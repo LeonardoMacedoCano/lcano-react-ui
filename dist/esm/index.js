@@ -1,5 +1,5 @@
 import { jsx, jsxs } from 'react/jsx-runtime';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -105,5 +105,37 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
-export { Container, Panel, ThemeSelector, convertReactStyleToCSSObject, getVariantColor };
+const Stack = ({ children, direction = 'row', divider, ...rest }) => {
+    return (jsx(StackContainer, { direction: direction, divider: divider, ...rest, children: children }));
+};
+const StackContainer = styled.div `
+  display: flex;
+  flex-direction: ${({ direction }) => direction};
+  width: ${({ width }) => width || '100%'};
+  height: ${({ height }) => height || 'auto'};
+
+  ${({ divider, direction, theme }) => divider &&
+    css `
+      > * + * {
+        ${(() => {
+        const color = theme.colors.gray;
+        if (direction === 'row') {
+            if (divider === 'left' || divider === 'x')
+                return `border-left: 1px solid ${color};`;
+            if (divider === 'right')
+                return `border-right: 1px solid ${color};`;
+        }
+        if (direction === 'column') {
+            if (divider === 'top' || divider === 'y')
+                return `border-top: 1px solid ${color};`;
+            if (divider === 'bottom')
+                return `border-bottom: 1px solid ${color};`;
+        }
+        return '';
+    })()}
+      }
+    `}
+`;
+
+export { Container, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, getVariantColor };
 //# sourceMappingURL=index.js.map

@@ -107,8 +107,41 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
+const Stack = ({ children, direction = 'row', divider, ...rest }) => {
+    return (jsxRuntime.jsx(StackContainer, { direction: direction, divider: divider, ...rest, children: children }));
+};
+const StackContainer = styled.div `
+  display: flex;
+  flex-direction: ${({ direction }) => direction};
+  width: ${({ width }) => width || '100%'};
+  height: ${({ height }) => height || 'auto'};
+
+  ${({ divider, direction, theme }) => divider &&
+    styled.css `
+      > * + * {
+        ${(() => {
+        const color = theme.colors.gray;
+        if (direction === 'row') {
+            if (divider === 'left' || divider === 'x')
+                return `border-left: 1px solid ${color};`;
+            if (divider === 'right')
+                return `border-right: 1px solid ${color};`;
+        }
+        if (direction === 'column') {
+            if (divider === 'top' || divider === 'y')
+                return `border-top: 1px solid ${color};`;
+            if (divider === 'bottom')
+                return `border-bottom: 1px solid ${color};`;
+        }
+        return '';
+    })()}
+      }
+    `}
+`;
+
 exports.Container = Container;
 exports.Panel = Panel;
+exports.Stack = Stack;
 exports.ThemeSelector = ThemeSelector;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.getVariantColor = getVariantColor;
