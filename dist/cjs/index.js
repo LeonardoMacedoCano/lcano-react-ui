@@ -116,6 +116,11 @@ const StackContainer = styled.div `
   width: ${({ width }) => width || '100%'};
   height: ${({ height }) => height || 'auto'};
 
+  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
+  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
+  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
+  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+
   ${({ divider, direction, theme }) => divider &&
     styled.css `
       > * + * {

@@ -7,6 +7,10 @@ export interface StackProps {
     direction?: 'row' | 'column';
     divider?: DividerPosition;
     style?: CSSProperties;
+    alignCenter?: boolean;
+    alignRight?: boolean;
+    justifyCenter?: boolean;
+    justifyBetween?: boolean;
 }
 export declare const Stack: FC<StackProps>;
 export default Stack;

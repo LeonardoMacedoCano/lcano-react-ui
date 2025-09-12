@@ -10,6 +10,10 @@ export interface StackProps {
   direction?: 'row' | 'column';
   divider?: DividerPosition;
   style?: CSSProperties;
+  alignCenter?: boolean;
+  alignRight?: boolean;
+  justifyCenter?: boolean;
+  justifyBetween?: boolean;
 }
 
 export const Stack: FC<StackProps> = ({
@@ -27,18 +31,18 @@ export const Stack: FC<StackProps> = ({
 
 export default Stack;
 
-interface StackContainerProps {
-  width?: string;
-  height?: string;
-  direction: 'row' | 'column';
-  divider?: DividerPosition;
-}
+interface StackContainerProps extends StackProps {}
 
 const StackContainer = styled.div<StackContainerProps>`
   display: flex;
   flex-direction: ${({ direction }) => direction};
   width: ${({ width }) => width || '100%'};
   height: ${({ height }) => height || 'auto'};
+
+  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
+  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
+  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
+  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
 
   ${({ divider, direction, theme }) =>
     divider &&
