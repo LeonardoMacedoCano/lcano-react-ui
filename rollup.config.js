@@ -1,39 +1,30 @@
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import { readFileSync } from 'fs';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
-// Lê o package.json usando ES modules
-const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
+export default [
+  // Build JS ESM/CJS
+  {
+    input: 'src/index.ts',
+    output: [
+      { dir: 'dist/esm', format: 'esm', sourcemap: true },
+      { dir: 'dist/cjs', format: 'cjs', sourcemap: true }
+    ],
+    plugins: [
+      peerDepsExternal(),
+      resolve(),
+      commonjs(),
+      typescript({ tsconfig: './tsconfig.build.json', jsx: 'react-jsx' })
+    ]
+  },
 
-export default {
-  input: 'src/index.ts',
-  output: [
-    {
-      file: 'dist/cjs/index.js',
-      format: 'cjs',
-      sourcemap: true,
-      exports: 'named',
-    },
-    {
-      file: 'dist/esm/index.js',
-      format: 'esm',
-      sourcemap: true,
-    },
-  ],
-  plugins: [
-    peerDepsExternal(),
-    resolve({
-      browser: true,
-    }),
-    commonjs(),
-    typescript({
-      tsconfig: './tsconfig.json',
-      declaration: true,
-      declarationDir: 'dist/types',
-      exclude: ['**/*.test.*', '**/*.stories.*', 'dist/**/*'],
-    }),
-  ],
-  external: ['react', 'react-dom', 'styled-components'],
-};
+  // Build apenas tipos
+  {
+    input: 'src/index.ts',
+    output: { dir: 'dist/types' }, // Rollup exige output, mas JS não é gerado
+    plugins: [
+      typescript({ tsconfig: './tsconfig.types.json' })
+    ]
+  }
+];
