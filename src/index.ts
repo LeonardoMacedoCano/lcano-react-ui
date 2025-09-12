@@ -1,3 +1,8 @@
+export * from './types';
+export * from './utils';
+
 export { default as ThemeSelector } from './components/ThemeSelector';
 export type { ThemeSelectorProps } from './components/ThemeSelector';
-export * from './types';
+
+export { default as Container } from './components/Container';
+export type { ContainerProps } from './components/Container';

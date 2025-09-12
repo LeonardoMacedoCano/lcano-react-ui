@@ -4,7 +4,6 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default [
-  // Build JS ESM/CJS
   {
     input: 'src/index.ts',
     output: [
@@ -19,10 +18,9 @@ export default [
     ]
   },
 
-  // Build apenas tipos
   {
     input: 'src/index.ts',
-    output: { dir: 'dist/types' }, // Rollup exige output, mas JS não é gerado
+    output: { dir: 'dist/types' },
     plugins: [
       typescript({ tsconfig: './tsconfig.types.json' })
     ]
