@@ -107,8 +107,8 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
-const Stack = ({ children, direction = 'row', divider, ...rest }) => {
-    return (jsxRuntime.jsx(StackContainer, { direction: direction, divider: divider, ...rest, children: children }));
+const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
+    return (jsxRuntime.jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
 };
 const StackContainer = styled.div `
   display: flex;
@@ -120,6 +120,8 @@ const StackContainer = styled.div `
   ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
   ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
   ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+
+  ${({ gap }) => gap && `gap: ${gap};`}
 
   ${({ divider, direction, theme }) => divider &&
     styled.css `

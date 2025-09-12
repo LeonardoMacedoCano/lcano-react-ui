@@ -14,16 +14,18 @@ export interface StackProps {
   alignRight?: boolean;
   justifyCenter?: boolean;
   justifyBetween?: boolean;
+  gap?: string;
 }
 
 export const Stack: FC<StackProps> = ({
   children,
   direction = 'row',
   divider,
+  gap,
   ...rest
 }) => {
   return (
-    <StackContainer direction={direction} divider={divider} {...rest}>
+    <StackContainer direction={direction} divider={divider} gap={gap} {...rest}>
       {children}
     </StackContainer>
   );
@@ -43,6 +45,8 @@ const StackContainer = styled.div<StackContainerProps>`
   ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
   ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
   ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+
+  ${({ gap }) => gap && `gap: ${gap};`}
 
   ${({ divider, direction, theme }) =>
     divider &&

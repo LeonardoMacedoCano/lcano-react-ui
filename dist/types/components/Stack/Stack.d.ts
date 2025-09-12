@@ -11,6 +11,7 @@ export interface StackProps {
     alignRight?: boolean;
     justifyCenter?: boolean;
     justifyBetween?: boolean;
+    gap?: string;
 }
 export declare const Stack: FC<StackProps>;
 export default Stack;
