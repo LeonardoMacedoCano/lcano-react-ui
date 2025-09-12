@@ -68,5 +68,42 @@ const StyledContainer = styled.div `
   background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
 `;
 
-export { Container, ThemeSelector, convertReactStyleToCSSObject, getVariantColor };
+const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
+    return (jsxs(Container, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxs(Title, { children: [jsx("h3", { children: title }), actionButton && jsx(ActionContainer, { children: actionButton })] })), jsxs(Container, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+                    {} :
+                    {
+                        boxShadow: '0 0 2px',
+                        borderRadius: '5px',
+                    }, children: [jsx(Body, { children: children }), footer && jsx(Footer, { children: footer })] })] }));
+};
+const Title = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
+  h3 {
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+const ActionContainer = styled.div `
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`;
+const BaseBox = styled.div `
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Body = styled(BaseBox) `
+  justify-content: space-between;
+`;
+const Footer = styled(BaseBox) `
+  height: 35px;
+  justify-content: center;
+  border-top: 1px solid ${({ theme }) => theme.colors.gray};
+`;
+
+export { Container, Panel, ThemeSelector, convertReactStyleToCSSObject, getVariantColor };
 //# sourceMappingURL=index.js.map

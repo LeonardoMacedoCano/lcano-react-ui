@@ -70,7 +70,45 @@ const StyledContainer = styled.div `
   background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
 `;
 
+const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
+    return (jsxRuntime.jsxs(Container, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+                    {} :
+                    {
+                        boxShadow: '0 0 2px',
+                        borderRadius: '5px',
+                    }, children: [jsxRuntime.jsx(Body, { children: children }), footer && jsxRuntime.jsx(Footer, { children: footer })] })] }));
+};
+const Title = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
+  h3 {
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+const ActionContainer = styled.div `
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`;
+const BaseBox = styled.div `
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Body = styled(BaseBox) `
+  justify-content: space-between;
+`;
+const Footer = styled(BaseBox) `
+  height: 35px;
+  justify-content: center;
+  border-top: 1px solid ${({ theme }) => theme.colors.gray};
+`;
+
 exports.Container = Container;
+exports.Panel = Panel;
 exports.ThemeSelector = ThemeSelector;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.getVariantColor = getVariantColor;
