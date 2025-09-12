@@ -3,6 +3,26 @@
 var jsxRuntime = require('react/jsx-runtime');
 var styled = require('styled-components');
 
+const convertReactStyleToCSSObject = (style) => {
+    return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
+};
+const getVariantColor = (theme, variant) => {
+    const colors = theme.colors;
+    const validVariant = variant || 'info';
+    switch (validVariant) {
+        case 'primary':
+        case 'secondary':
+        case 'tertiary':
+        case 'quaternary':
+        case 'success':
+        case 'info':
+        case 'warning':
+            return colors[validVariant];
+        default:
+            return colors.defaultColor;
+    }
+};
+
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
     return (jsxRuntime.jsx(ThemeGrid, { children: themes.map((theme) => (jsxRuntime.jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsxRuntime.jsx(ThemeName, { children: theme.title }), jsxRuntime.jsxs(ColorPalette, { children: [jsxRuntime.jsx(ColorBlock, { color: theme.primaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.secondaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.tertiaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
 };
@@ -40,5 +60,18 @@ const ColorBlock = styled.div `
   background-color: ${props => props.color};
 `;
 
+const Container = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsxRuntime.jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
+const StyledContainer = styled.div `
+  height: ${({ height }) => height || 'auto'};
+  width: ${({ width }) => width || 'auto'};
+  margin: ${({ margin }) => margin || '0'};
+  padding: ${({ padding }) => padding || '0'};
+  max-width: ${({ maxWidth }) => maxWidth || 'none'};
+  background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
+`;
+
+exports.Container = Container;
 exports.ThemeSelector = ThemeSelector;
+exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
+exports.getVariantColor = getVariantColor;
 //# sourceMappingURL=index.js.map
