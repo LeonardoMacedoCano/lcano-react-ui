@@ -1,0 +1,30 @@
+import React, { FC, KeyboardEventHandler } from 'react';
+import { SelectValue } from '../../types';
+import { VariantColor } from '../../utils';
+type FieldValueType = 'string' | 'number' | 'boolean' | 'date' | 'month' | 'select';
+export type FieldValueProps = {
+    type: FieldValueType;
+    value?: string | number | boolean | SelectValue;
+    variant?: VariantColor;
+    description?: string;
+    hint?: string;
+    editable?: boolean;
+    width?: string;
+    maxWidth?: string;
+    maxHeight?: string;
+    minValue?: number;
+    maxValue?: number;
+    inputWidth?: string;
+    inline?: boolean;
+    options?: SelectValue[];
+    icon?: React.ReactNode;
+    padding?: string;
+    placeholder?: string;
+    maxDecimalPlaces?: number;
+    maxIntegerDigits?: number;
+    onUpdate?: (value: any) => void;
+    onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
+};
+declare const FieldValue: FC<FieldValueProps>;
+export default FieldValue;
+//# sourceMappingURL=FieldValue.d.ts.map

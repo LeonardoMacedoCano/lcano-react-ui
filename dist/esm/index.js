@@ -21,6 +21,52 @@ const getVariantColor = (theme, variant) => {
     }
 };
 
+const getCurrentDate = () => new Date();
+const parseShortStringToDateTime = (dateStr) => {
+    if (!dateStr)
+        return '';
+    const dateParts = dateStr.toString().split(',');
+    return `${dateParts[2].padStart(2, '0')}/${(parseInt(dateParts[1], 10) + 1)
+        .toString()
+        .padStart(2, '0')}/${dateParts[0].slice(-2)} ${dateParts[3].padStart(2, '0')}:${dateParts[4].padStart(2, '0')}`;
+};
+const formatDateToShortString = (date) => {
+    if (!date)
+        return '';
+    const dateObj = new Date(date);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+};
+const formatDateToYMDString = (date) => {
+    if (!date)
+        return '';
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear().toString();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+const formatDateToYMString = (date) => {
+    if (!date)
+        return '';
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear().toString();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+};
+const parseDateStringToDate = (dateStr) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+};
+const isDateValid = (date) => {
+    if (typeof date === 'number' || typeof date === 'string') {
+        date = new Date(date);
+    }
+    return date instanceof Date && !isNaN(date.getTime());
+};
+
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
     return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { color: theme.primaryColor }), jsx(ColorBlock, { color: theme.secondaryColor }), jsx(ColorBlock, { color: theme.tertiaryColor }), jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
 };
@@ -144,5 +190,5 @@ const StackContainer = styled.div `
     `}
 `;
 
-export { Container, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, getVariantColor };
+export { Container, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
 //# sourceMappingURL=index.js.map
