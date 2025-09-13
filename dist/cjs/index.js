@@ -2,6 +2,7 @@
 
 var jsxRuntime = require('react/jsx-runtime');
 var styled = require('styled-components');
+var react = require('react');
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -335,9 +336,79 @@ const Description = styled.span `
   margin-left: 8px;
 `;
 
+const ImagePicker = ({ currentImage, onImageChange, size = '150px', borderColor, isLoading = false, icon, }) => {
+    const fileInputRef = react.useRef(null);
+    const handleImageClick = () => {
+        if (!isLoading && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0];
+        if (file && onImageChange) {
+            onImageChange(file);
+        }
+    };
+    return (jsxRuntime.jsxs(ImageContainer, { size: size, children: [jsxRuntime.jsx(ProfileImage, { src: currentImage || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsxRuntime.jsx(LoadingOverlay, {}), jsxRuntime.jsx(UploadButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, children: icon }), jsxRuntime.jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
+};
+const ImageContainer = styled.div `
+  position: relative;
+  width: ${props => props.size};
+  height: ${props => props.size};
+  margin: 0 auto;
+`;
+const ProfileImage = styled.img `
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid ${props => props.borderColor || props.theme.colors.quaternary};
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: ${props => props.isLoading ? 0.7 : 1};
+`;
+const LoadingOverlay = styled.div `
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+`;
+const UploadButton = styled.div `
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: ${props => props.borderColor || props.theme.colors.quaternary};
+  color: ${props => props.theme.colors.primary};
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+  opacity: ${props => props.disabled ? 0.7 : 1};
+
+  &:hover {
+    transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};
+  }
+`;
+
 exports.Button = Button;
 exports.Container = Container;
 exports.FieldValue = FieldValue;
+exports.ImagePicker = ImagePicker;
 exports.Panel = Panel;
 exports.Stack = Stack;
 exports.ThemeSelector = ThemeSelector;
