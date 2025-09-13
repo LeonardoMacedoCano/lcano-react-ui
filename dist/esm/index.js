@@ -1,4 +1,4 @@
-import { jsx, jsxs } from 'react/jsx-runtime';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css } from 'styled-components';
 
 const convertReactStyleToCSSObject = (style) => {
@@ -190,5 +190,108 @@ const StackContainer = styled.div `
     `}
 `;
 
-export { Container, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
+    const handleChange = (event) => {
+        if (!onUpdate)
+            return;
+        let val = event.target.value;
+        switch (type) {
+            case 'number':
+                val = enforceNumeric(val);
+                break;
+            case 'boolean':
+                val = val === 'true';
+                break;
+            case 'date':
+                val = parseDateStringToDate(val);
+                break;
+        }
+        onUpdate(val);
+    };
+    const enforceNumeric = (val) => {
+        const [integerPart, decimalPart] = val.split('.');
+        let newVal = integerPart.slice(0, maxIntegerDigits) + (decimalPart ? `.${decimalPart.slice(0, maxDecimalPlaces)}` : '');
+        if (minValue !== undefined && parseFloat(newVal) < minValue)
+            newVal = String(minValue);
+        if (maxValue !== undefined && parseFloat(newVal) > maxValue)
+            newVal = String(maxValue);
+        return newVal;
+    };
+    const formattedValue = () => {
+        if (type === 'number' || type === 'string')
+            return String(value);
+        if (type === 'boolean')
+            return value ? 'true' : 'false';
+        if (type === 'date')
+            return formatDateToYMDString(value);
+        if (type === 'month')
+            return formatDateToYMString(value);
+        if (type === 'select')
+            return value?.key ?? '';
+        return '';
+    };
+    return (jsxs(FieldWrapper, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsx(Label, { title: hint, children: description }), type === 'select' || type === 'boolean' ? (jsxs(StyledSelect, { value: formattedValue(), onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, children: [type === 'select' && jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'select'
+                        ? options?.map(opt => jsx("option", { value: opt.key, children: opt.value }, opt.key))
+                        : (jsxs(Fragment, { children: [jsx("option", { value: "true", children: "Sim" }), jsx("option", { value: "false", children: "N\u00E3o" })] }))] })) : (jsxs(Fragment, { children: [icon && jsx(Icon, { children: icon }), jsx(StyledInput, { type: editable ? type : 'string', readOnly: !editable, value: formattedValue(), onChange: handleChange, onKeyDown: onKeyDown, inputWidth: inputWidth, inline: inline, placeholder: placeholder, variant: variant })] }))] }));
+};
+const FieldWrapper = styled.div `
+  width: ${({ width }) => width || '100%'};
+  max-width: ${({ maxWidth }) => maxWidth || 'none'};
+  max-height: ${({ maxHeight }) => maxHeight || 'none'};
+  height: 100%;
+  padding: ${({ padding }) => padding || '5px'};
+  display: flex;
+  flex-direction: ${({ inline }) => (inline ? 'row' : 'column')};
+  align-items: ${({ inline }) => (inline ? 'center' : 'stretch')};
+`;
+const Label = styled.span `
+  color: ${({ theme }) => theme.colors.quaternary};
+  font-weight: bold;
+  font-size: 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
+const StyledInput = styled.input `
+  width: ${({ inputWidth }) => inputWidth || '100%'};
+  font-size: 15px;
+  height: 100%;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(100%);
+  }
+
+  ${({ variant, theme }) => variant &&
+    css `
+      color: ${getVariantColor(theme, variant)};
+    `}
+`;
+const StyledSelect = styled.select `
+  width: ${({ inputWidth }) => inputWidth || '100%'};
+  font-size: 15px;
+  height: 100%;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+
+  ${({ variant, theme }) => variant &&
+    css `
+      color: ${getVariantColor(theme, variant)};
+    `}
+
+  option {
+    color: ${({ theme }) => theme.colors.white};
+    background-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+const Icon = styled.div `
+  height: 100%;
+  width: auto;
+`;
+
+export { Container, FieldValue, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
 //# sourceMappingURL=index.js.map

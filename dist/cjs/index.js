@@ -192,7 +192,111 @@ const StackContainer = styled.div `
     `}
 `;
 
+const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
+    const handleChange = (event) => {
+        if (!onUpdate)
+            return;
+        let val = event.target.value;
+        switch (type) {
+            case 'number':
+                val = enforceNumeric(val);
+                break;
+            case 'boolean':
+                val = val === 'true';
+                break;
+            case 'date':
+                val = parseDateStringToDate(val);
+                break;
+        }
+        onUpdate(val);
+    };
+    const enforceNumeric = (val) => {
+        const [integerPart, decimalPart] = val.split('.');
+        let newVal = integerPart.slice(0, maxIntegerDigits) + (decimalPart ? `.${decimalPart.slice(0, maxDecimalPlaces)}` : '');
+        if (minValue !== undefined && parseFloat(newVal) < minValue)
+            newVal = String(minValue);
+        if (maxValue !== undefined && parseFloat(newVal) > maxValue)
+            newVal = String(maxValue);
+        return newVal;
+    };
+    const formattedValue = () => {
+        if (type === 'number' || type === 'string')
+            return String(value);
+        if (type === 'boolean')
+            return value ? 'true' : 'false';
+        if (type === 'date')
+            return formatDateToYMDString(value);
+        if (type === 'month')
+            return formatDateToYMString(value);
+        if (type === 'select')
+            return value?.key ?? '';
+        return '';
+    };
+    return (jsxRuntime.jsxs(FieldWrapper, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsxRuntime.jsx(Label, { title: hint, children: description }), type === 'select' || type === 'boolean' ? (jsxRuntime.jsxs(StyledSelect, { value: formattedValue(), onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, children: [type === 'select' && jsxRuntime.jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'select'
+                        ? options?.map(opt => jsxRuntime.jsx("option", { value: opt.key, children: opt.value }, opt.key))
+                        : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("option", { value: "true", children: "Sim" }), jsxRuntime.jsx("option", { value: "false", children: "N\u00E3o" })] }))] })) : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [icon && jsxRuntime.jsx(Icon, { children: icon }), jsxRuntime.jsx(StyledInput, { type: editable ? type : 'string', readOnly: !editable, value: formattedValue(), onChange: handleChange, onKeyDown: onKeyDown, inputWidth: inputWidth, inline: inline, placeholder: placeholder, variant: variant })] }))] }));
+};
+const FieldWrapper = styled.div `
+  width: ${({ width }) => width || '100%'};
+  max-width: ${({ maxWidth }) => maxWidth || 'none'};
+  max-height: ${({ maxHeight }) => maxHeight || 'none'};
+  height: 100%;
+  padding: ${({ padding }) => padding || '5px'};
+  display: flex;
+  flex-direction: ${({ inline }) => (inline ? 'row' : 'column')};
+  align-items: ${({ inline }) => (inline ? 'center' : 'stretch')};
+`;
+const Label = styled.span `
+  color: ${({ theme }) => theme.colors.quaternary};
+  font-weight: bold;
+  font-size: 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
+const StyledInput = styled.input `
+  width: ${({ inputWidth }) => inputWidth || '100%'};
+  font-size: 15px;
+  height: 100%;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(100%);
+  }
+
+  ${({ variant, theme }) => variant &&
+    styled.css `
+      color: ${getVariantColor(theme, variant)};
+    `}
+`;
+const StyledSelect = styled.select `
+  width: ${({ inputWidth }) => inputWidth || '100%'};
+  font-size: 15px;
+  height: 100%;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+
+  ${({ variant, theme }) => variant &&
+    styled.css `
+      color: ${getVariantColor(theme, variant)};
+    `}
+
+  option {
+    color: ${({ theme }) => theme.colors.white};
+    background-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+const Icon = styled.div `
+  height: 100%;
+  width: auto;
+`;
+
 exports.Container = Container;
+exports.FieldValue = FieldValue;
 exports.Panel = Panel;
 exports.Stack = Stack;
 exports.ThemeSelector = ThemeSelector;
