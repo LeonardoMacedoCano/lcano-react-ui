@@ -406,7 +406,7 @@ const CameraButton = styled.button `
   }
 `;
 
-const ExpandableActionButton = ({ icon, hint, onClick, options, disabled, }) => {
+const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
     const [expanded, setExpanded] = react.useState(false);
     const toggleOptions = (show) => setExpanded(show);
     const handleOptionClick = (action) => {
@@ -462,9 +462,9 @@ const OptionButton = styled.button `
   opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
 
+exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Container = Container$1;
-exports.ExpandableActionButton = ExpandableActionButton;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Panel = Panel;

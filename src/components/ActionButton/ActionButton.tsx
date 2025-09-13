@@ -8,7 +8,7 @@ export interface ActionOption {
   disabled?: boolean;
 }
 
-export interface ExpandableActionButtonProps {
+export interface ActionButtonProps {
   icon: React.ReactNode;
   hint?: string;
   onClick?: () => void;
@@ -16,7 +16,7 @@ export interface ExpandableActionButtonProps {
   disabled?: boolean;
 }
 
-const ExpandableActionButton: React.FC<ExpandableActionButtonProps> = ({
+const ActionButton: React.FC<ActionButtonProps> = ({
   icon,
   hint,
   onClick,
@@ -67,7 +67,7 @@ const ExpandableActionButton: React.FC<ExpandableActionButtonProps> = ({
   );
 };
 
-export default ExpandableActionButton;
+export default ActionButton;
 
 const Wrapper = styled.div`
   position: fixed;

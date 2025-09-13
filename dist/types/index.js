@@ -404,7 +404,7 @@ const CameraButton = styled.button `
   }
 `;
 
-const ExpandableActionButton = ({ icon, hint, onClick, options, disabled, }) => {
+const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
     const [expanded, setExpanded] = useState(false);
     const toggleOptions = (show) => setExpanded(show);
     const handleOptionClick = (action) => {
@@ -460,4 +460,4 @@ const OptionButton = styled.button `
   opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
 
-export { Button, Container$1 as Container, ExpandableActionButton, FieldValue, ImagePicker, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+export { ActionButton, Button, Container$1 as Container, FieldValue, ImagePicker, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
