@@ -107,7 +107,7 @@ const ColorBlock = styled.div `
   background-color: ${props => props.color};
 `;
 
-const Container = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsxRuntime.jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
+const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsxRuntime.jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
 const StyledContainer = styled.div `
   height: ${({ height }) => height || 'auto'};
   width: ${({ width }) => width || 'auto'};
@@ -118,7 +118,7 @@ const StyledContainer = styled.div `
 `;
 
 const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxRuntime.jsxs(Container, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
                     {} :
                     {
                         boxShadow: '0 0 2px',
@@ -336,7 +336,7 @@ const Description = styled.span `
   margin-left: 8px;
 `;
 
-const ImagePicker = ({ currentImage, onImageChange, size = '150px', borderColor, isLoading = false, icon, }) => {
+const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
     const fileInputRef = react.useRef(null);
     const handleImageClick = () => {
         if (!isLoading && fileInputRef.current) {
@@ -345,19 +345,19 @@ const ImagePicker = ({ currentImage, onImageChange, size = '150px', borderColor,
     };
     const handleFileChange = (event) => {
         const file = event.target.files?.[0];
-        if (file && onImageChange) {
-            onImageChange(file);
+        if (file && onChange) {
+            onChange(file);
         }
     };
-    return (jsxRuntime.jsxs(ImageContainer, { size: size, children: [jsxRuntime.jsx(ProfileImage, { src: currentImage || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsxRuntime.jsx(LoadingOverlay, {}), jsxRuntime.jsx(UploadButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, children: icon }), jsxRuntime.jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
+    return (jsxRuntime.jsxs(Container, { size: size, children: [jsxRuntime.jsx(Avatar, { src: imageUrl || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsxRuntime.jsx(Spinner, {}), jsxRuntime.jsx(CameraButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, "aria-label": "Upload image", children: icon }), jsxRuntime.jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
 };
-const ImageContainer = styled.div `
+const Container = styled.div `
   position: relative;
   width: ${props => props.size};
   height: ${props => props.size};
   margin: 0 auto;
 `;
-const ProfileImage = styled.img `
+const Avatar = styled.img `
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -366,7 +366,11 @@ const ProfileImage = styled.img `
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   opacity: ${props => props.isLoading ? 0.7 : 1};
 `;
-const LoadingOverlay = styled.div `
+const spin = styled.keyframes `
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+`;
+const Spinner = styled.div `
   position: absolute;
   top: 50%;
   left: 50%;
@@ -376,14 +380,9 @@ const LoadingOverlay = styled.div `
   border: 3px solid rgba(0, 0, 0, 0.1);
   border-top: 3px solid #3498db;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-  }
+  animation: ${spin} 1s linear infinite;
 `;
-const UploadButton = styled.div `
+const CameraButton = styled.button `
   position: absolute;
   bottom: 0;
   right: 0;
@@ -397,8 +396,10 @@ const UploadButton = styled.div `
   justify-content: center;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   opacity: ${props => props.disabled ? 0.7 : 1};
+  border: none;
+  outline: none;
 
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};
@@ -406,7 +407,7 @@ const UploadButton = styled.div `
 `;
 
 exports.Button = Button;
-exports.Container = Container;
+exports.Container = Container$1;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Panel = Panel;

@@ -1,18 +1,18 @@
 import React, { useRef } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export interface ImagePickerProps {
   icon: React.ReactNode;
-  currentImage?: string;
-  onImageChange?: (file: File) => void;
+  imageUrl?: string;
+  onChange?: (file: File) => void;
   size?: string;
   borderColor?: string;
   isLoading?: boolean;
 }
 
 const ImagePicker: React.FC<ImagePickerProps> = ({
-  currentImage,
-  onImageChange,
+  imageUrl,
+  onChange,
   size = '150px',
   borderColor,
   isLoading = false,
@@ -28,27 +28,28 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && onImageChange) {
-      onImageChange(file);
+    if (file && onChange) {
+      onChange(file);
     }
   };
 
   return (
-    <ImageContainer size={size}>
-      <ProfileImage
-        src={currentImage || '/default-profile-image.png'}
+    <Container size={size}>
+      <Avatar
+        src={imageUrl || '/default-profile-image.png'}
         alt="Profile"
         borderColor={borderColor}
         isLoading={isLoading}
       />
-      {isLoading && <LoadingOverlay />}
-      <UploadButton
+      {isLoading && <Spinner />}
+      <CameraButton
         onClick={handleImageClick}
         borderColor={borderColor}
         disabled={isLoading}
+        aria-label="Upload image"
       >
         {icon}
-      </UploadButton>
+      </CameraButton>
       <input
         type="file"
         ref={fileInputRef}
@@ -56,29 +57,29 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
         accept="image/*"
         style={{ display: 'none' }}
       />
-    </ImageContainer>
+    </Container>
   );
 };
 
 export default ImagePicker;
 
-interface ImageContainerProps {
+interface ContainerProps {
   size: string;
 }
 
-const ImageContainer = styled.div<ImageContainerProps>`
+const Container = styled.div<ContainerProps>`
   position: relative;
   width: ${props => props.size};
   height: ${props => props.size};
   margin: 0 auto;
 `;
 
-interface ProfileImageProps {
+interface AvatarProps {
   borderColor?: string;
   isLoading?: boolean;
 }
 
-const ProfileImage = styled.img<ProfileImageProps>`
+const Avatar = styled.img<AvatarProps>`
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -88,7 +89,12 @@ const ProfileImage = styled.img<ProfileImageProps>`
   opacity: ${props => props.isLoading ? 0.7 : 1};
 `;
 
-const LoadingOverlay = styled.div`
+const spin = keyframes`
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+`;
+
+const Spinner = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -98,20 +104,15 @@ const LoadingOverlay = styled.div`
   border: 3px solid rgba(0, 0, 0, 0.1);
   border-top: 3px solid #3498db;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-  }
+  animation: ${spin} 1s linear infinite;
 `;
 
-interface UploadButtonProps {
+interface CameraButtonProps {
   borderColor?: string;
   disabled?: boolean;
 }
 
-const UploadButton = styled.div<UploadButtonProps>`
+const CameraButton = styled.button<CameraButtonProps>`
   position: absolute;
   bottom: 0;
   right: 0;
@@ -125,8 +126,10 @@ const UploadButton = styled.div<UploadButtonProps>`
   justify-content: center;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   opacity: ${props => props.disabled ? 0.7 : 1};
+  border: none;
+  outline: none;
 
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};

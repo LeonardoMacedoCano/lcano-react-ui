@@ -1,8 +1,8 @@
 import React from 'react';
 export interface ImagePickerProps {
     icon: React.ReactNode;
-    currentImage?: string;
-    onImageChange?: (file: File) => void;
+    imageUrl?: string;
+    onChange?: (file: File) => void;
     size?: string;
     borderColor?: string;
     isLoading?: boolean;
