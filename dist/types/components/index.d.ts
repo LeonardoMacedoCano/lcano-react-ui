@@ -7,4 +7,6 @@ export { default as Button, type ButtonProps } from './Button';
 export { default as ImagePicker, type ImagePickerProps } from './ImagePicker';
 export { default as ActionButton, type ActionButtonProps } from './ActionButton';
 export { default as Loading, type LoadingProps } from './Loading';
+export { default as SearchPagination, type SearchPaginationProps } from './SearchPagination';
+export { default as Table, Column, type TableActionsProps, type ColumnProps } from './Table';
 //# sourceMappingURL=index.d.ts.map

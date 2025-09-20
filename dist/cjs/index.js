@@ -2,7 +2,7 @@
 
 var jsxRuntime = require('react/jsx-runtime');
 var styled = require('styled-components');
-var react = require('react');
+var React = require('react');
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -337,7 +337,7 @@ const Description = styled.span `
 `;
 
 const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
-    const fileInputRef = react.useRef(null);
+    const fileInputRef = React.useRef(null);
     const handleImageClick = () => {
         if (!isLoading && fileInputRef.current) {
             fileInputRef.current.click();
@@ -407,7 +407,7 @@ const CameraButton = styled.button `
 `;
 
 const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
-    const [expanded, setExpanded] = react.useState(false);
+    const [expanded, setExpanded] = React.useState(false);
     const toggleOptions = (show) => setExpanded(show);
     const handleOptionClick = (action) => {
         action();
@@ -475,9 +475,9 @@ const svgAnimation = `
 `;
 const LOADING_DELAY = 100;
 const Loading = ({ isLoading }) => {
-    const [shouldDisplay, setShouldDisplay] = react.useState(false);
+    const [shouldDisplay, setShouldDisplay] = React.useState(false);
     const theme = styled.useTheme();
-    react.useEffect(() => {
+    React.useEffect(() => {
         let timer;
         if (isLoading) {
             timer = setTimeout(() => {
@@ -568,14 +568,326 @@ const Loading = ({ isLoading }) => {
         }, children: jsxRuntime.jsx("div", { dangerouslySetInnerHTML: { __html: svgContent } }) }));
 };
 
+var DefaultContext = {
+  color: undefined,
+  size: undefined,
+  className: undefined,
+  style: undefined,
+  attr: undefined
+};
+var IconContext = React.createContext && /*#__PURE__*/React.createContext(DefaultContext);
+
+var _excluded = ["attr", "size", "title"];
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } } return target; }
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), true).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function Tree2Element(tree) {
+  return tree && tree.map((node, i) => /*#__PURE__*/React.createElement(node.tag, _objectSpread({
+    key: i
+  }, node.attr), Tree2Element(node.child)));
+}
+function GenIcon(data) {
+  return props => /*#__PURE__*/React.createElement(IconBase, _extends({
+    attr: _objectSpread({}, data.attr)
+  }, props), Tree2Element(data.child));
+}
+function IconBase(props) {
+  var elem = conf => {
+    var {
+        attr,
+        size,
+        title
+      } = props,
+      svgProps = _objectWithoutProperties(props, _excluded);
+    var computedSize = size || conf.size || "1em";
+    var className;
+    if (conf.className) className = conf.className;
+    if (props.className) className = (className ? className + " " : "") + props.className;
+    return /*#__PURE__*/React.createElement("svg", _extends({
+      stroke: "currentColor",
+      fill: "currentColor",
+      strokeWidth: "0"
+    }, conf.attr, attr, svgProps, {
+      className: className,
+      style: _objectSpread(_objectSpread({
+        color: props.color || conf.color
+      }, conf.style), props.style),
+      height: computedSize,
+      width: computedSize,
+      xmlns: "http://www.w3.org/2000/svg"
+    }), title && /*#__PURE__*/React.createElement("title", null, title), props.children);
+  };
+  return IconContext !== undefined ? /*#__PURE__*/React.createElement(IconContext.Consumer, null, conf => elem(conf)) : elem(DefaultContext);
+}
+
+// THIS FILE IS AUTO GENERATED
+function FaAngleDoubleLeft (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M223.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L319.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L393.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34zm-192 34l136 136c9.4 9.4 24.6 9.4 33.9 0l22.6-22.6c9.4-9.4 9.4-24.6 0-33.9L127.9 256l96.4-96.4c9.4-9.4 9.4-24.6 0-33.9L201.7 103c-9.4-9.4-24.6-9.4-33.9 0l-136 136c-9.5 9.4-9.5 24.6-.1 34z"},"child":[]}]})(props);
+}function FaAngleDoubleRight (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"},"child":[]}]})(props);
+}function FaAngleLeft (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"},"child":[]}]})(props);
+}function FaAngleRight (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"},"child":[]}]})(props);
+}function FaEdit (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"},"child":[]}]})(props);
+}function FaEye (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
+}function FaTrash (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"},"child":[]}]})(props);
+}
+
+const usePaginationState = (page) => {
+    const [currentPageIndex, setCurrentPageIndex] = React.useState(page.number);
+    React.useEffect(() => {
+        setCurrentPageIndex(page.number);
+    }, [page.number]);
+    return React.useMemo(() => ({
+        isFirstPage: currentPageIndex === 0,
+        isLastPage: currentPageIndex === page.totalPages - 1,
+        currentPage: currentPageIndex,
+        totalPages: page.totalPages,
+        pageSize: page.size,
+    }), [currentPageIndex, page.totalPages, page.size]);
+};
+const useNavigationHandlers = (loadPage, state) => {
+    const { currentPage, totalPages, pageSize } = state;
+    return React.useMemo(() => ({
+        goToFirst: () => {
+            if (!state.isFirstPage) {
+                loadPage(0, pageSize);
+            }
+        },
+        goToPrevious: () => {
+            if (currentPage > 0) {
+                loadPage(currentPage - 1, pageSize);
+            }
+        },
+        goToNext: () => {
+            if (currentPage < totalPages - 1) {
+                loadPage(currentPage + 1, pageSize);
+            }
+        },
+        goToLast: () => {
+            if (!state.isLastPage) {
+                loadPage(totalPages - 1, pageSize);
+            }
+        },
+    }), [loadPage, currentPage, totalPages, pageSize, state.isFirstPage, state.isLastPage]);
+};
+const PaginationControls = ({ state, handlers }) => {
+    const { isFirstPage, isLastPage, currentPage, totalPages } = state;
+    const { goToFirst, goToPrevious, goToNext, goToLast } = handlers;
+    return (jsxRuntime.jsxs(StyledPaginationControls, { children: [jsxRuntime.jsx(ControlItem, { onClick: goToFirst, disabled: isFirstPage, children: jsxRuntime.jsx(FaAngleDoubleLeft, {}) }), jsxRuntime.jsx(ControlItem, { onClick: goToPrevious, disabled: isFirstPage, children: jsxRuntime.jsx(FaAngleLeft, {}) }), jsxRuntime.jsxs(PageIndicator, { children: [currentPage + 1, " / ", totalPages] }), jsxRuntime.jsx(ControlItem, { onClick: goToNext, disabled: isLastPage, children: jsxRuntime.jsx(FaAngleRight, {}) }), jsxRuntime.jsx(ControlItem, { onClick: goToLast, disabled: isLastPage, children: jsxRuntime.jsx(FaAngleDoubleRight, {}) })] }));
+};
+const SearchPagination = ({ page, height, width, loadPage }) => {
+    const state = usePaginationState(page);
+    const handlers = useNavigationHandlers(loadPage, state);
+    return (jsxRuntime.jsx(Container$1, { height: height, width: width, backgroundColor: "transparent", children: jsxRuntime.jsx(Stack, { direction: "row", alignCenter: true, justifyCenter: true, gap: "10px", children: jsxRuntime.jsx(PaginationControls, { state: state, handlers: handlers }) }) }));
+};
+const StyledPaginationControls = styled.ul `
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.quaternary};
+`;
+const ControlItem = styled.li `
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ disabled }) => disabled ? '0.2' : '1'};
+
+  &:hover {
+    color: ${({ theme, disabled }) => disabled ? theme.colors.white : theme.colors.gray};
+  }
+`;
+const PageIndicator = styled.span `
+  margin: 0 8px;
+  user-select: none;
+`;
+
+const Column = ({}) => null;
+const COMMON_BUTTON_STYLES = {
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    height: '25px',
+    width: '25px',
+};
+const TableActions = ({ onView, onEdit, onDelete, visible, customActions }) => (jsxRuntime.jsx(ActionsContainer, { children: jsxRuntime.jsxs(ActionsWrapper, { visible: visible, children: [customActions && (jsxRuntime.jsx(CustomActionWrapper, { children: customActions() })), onView && (jsxRuntime.jsx(Button, { onClick: onView, variant: "success", icon: jsxRuntime.jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsxRuntime.jsx(Button, { variant: "info", icon: jsxRuntime.jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsxRuntime.jsx(Button, { variant: "warning", icon: jsxRuntime.jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
+const isPagedResponse = (values) => typeof values === 'object' && values !== null && 'content' in values;
+const getTableData = (values) => isPagedResponse(values) ? values.content || [] : values;
+const TableHeader = ({ columns }) => (jsxRuntime.jsx("thead", { children: jsxRuntime.jsx(TableHeadRow, { children: columns.map((column, index) => {
+            if (!React.isValidElement(column))
+                return null;
+            const { header, titleAlign = 'center' } = column.props;
+            return (jsxRuntime.jsx(TableHeadColumn, { children: jsxRuntime.jsx(TableColumnTitle, { align: titleAlign, children: header }) }, index));
+        }) }) }));
+const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, }) => {
+    if (data.length === 0) {
+        return (jsxRuntime.jsx("tbody", { children: jsxRuntime.jsx("tr", { children: jsxRuntime.jsx("td", { colSpan: columns.length + 1, children: jsxRuntime.jsx(EmptyMessage, { children: messageEmpty }) }) }) }));
+    }
+    return (jsxRuntime.jsx("tbody", { children: data.map((item, index) => (jsxRuntime.jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), children: [columns.map((column, columnIndex) => {
+                    if (!React.isValidElement(column))
+                        return null;
+                    const { value, width, align } = column.props;
+                    const isSelected = rowSelected?.(item) ?? false;
+                    return (jsxRuntime.jsx(TableColumn, { isSelected: isSelected, width: width, align: align, children: jsxRuntime.jsx(TruncatedContent, { children: value(item, index) }) }, columnIndex));
+                }), jsxRuntime.jsx(ActionColumn, { children: jsxRuntime.jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined }) })] }, keyExtractor(item, index)))) }));
+};
+const TablePagination = ({ values, loadPage }) => {
+    if (!loadPage || !isPagedResponse(values) || values.totalElements <= 0) {
+        return null;
+    }
+    return (jsxRuntime.jsx(SearchPagination, { height: "35px", page: values, loadPage: loadPage }));
+};
+const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, }) => {
+    const [hoveredRowIndex, setHoveredRowIndex] = React.useState(null);
+    const tableData = React.useMemo(() => getTableData(values), [values]);
+    const isEmpty = tableData.length === 0;
+    if (isEmpty) {
+        return (jsxRuntime.jsx(Container$1, { backgroundColor: "transparent", width: "100%", children: jsxRuntime.jsx(EmptyMessage, { children: messageEmpty }) }));
+    }
+    return (jsxRuntime.jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsxRuntime.jsx(TableContainer, { children: jsxRuntime.jsxs(StyledTable, { children: [jsxRuntime.jsx(TableHeader, { columns: columns }), jsxRuntime.jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex })] }) }), jsxRuntime.jsx(TablePagination, { values: values, loadPage: loadPage })] }));
+};
+const TableContainer = styled.div `
+  width: 100%;
+  overflow: hidden;
+  table-layout: fixed;
+`;
+const EmptyMessage = styled.div `
+  padding: 10px;
+`;
+const StyledTable = styled.table `
+  width: 100%;
+  border-collapse: collapse;
+`;
+const TableHeadRow = styled.tr `
+  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
+`;
+const TableHeadColumn = styled.th `
+  padding: 0 3px;
+  text-align: left;
+  background-color: transparent;
+  border-left: 1px solid ${({ theme }) => theme.colors.gray};
+
+  &:first-child {
+    border-left: none;
+  }
+`;
+const TableColumn = styled.td `
+  font-size: 13px;
+  height: 35px;
+  text-align: ${({ align }) => align || 'left'};
+  border-left: 1px solid ${({ theme }) => theme.colors.gray};
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: ${({ width }) => width || 'auto'};
+  width: ${({ width }) => width || 'auto'};
+  padding: 0 5px;
+  display: table-cell;
+
+  &:first-child::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: ${({ theme, isSelected }) => isSelected ? theme.colors.quaternary : 'transparent'};
+  }
+
+  &:first-child {
+    border-left: none;
+  }
+`;
+const TruncatedContent = styled.div `
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+`;
+const TableColumnTitle = styled.div `
+  font-size: 14px;
+  height: 40px;
+  text-align: ${({ align }) => align};
+  display: flex;
+  align-items: center;
+  justify-content: ${({ align }) => align === 'left' ? 'flex-start' :
+    align === 'right' ? 'flex-end' : 'center'};
+  box-sizing: border-box;
+  color: ${({ theme }) => theme.colors.quaternary};
+`;
+const TableRow = styled.tr `
+  background-color: ${({ theme }) => theme.colors.secondary};
+  position: relative;
+
+  &:nth-child(odd) {
+    background-color: ${({ theme }) => theme.colors.tertiary};
+  }
+
+  &:last-child {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+  }
+`;
+const ActionColumn = styled.td `
+  position: sticky;
+  right: 0;
+  padding: 2px;
+  z-index: 2;
+`;
+const ActionsContainer = styled.div `
+  position: relative;
+  height: 100%;
+`;
+const ActionsWrapper = styled.div `
+  position: sticky;
+  top: 0;
+  right: 5px;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  opacity: ${({ visible }) => visible ? 1 : 0};
+  pointer-events: ${({ visible }) => visible ? 'auto' : 'none'};
+  transition: opacity 0.2s ease-in-out;
+`;
+const CustomActionWrapper = styled.div `
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  align-items: center;
+`;
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
+exports.Column = Column;
 exports.Container = Container$1;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Loading = Loading;
 exports.Panel = Panel;
+exports.SearchPagination = SearchPagination;
 exports.Stack = Stack;
+exports.Table = Table;
 exports.ThemeSelector = ThemeSelector;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatDateToShortString = formatDateToShortString;

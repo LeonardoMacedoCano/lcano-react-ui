@@ -1,0 +1,1 @@
+{"version":3,"file":"PagedResponse.d.ts","sourceRoot":"","sources":["../../../src/types/PagedResponse.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,aAAa,CAAC,CAAC;IAC9B,OAAO,EAAE,CAAC,EAAE,CAAC;IACb,IAAI,EAAE,OAAO,CAAC;IACd,UAAU,EAAE,MAAM,CAAC;IACnB,aAAa,EAAE,MAAM,CAAC;IACtB,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,OAAO,CAAC;IACf,MAAM,EAAE,MAAM,CAAC;IACf,gBAAgB,EAAE,MAAM,CAAC;CAC1B"}

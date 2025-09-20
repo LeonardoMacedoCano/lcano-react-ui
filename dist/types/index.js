@@ -1,6 +1,7 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -566,4 +567,239 @@ const Loading = ({ isLoading }) => {
         }, children: jsx("div", { dangerouslySetInnerHTML: { __html: svgContent } }) }));
 };
 
-export { ActionButton, Button, Container$1 as Container, FieldValue, ImagePicker, Loading, Panel, Stack, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const usePaginationState = (page) => {
+    const [currentPageIndex, setCurrentPageIndex] = useState(page.number);
+    useEffect(() => {
+        setCurrentPageIndex(page.number);
+    }, [page.number]);
+    return useMemo(() => ({
+        isFirstPage: currentPageIndex === 0,
+        isLastPage: currentPageIndex === page.totalPages - 1,
+        currentPage: currentPageIndex,
+        totalPages: page.totalPages,
+        pageSize: page.size,
+    }), [currentPageIndex, page.totalPages, page.size]);
+};
+const useNavigationHandlers = (loadPage, state) => {
+    const { currentPage, totalPages, pageSize } = state;
+    return useMemo(() => ({
+        goToFirst: () => {
+            if (!state.isFirstPage) {
+                loadPage(0, pageSize);
+            }
+        },
+        goToPrevious: () => {
+            if (currentPage > 0) {
+                loadPage(currentPage - 1, pageSize);
+            }
+        },
+        goToNext: () => {
+            if (currentPage < totalPages - 1) {
+                loadPage(currentPage + 1, pageSize);
+            }
+        },
+        goToLast: () => {
+            if (!state.isLastPage) {
+                loadPage(totalPages - 1, pageSize);
+            }
+        },
+    }), [loadPage, currentPage, totalPages, pageSize, state.isFirstPage, state.isLastPage]);
+};
+const PaginationControls = ({ state, handlers }) => {
+    const { isFirstPage, isLastPage, currentPage, totalPages } = state;
+    const { goToFirst, goToPrevious, goToNext, goToLast } = handlers;
+    return (jsxs(StyledPaginationControls, { children: [jsx(ControlItem, { onClick: goToFirst, disabled: isFirstPage, children: jsx(FaAngleDoubleLeft, {}) }), jsx(ControlItem, { onClick: goToPrevious, disabled: isFirstPage, children: jsx(FaAngleLeft, {}) }), jsxs(PageIndicator, { children: [currentPage + 1, " / ", totalPages] }), jsx(ControlItem, { onClick: goToNext, disabled: isLastPage, children: jsx(FaAngleRight, {}) }), jsx(ControlItem, { onClick: goToLast, disabled: isLastPage, children: jsx(FaAngleDoubleRight, {}) })] }));
+};
+const SearchPagination = ({ page, height, width, loadPage }) => {
+    const state = usePaginationState(page);
+    const handlers = useNavigationHandlers(loadPage, state);
+    return (jsx(Container$1, { height: height, width: width, backgroundColor: "transparent", children: jsx(Stack, { direction: "row", alignCenter: true, justifyCenter: true, gap: "10px", children: jsx(PaginationControls, { state: state, handlers: handlers }) }) }));
+};
+const StyledPaginationControls = styled.ul `
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.quaternary};
+`;
+const ControlItem = styled.li `
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ disabled }) => disabled ? '0.2' : '1'};
+
+  &:hover {
+    color: ${({ theme, disabled }) => disabled ? theme.colors.white : theme.colors.gray};
+  }
+`;
+const PageIndicator = styled.span `
+  margin: 0 8px;
+  user-select: none;
+`;
+
+const Column = ({}) => null;
+const COMMON_BUTTON_STYLES = {
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    height: '25px',
+    width: '25px',
+};
+const TableActions = ({ onView, onEdit, onDelete, visible, customActions }) => (jsx(ActionsContainer, { children: jsxs(ActionsWrapper, { visible: visible, children: [customActions && (jsx(CustomActionWrapper, { children: customActions() })), onView && (jsx(Button, { onClick: onView, variant: "success", icon: jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsx(Button, { variant: "info", icon: jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsx(Button, { variant: "warning", icon: jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
+const isPagedResponse = (values) => typeof values === 'object' && values !== null && 'content' in values;
+const getTableData = (values) => isPagedResponse(values) ? values.content || [] : values;
+const TableHeader = ({ columns }) => (jsx("thead", { children: jsx(TableHeadRow, { children: columns.map((column, index) => {
+            if (!React.isValidElement(column))
+                return null;
+            const { header, titleAlign = 'center' } = column.props;
+            return (jsx(TableHeadColumn, { children: jsx(TableColumnTitle, { align: titleAlign, children: header }) }, index));
+        }) }) }));
+const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, }) => {
+    if (data.length === 0) {
+        return (jsx("tbody", { children: jsx("tr", { children: jsx("td", { colSpan: columns.length + 1, children: jsx(EmptyMessage, { children: messageEmpty }) }) }) }));
+    }
+    return (jsx("tbody", { children: data.map((item, index) => (jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), children: [columns.map((column, columnIndex) => {
+                    if (!React.isValidElement(column))
+                        return null;
+                    const { value, width, align } = column.props;
+                    const isSelected = rowSelected?.(item) ?? false;
+                    return (jsx(TableColumn, { isSelected: isSelected, width: width, align: align, children: jsx(TruncatedContent, { children: value(item, index) }) }, columnIndex));
+                }), jsx(ActionColumn, { children: jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined }) })] }, keyExtractor(item, index)))) }));
+};
+const TablePagination = ({ values, loadPage }) => {
+    if (!loadPage || !isPagedResponse(values) || values.totalElements <= 0) {
+        return null;
+    }
+    return (jsx(SearchPagination, { height: "35px", page: values, loadPage: loadPage }));
+};
+const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, }) => {
+    const [hoveredRowIndex, setHoveredRowIndex] = useState(null);
+    const tableData = useMemo(() => getTableData(values), [values]);
+    const isEmpty = tableData.length === 0;
+    if (isEmpty) {
+        return (jsx(Container$1, { backgroundColor: "transparent", width: "100%", children: jsx(EmptyMessage, { children: messageEmpty }) }));
+    }
+    return (jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsx(TableContainer, { children: jsxs(StyledTable, { children: [jsx(TableHeader, { columns: columns }), jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex })] }) }), jsx(TablePagination, { values: values, loadPage: loadPage })] }));
+};
+const TableContainer = styled.div `
+  width: 100%;
+  overflow: hidden;
+  table-layout: fixed;
+`;
+const EmptyMessage = styled.div `
+  padding: 10px;
+`;
+const StyledTable = styled.table `
+  width: 100%;
+  border-collapse: collapse;
+`;
+const TableHeadRow = styled.tr `
+  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
+`;
+const TableHeadColumn = styled.th `
+  padding: 0 3px;
+  text-align: left;
+  background-color: transparent;
+  border-left: 1px solid ${({ theme }) => theme.colors.gray};
+
+  &:first-child {
+    border-left: none;
+  }
+`;
+const TableColumn = styled.td `
+  font-size: 13px;
+  height: 35px;
+  text-align: ${({ align }) => align || 'left'};
+  border-left: 1px solid ${({ theme }) => theme.colors.gray};
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: ${({ width }) => width || 'auto'};
+  width: ${({ width }) => width || 'auto'};
+  padding: 0 5px;
+  display: table-cell;
+
+  &:first-child::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: ${({ theme, isSelected }) => isSelected ? theme.colors.quaternary : 'transparent'};
+  }
+
+  &:first-child {
+    border-left: none;
+  }
+`;
+const TruncatedContent = styled.div `
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+`;
+const TableColumnTitle = styled.div `
+  font-size: 14px;
+  height: 40px;
+  text-align: ${({ align }) => align};
+  display: flex;
+  align-items: center;
+  justify-content: ${({ align }) => align === 'left' ? 'flex-start' :
+    align === 'right' ? 'flex-end' : 'center'};
+  box-sizing: border-box;
+  color: ${({ theme }) => theme.colors.quaternary};
+`;
+const TableRow = styled.tr `
+  background-color: ${({ theme }) => theme.colors.secondary};
+  position: relative;
+
+  &:nth-child(odd) {
+    background-color: ${({ theme }) => theme.colors.tertiary};
+  }
+
+  &:last-child {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+  }
+`;
+const ActionColumn = styled.td `
+  position: sticky;
+  right: 0;
+  padding: 2px;
+  z-index: 2;
+`;
+const ActionsContainer = styled.div `
+  position: relative;
+  height: 100%;
+`;
+const ActionsWrapper = styled.div `
+  position: sticky;
+  top: 0;
+  right: 5px;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  opacity: ${({ visible }) => visible ? 1 : 0};
+  pointer-events: ${({ visible }) => visible ? 'auto' : 'none'};
+  transition: opacity 0.2s ease-in-out;
+`;
+const CustomActionWrapper = styled.div `
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  align-items: center;
+`;
+
+export { ActionButton, Button, Column, Container$1 as Container, FieldValue, ImagePicker, Loading, Panel, SearchPagination, Stack, Table, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
