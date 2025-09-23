@@ -11,4 +11,5 @@ export { default as SearchPagination, type SearchPaginationProps } from './Searc
 export { default as Table, Column, type TableActionsProps, type ColumnProps } from './Table';
 export { default as Modal, type ModalProps } from './Modal';
 export { default as ConfirmModal, type ConfirmModalProps } from './ConfirmModal';
+export { default as ToastNotification, type ToastNotificationProps } from './ToastNotification';
 //# sourceMappingURL=index.d.ts.map

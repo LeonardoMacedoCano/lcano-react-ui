@@ -1,7 +1,7 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
+import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash, FaTimes, FaExclamationTriangle, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -881,4 +881,70 @@ const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth =
                 }, confirmButtonProps)] }) }));
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const iconMap = {
+    success: jsx(FaCheckCircle, {}),
+    info: jsx(FaInfoCircle, {}),
+    error: jsx(FaExclamationCircle, {}),
+};
+const getVariant = (type) => {
+    switch (type) {
+        case 'error':
+            return 'warning';
+        case 'success':
+            return 'success';
+        default:
+            return 'info';
+    }
+};
+const ToastNotification = ({ type, message, onClose }) => {
+    const icon = iconMap[type];
+    const variant = getVariant(type);
+    return (jsx(ToastContainer, { children: jsxs(ToastCard, { variant: variant, children: [jsx(ToastIcon, { variant: variant, children: icon }), jsx(ToastMessage, { children: message }), jsx(CloseButton, { variant: variant, onClick: onClose })] }) }));
+};
+const ToastContainer = styled.div `
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+`;
+const ToastCard = styled.div `
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  color: ${({ theme, variant }) => theme.colors[variant]};
+  border-left: 5px solid ${({ theme, variant }) => theme.colors[variant]};
+  border-radius: 6px;
+  padding: 12px 16px;
+  min-width: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+`;
+const ToastIcon = styled.div `
+  font-size: 20px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const ToastMessage = styled.div `
+  flex: 1;
+  font-size: 14px;
+`;
+const CloseButtonBase = ({ variant, ...props }) => (jsx("button", { ...props, children: jsx(FaTimes, {}) }));
+const CloseButton = styled(CloseButtonBase) `
+  background: none;
+  border: none;
+  color: ${({ theme, variant }) => theme.colors[variant]};
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
