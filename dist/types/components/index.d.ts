@@ -26,4 +26,6 @@ export { default as ConfirmModal } from './ConfirmModal';
 export type { ConfirmModalProps } from './ConfirmModal';
 export { default as ToastNotification } from './ToastNotification';
 export type { ToastNotificationProps, ToastType, ToastVariant } from './ToastNotification';
+export { default as ThemeFavicon } from './ThemeFavicon';
+export type { ThemeFaviconProps } from './ThemeFavicon';
 //# sourceMappingURL=index.d.ts.map

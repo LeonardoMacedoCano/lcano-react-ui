@@ -1045,5 +1045,25 @@ const DEFAULT_THEME_SYSTEM = {
     }
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const defaultRenderSvg = (theme) => `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
+  </svg>
+`;
+const ThemeFavicon = ({ renderSvg }) => {
+    const theme = useTheme() || DEFAULT_THEME_SYSTEM;
+    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
+    useEffect(() => {
+        let faviconLink = document.querySelector("link[rel='icon']");
+        if (!faviconLink) {
+            faviconLink = document.createElement('link');
+            faviconLink.rel = 'icon';
+            document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    }, [svgContent]);
+    return null;
+};
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
 //# sourceMappingURL=index.js.map

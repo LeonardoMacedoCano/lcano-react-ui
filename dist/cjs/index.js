@@ -1047,6 +1047,26 @@ const DEFAULT_THEME_SYSTEM = {
     }
 };
 
+const defaultRenderSvg = (theme) => `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
+  </svg>
+`;
+const ThemeFavicon = ({ renderSvg }) => {
+    const theme = styled.useTheme() || DEFAULT_THEME_SYSTEM;
+    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
+    React.useEffect(() => {
+        let faviconLink = document.querySelector("link[rel='icon']");
+        if (!faviconLink) {
+            faviconLink = document.createElement('link');
+            faviconLink.rel = 'icon';
+            document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    }, [svgContent]);
+    return null;
+};
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Column = Column;
@@ -1061,6 +1081,7 @@ exports.Panel = Panel;
 exports.SearchPagination = SearchPagination;
 exports.Stack = Stack;
 exports.Table = Table;
+exports.ThemeFavicon = ThemeFavicon;
 exports.ThemeSelector = ThemeSelector;
 exports.ToastNotification = ToastNotification;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
