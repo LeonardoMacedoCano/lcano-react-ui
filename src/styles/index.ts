@@ -1,0 +1,1 @@
+export type { DefaultTheme } from 'styled-components';
