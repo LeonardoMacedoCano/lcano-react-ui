@@ -1034,17 +1034,17 @@ const CloseButton = styled(CloseButtonBase) `
 
 const DEFAULT_THEME_SYSTEM = {
     colors: {
-        primary: '#cccccc',
-        secondary: '#999999',
-        tertiary: '#666666',
-        quaternary: '#333333',
-        white: '#ffffffb7',
+        primary: '#282a36',
+        secondary: '#44475a',
+        tertiary: '#6272a4',
+        quaternary: '#bd93f9',
+        white: '#f8f8f2',
         black: '#000000',
-        gray: '#888888',
-        success: '#28a745',
-        info: '#17a2b8',
-        warning: '#ffc107',
-    }
+        gray: '#999999',
+        success: '#32cd80',
+        info: '#5ad4e6',
+        warning: '#ff944d',
+    },
 };
 
 const defaultRenderSvg = (theme) => `

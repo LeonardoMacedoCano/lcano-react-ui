@@ -1,14 +1,6 @@
 import 'styled-components';
+import type { AppTheme } from './theme.types';
 
 declare module 'styled-components' {
-  export interface DefaultTheme {
-    colors: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      quaternary: string;
-      white: string;
-      [key: string]: string;
-    };
-  }
+  export interface DefaultTheme extends AppTheme {}
 }
