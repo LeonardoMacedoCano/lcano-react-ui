@@ -948,6 +948,7 @@ const CloseButton = styled(CloseButtonBase) `
 `;
 
 const DEFAULT_THEME_SYSTEM = {
+    title: 'DEFAULT_THEME_SYSTEM',
     colors: {
         primary: '#282a36',
         secondary: '#44475a',

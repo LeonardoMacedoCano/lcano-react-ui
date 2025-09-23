@@ -1,6 +1,7 @@
 import { AppTheme } from './theme.types';
 
 export const DEFAULT_THEME_SYSTEM: AppTheme = {
+  title: 'DEFAULT_THEME_SYSTEM',
   colors: {
     primary: '#282a36',
     secondary: '#44475a',

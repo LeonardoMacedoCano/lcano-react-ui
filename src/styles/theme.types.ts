@@ -1,4 +1,5 @@
 export interface AppTheme {
+  title?: string;
   colors: {
     primary: string;
     secondary: string;
