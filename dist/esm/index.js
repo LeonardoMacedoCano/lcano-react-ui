@@ -1,6 +1,6 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback, createContext } from 'react';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -1086,5 +1086,27 @@ const useConfirmModal = () => {
     return { confirm, ConfirmModalComponent };
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal };
+const ContextMessage = createContext(undefined);
+let idCounter = 0;
+const ContextMessageProvider = ({ children }) => {
+    const [messages, setMessages] = useState([]);
+    const addMessage = useCallback((type, message) => {
+        const id = idCounter++;
+        setMessages(prev => [...prev, { id, type, message }]);
+        setTimeout(() => removeMessage(id), 5000);
+    }, []);
+    const removeMessage = useCallback((id) => {
+        setMessages(prev => prev.filter(msg => msg.id !== id));
+    }, []);
+    const showError = useCallback((message) => addMessage('error', message), [addMessage]);
+    const showSuccess = useCallback((message) => addMessage('success', message), [addMessage]);
+    const showInfo = useCallback((message) => addMessage('info', message), [addMessage]);
+    const showErrorWithLog = useCallback((messageText, error) => {
+        console.error(messageText, error);
+        addMessage('error', `${messageText} Consulte o log para mais detalhes!`);
+    }, [addMessage]);
+    return (jsxs(ContextMessage.Provider, { value: { showError, showErrorWithLog, showSuccess, showInfo }, children: [children, messages.map(msg => (jsx(ToastNotification, { type: msg.type, message: msg.message, onClose: () => removeMessage(msg.id) }, msg.id)))] }));
+};
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal };
 //# sourceMappingURL=index.js.map

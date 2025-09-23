@@ -1088,11 +1088,34 @@ const useConfirmModal = () => {
     return { confirm, ConfirmModalComponent };
 };
 
+const ContextMessage = React.createContext(undefined);
+let idCounter = 0;
+const ContextMessageProvider = ({ children }) => {
+    const [messages, setMessages] = React.useState([]);
+    const addMessage = React.useCallback((type, message) => {
+        const id = idCounter++;
+        setMessages(prev => [...prev, { id, type, message }]);
+        setTimeout(() => removeMessage(id), 5000);
+    }, []);
+    const removeMessage = React.useCallback((id) => {
+        setMessages(prev => prev.filter(msg => msg.id !== id));
+    }, []);
+    const showError = React.useCallback((message) => addMessage('error', message), [addMessage]);
+    const showSuccess = React.useCallback((message) => addMessage('success', message), [addMessage]);
+    const showInfo = React.useCallback((message) => addMessage('info', message), [addMessage]);
+    const showErrorWithLog = React.useCallback((messageText, error) => {
+        console.error(messageText, error);
+        addMessage('error', `${messageText} Consulte o log para mais detalhes!`);
+    }, [addMessage]);
+    return (jsxRuntime.jsxs(ContextMessage.Provider, { value: { showError, showErrorWithLog, showSuccess, showInfo }, children: [children, messages.map(msg => (jsxRuntime.jsx(ToastNotification, { type: msg.type, message: msg.message, onClose: () => removeMessage(msg.id) }, msg.id)))] }));
+};
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Column = Column;
 exports.ConfirmModal = ConfirmModal;
 exports.Container = Container$1;
+exports.ContextMessageProvider = ContextMessageProvider;
 exports.DEFAULT_THEME_SYSTEM = DEFAULT_THEME_SYSTEM;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
