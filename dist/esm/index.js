@@ -1,6 +1,6 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import React, { useRef, useState, useEffect, useMemo, useCallback, createContext } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback, createContext, useContext } from 'react';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -1107,6 +1107,12 @@ const ContextMessageProvider = ({ children }) => {
     }, [addMessage]);
     return (jsxs(ContextMessage.Provider, { value: { showError, showErrorWithLog, showSuccess, showInfo }, children: [children, messages.map(msg => (jsx(ToastNotification, { type: msg.type, message: msg.message, onClose: () => removeMessage(msg.id) }, msg.id)))] }));
 };
+const useMessage = () => {
+    const context = useContext(ContextMessage);
+    if (!context)
+        throw new Error('useMessage must be used within a ContextMessageProvider');
+    return context;
+};
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal };
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
 //# sourceMappingURL=index.js.map

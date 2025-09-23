@@ -1109,6 +1109,12 @@ const ContextMessageProvider = ({ children }) => {
     }, [addMessage]);
     return (jsxRuntime.jsxs(ContextMessage.Provider, { value: { showError, showErrorWithLog, showSuccess, showInfo }, children: [children, messages.map(msg => (jsxRuntime.jsx(ToastNotification, { type: msg.type, message: msg.message, onClose: () => removeMessage(msg.id) }, msg.id)))] }));
 };
+const useMessage = () => {
+    const context = React.useContext(ContextMessage);
+    if (!context)
+        throw new Error('useMessage must be used within a ContextMessageProvider');
+    return context;
+};
 
 exports.ActionButton = ActionButton;
 exports.Button = Button;
@@ -1138,4 +1144,5 @@ exports.isDateValid = isDateValid;
 exports.parseDateStringToDate = parseDateStringToDate;
 exports.parseShortStringToDateTime = parseShortStringToDateTime;
 exports.useConfirmModal = useConfirmModal;
+exports.useMessage = useMessage;
 //# sourceMappingURL=index.js.map
