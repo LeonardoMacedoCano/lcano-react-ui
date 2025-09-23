@@ -1,7 +1,7 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
 
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
@@ -296,7 +296,7 @@ const Icon = styled.div `
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper, { children: icon }), description && jsx(Description, { children: description })] }));
+    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$1, { children: icon }), description && jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -326,7 +326,7 @@ const StyledButton = styled.button `
 
   ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
 `;
-const IconWrapper = styled.span `
+const IconWrapper$1 = styled.span `
   display: flex;
   align-items: center;
   justify-content: center;
@@ -802,4 +802,83 @@ const CustomActionWrapper = styled.div `
   align-items: center;
 `;
 
-export { ActionButton, Button, Column, Container$1 as Container, FieldValue, ImagePicker, Loading, Panel, SearchPagination, Stack, Table, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsx(FaExclamationTriangle, {}) }) => {
+    if (!isOpen)
+        return null;
+    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+                                backgroundColor: 'transparent',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }, icon: jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsx(ModalContent, { children: content }), actions && jsx(ModalActions, { children: actions })] }) }));
+};
+const ModalOverlay = styled.div `
+  z-index: 1000;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalContainer = styled.div `
+  width: ${({ width }) => width};
+  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
+  height: ${({ height }) => height};
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 8px;
+  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
+  display: flex;
+  flex-direction: column;
+`;
+const ModalHeader = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 15px;
+`;
+const HeaderLeft = styled.div `
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const IconWrapper = styled.span `
+  display: flex;
+  align-items: center;
+`;
+const ModalTitle = styled.div `
+  font-size: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.white};
+`;
+const ModalContent = styled.div `
+  padding: 20px;
+  flex: 1;
+`;
+const ModalActions = styled.div `
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+`;
+
+const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
+    const defaultButtonStyle = {
+        borderRadius: '5px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+    const renderButton = (label, variant, onClick, props) => (jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
+    return (jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxs(Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
+                    onConfirm();
+                    onClose();
+                }, confirmButtonProps)] }) }));
+};
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };

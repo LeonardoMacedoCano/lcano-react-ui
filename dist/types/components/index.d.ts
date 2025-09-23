@@ -9,4 +9,6 @@ export { default as ActionButton, type ActionButtonProps } from './ActionButton'
 export { default as Loading, type LoadingProps } from './Loading';
 export { default as SearchPagination, type SearchPaginationProps } from './SearchPagination';
 export { default as Table, Column, type TableActionsProps, type ColumnProps } from './Table';
+export { default as Modal, type ModalProps } from './Modal';
+export { default as ConfirmModal, type ConfirmModalProps } from './ConfirmModal';
 //# sourceMappingURL=index.d.ts.map

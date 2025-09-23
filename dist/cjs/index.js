@@ -297,7 +297,7 @@ const Icon = styled.div `
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxRuntime.jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
+    return (jsxRuntime.jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper$1, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -327,7 +327,7 @@ const StyledButton = styled.button `
 
   ${props => props.style && styled.css `${convertReactStyleToCSSObject(props.style)}`}
 `;
-const IconWrapper = styled.span `
+const IconWrapper$1 = styled.span `
   display: flex;
   align-items: center;
   justify-content: center;
@@ -636,8 +636,12 @@ function FaAngleDoubleLeft (props) {
   return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"},"child":[]}]})(props);
 }function FaEdit (props) {
   return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"},"child":[]}]})(props);
+}function FaExclamationTriangle (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"},"child":[]}]})(props);
 }function FaEye (props) {
   return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
+}function FaTimes (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 352 512"},"child":[{"tag":"path","attr":{"d":"M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"},"child":[]}]})(props);
 }function FaTrash (props) {
   return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"},"child":[]}]})(props);
 }
@@ -877,13 +881,94 @@ const CustomActionWrapper = styled.div `
   align-items: center;
 `;
 
+const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsxRuntime.jsx(FaExclamationTriangle, {}) }) => {
+    if (!isOpen)
+        return null;
+    return (jsxRuntime.jsx(ModalOverlay, { onClick: onClose, children: jsxRuntime.jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxRuntime.jsxs(ModalHeader, { variant: variant, children: [jsxRuntime.jsxs(HeaderLeft, { children: [icon && jsxRuntime.jsx(IconWrapper, { children: icon }), jsxRuntime.jsx(ModalTitle, { children: title })] }), showCloseButton && (jsxRuntime.jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+                                backgroundColor: 'transparent',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }, icon: jsxRuntime.jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsxRuntime.jsx(ModalContent, { children: content }), actions && jsxRuntime.jsx(ModalActions, { children: actions })] }) }));
+};
+const ModalOverlay = styled.div `
+  z-index: 1000;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalContainer = styled.div `
+  width: ${({ width }) => width};
+  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
+  height: ${({ height }) => height};
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 8px;
+  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
+  display: flex;
+  flex-direction: column;
+`;
+const ModalHeader = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 15px;
+`;
+const HeaderLeft = styled.div `
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const IconWrapper = styled.span `
+  display: flex;
+  align-items: center;
+`;
+const ModalTitle = styled.div `
+  font-size: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.white};
+`;
+const ModalContent = styled.div `
+  padding: 20px;
+  flex: 1;
+`;
+const ModalActions = styled.div `
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+`;
+
+const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
+    const defaultButtonStyle = {
+        borderRadius: '5px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+    const renderButton = (label, variant, onClick, props) => (jsxRuntime.jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
+    return (jsxRuntime.jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
+                    onConfirm();
+                    onClose();
+                }, confirmButtonProps)] }) }));
+};
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Column = Column;
+exports.ConfirmModal = ConfirmModal;
 exports.Container = Container$1;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Loading = Loading;
+exports.Modal = Modal;
 exports.Panel = Panel;
 exports.SearchPagination = SearchPagination;
 exports.Stack = Stack;
