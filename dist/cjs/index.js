@@ -1067,6 +1067,27 @@ const ThemeFavicon = ({ renderSvg }) => {
     return null;
 };
 
+const useConfirmModal = () => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [title, setTitle] = React.useState('Confirmação');
+    const [content, setContent] = React.useState(jsxRuntime.jsx("p", { children: "Deseja realmente executar esta a\u00E7\u00E3o?" }));
+    const [resolver, setResolver] = React.useState(() => () => { });
+    const confirm = React.useCallback((newTitle, newContent) => {
+        setTitle(newTitle);
+        setContent(newContent);
+        setIsOpen(true);
+        return new Promise((resolve) => {
+            setResolver(() => resolve);
+        });
+    }, []);
+    const handleClose = React.useCallback((value) => {
+        setIsOpen(false);
+        resolver(value);
+    }, [resolver]);
+    const ConfirmModalComponent = React.useMemo(() => (jsxRuntime.jsx(ConfirmModal, { isOpen: isOpen, title: title, content: content, onClose: () => handleClose(false), onConfirm: () => handleClose(true) })), [isOpen, title, content, handleClose]);
+    return { confirm, ConfirmModalComponent };
+};
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Column = Column;
@@ -1093,4 +1114,5 @@ exports.getVariantColor = getVariantColor;
 exports.isDateValid = isDateValid;
 exports.parseDateStringToDate = parseDateStringToDate;
 exports.parseShortStringToDateTime = parseShortStringToDateTime;
+exports.useConfirmModal = useConfirmModal;
 //# sourceMappingURL=index.js.map

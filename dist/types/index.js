@@ -1,6 +1,6 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash, FaTimes, FaExclamationTriangle, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 
 const convertReactStyleToCSSObject = (style) => {
@@ -982,4 +982,25 @@ const ThemeFavicon = ({ renderSvg }) => {
     return null;
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const useConfirmModal = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [title, setTitle] = useState('Confirmação');
+    const [content, setContent] = useState(jsx("p", { children: "Deseja realmente executar esta a\u00E7\u00E3o?" }));
+    const [resolver, setResolver] = useState(() => () => { });
+    const confirm = useCallback((newTitle, newContent) => {
+        setTitle(newTitle);
+        setContent(newContent);
+        setIsOpen(true);
+        return new Promise((resolve) => {
+            setResolver(() => resolve);
+        });
+    }, []);
+    const handleClose = useCallback((value) => {
+        setIsOpen(false);
+        resolver(value);
+    }, [resolver]);
+    const ConfirmModalComponent = useMemo(() => (jsx(ConfirmModal, { isOpen: isOpen, title: title, content: content, onClose: () => handleClose(false), onConfirm: () => handleClose(true) })), [isOpen, title, content, handleClose]);
+    return { confirm, ConfirmModalComponent };
+};
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal };
