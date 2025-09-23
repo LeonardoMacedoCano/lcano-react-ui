@@ -1032,11 +1032,27 @@ const CloseButton = styled(CloseButtonBase) `
   }
 `;
 
+const DEFAULT_THEME_SYSTEM = {
+    colors: {
+        primary: '#cccccc',
+        secondary: '#999999',
+        tertiary: '#666666',
+        quaternary: '#333333',
+        white: '#ffffffb7',
+        black: '#000000',
+        gray: '#888888',
+        success: '#28a745',
+        info: '#17a2b8',
+        warning: '#ffc107',
+    }
+};
+
 exports.ActionButton = ActionButton;
 exports.Button = Button;
 exports.Column = Column;
 exports.ConfirmModal = ConfirmModal;
 exports.Container = Container$1;
+exports.DEFAULT_THEME_SYSTEM = DEFAULT_THEME_SYSTEM;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Loading = Loading;

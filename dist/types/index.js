@@ -947,4 +947,19 @@ const CloseButton = styled(CloseButtonBase) `
   }
 `;
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
+const DEFAULT_THEME_SYSTEM = {
+    colors: {
+        primary: '#cccccc',
+        secondary: '#999999',
+        tertiary: '#666666',
+        quaternary: '#333333',
+        white: '#ffffffb7',
+        black: '#000000',
+        gray: '#888888',
+        success: '#28a745',
+        info: '#17a2b8',
+        warning: '#ffc107',
+    }
+};
+
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime };
