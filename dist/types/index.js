@@ -983,6 +983,52 @@ const ThemeFavicon = ({ renderSvg }) => {
     return null;
 };
 
+const Tabs = ({ tabs }) => {
+    const [activeTab, setActiveTab] = useState(0);
+    const handleTabClick = (index) => {
+        setActiveTab(index);
+    };
+    return (jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsx(TabList, { children: tabs.map((tab, index) => (jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsx(TabContent, { children: tabs[activeTab]?.content })] }));
+};
+const TabList = styled.div `
+  display: flex;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
+`;
+const TabButton = styled.button `
+  flex: 1;
+  padding: 10px 0px;
+  border: none;
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  cursor: pointer;
+  transition: background-color 0.3s, border-right-color 0.3s;
+
+  &:not(:last-child) {
+    border-right: 2px solid ${({ theme }) => theme.colors.tertiary};
+  }
+
+  &:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 5px;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.tertiary};
+  }
+
+  ${({ active, theme }) => active &&
+    `
+    cursor: default;
+    background-color: ${theme.colors.tertiary};
+    border-right-color: transparent;
+  `}
+`;
+const TabContent = styled.div `
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1032,4 +1078,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };

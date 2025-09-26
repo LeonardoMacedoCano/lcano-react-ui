@@ -42,3 +42,6 @@ export type { ToastNotificationProps, ToastType, ToastVariant } from './ToastNot
 
 export { default as ThemeFavicon } from './ThemeFavicon';
 export type { ThemeFaviconProps } from './ThemeFavicon';
+
+export { default as Tabs } from './Tabs';
+export type { TabsProps } from './Tabs';
