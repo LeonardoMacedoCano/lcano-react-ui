@@ -231,11 +231,11 @@ const FieldValue = ({ type, value = '', variant, description, hint, editable = t
             return value?.key ?? '';
         return '';
     };
-    return (jsxs(FieldWrapper, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsx(Label, { title: hint, children: description }), type === 'select' || type === 'boolean' ? (jsxs(StyledSelect, { value: formattedValue(), onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, children: [type === 'select' && jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'select'
+    return (jsxs(FieldWrapper$1, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsx(Label, { title: hint, children: description }), type === 'select' || type === 'boolean' ? (jsxs(StyledSelect, { value: formattedValue(), onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, children: [type === 'select' && jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'select'
                         ? options?.map(opt => jsx("option", { value: opt.key, children: opt.value }, opt.key))
                         : (jsxs(Fragment, { children: [jsx("option", { value: "true", children: "Sim" }), jsx("option", { value: "false", children: "N\u00E3o" })] }))] })) : (jsxs(Fragment, { children: [icon && jsx(Icon, { children: icon }), jsx(StyledInput, { type: editable ? type : 'string', readOnly: !editable, value: formattedValue(), onChange: handleChange, onKeyDown: onKeyDown, inputWidth: inputWidth, inline: inline, placeholder: placeholder, variant: variant })] }))] }));
 };
-const FieldWrapper = styled.div `
+const FieldWrapper$1 = styled.div `
   width: ${({ width }) => width || '100%'};
   max-width: ${({ maxWidth }) => maxWidth || 'none'};
   max-height: ${({ maxHeight }) => maxHeight || 'none'};
@@ -295,7 +295,7 @@ const Icon = styled.div `
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$1, { children: icon }), description && jsx(Description, { children: description })] }));
+    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -325,7 +325,7 @@ const StyledButton = styled.button `
 
   ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
 `;
-const IconWrapper$1 = styled.span `
+const IconWrapper$2 = styled.span `
   display: flex;
   align-items: center;
   justify-content: center;
@@ -347,7 +347,7 @@ const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoadin
             onChange(file);
         }
     };
-    return (jsxs(Container, { size: size, children: [jsx(Avatar, { src: imageUrl || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsx(Spinner, {}), jsx(CameraButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, "aria-label": "Upload image", children: icon }), jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
+    return (jsxs(Container, { size: size, children: [jsx(Avatar, { src: imageUrl || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsx(Spinner$1, {}), jsx(CameraButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, "aria-label": "Upload image", children: icon }), jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
 };
 const Container = styled.div `
   position: relative;
@@ -364,11 +364,11 @@ const Avatar = styled.img `
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   opacity: ${props => props.isLoading ? 0.7 : 1};
 `;
-const spin = keyframes `
+const spin$1 = keyframes `
   0% { transform: translate(-50%, -50%) rotate(0deg); }
   100% { transform: translate(-50%, -50%) rotate(360deg); }
 `;
-const Spinner = styled.div `
+const Spinner$1 = styled.div `
   position: absolute;
   top: 50%;
   left: 50%;
@@ -378,7 +378,7 @@ const Spinner = styled.div `
   border: 3px solid rgba(0, 0, 0, 0.1);
   border-top: 3px solid #3498db;
   border-radius: 50%;
-  animation: ${spin} 1s linear infinite;
+  animation: ${spin$1} 1s linear infinite;
 `;
 const CameraButton = styled.button `
   position: absolute;
@@ -411,9 +411,9 @@ const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
         action();
         setExpanded(false);
     };
-    return (jsxs(Wrapper, { children: [jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
+    return (jsxs(Wrapper$1, { children: [jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
 };
-const Wrapper = styled.div `
+const Wrapper$1 = styled.div `
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -644,6 +644,8 @@ function FaAngleDoubleLeft (props) {
   return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
 }function FaInfoCircle (props) {
   return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"},"child":[]}]})(props);
+}function FaSearch (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"},"child":[]}]})(props);
 }function FaTimes (props) {
   return GenIcon({"attr":{"viewBox":"0 0 352 512"},"child":[{"tag":"path","attr":{"d":"M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"},"child":[]}]})(props);
 }function FaTrash (props) {
@@ -888,7 +890,7 @@ const CustomActionWrapper = styled.div `
 const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsx(FaExclamationTriangle, {}) }) => {
     if (!isOpen)
         return null;
-    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper$1, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
                                 backgroundColor: 'transparent',
                                 borderRadius: '50%',
                                 display: 'flex',
@@ -930,7 +932,7 @@ const HeaderLeft = styled.div `
   align-items: center;
   gap: 10px;
 `;
-const IconWrapper = styled.span `
+const IconWrapper$1 = styled.span `
   display: flex;
   align-items: center;
 `;
@@ -1112,6 +1114,152 @@ const TabButton = styled.button `
 const TabContent = styled.div `
 `;
 
+const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
+    const [query, setQuery] = useState(value?.value || '');
+    const [options, setOptions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const containerRef = useRef(null);
+    const selectedRef = useRef(value || null);
+    useEffect(() => {
+        selectedRef.current = value || null;
+        setQuery(value?.value || '');
+    }, [value]);
+    const loadOptions = useCallback(async (searchQuery) => {
+        setLoading(true);
+        try {
+            const result = await fetchOptions(searchQuery, 0);
+            setOptions(result);
+        }
+        catch {
+            setOptions([]);
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [fetchOptions]);
+    useEffect(() => {
+        if (!showDropdown)
+            return;
+        const timeout = setTimeout(() => {
+            if (query || loadAllOnFocus)
+                loadOptions(query);
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [query, showDropdown, loadAllOnFocus, loadOptions]);
+    const handleFocus = () => {
+        setShowDropdown(true);
+        if (loadAllOnFocus)
+            loadOptions('');
+    };
+    const handleBlur = (e) => {
+        if (!containerRef.current?.contains(e.relatedTarget)) {
+            const selectedKeyNum = Number(selectedRef.current?.key || 0);
+            if (!selectedRef.current || selectedKeyNum <= 0) {
+                clearSelection();
+            }
+            else {
+                setShowDropdown(false);
+            }
+        }
+    };
+    const handleSelect = (option) => {
+        setQuery(option.value);
+        selectedRef.current = option;
+        onSelect(option);
+        setShowDropdown(false);
+    };
+    const clearSelection = () => {
+        setQuery('');
+        selectedRef.current = null;
+        onSelect(undefined);
+        setOptions([]);
+        setShowDropdown(false);
+    };
+    const handleQueryChange = (val) => {
+        setQuery(val);
+        if (selectedRef.current && val !== selectedRef.current.value) {
+            selectedRef.current = null;
+        }
+    };
+    const renderIcon = () => {
+        if (loading)
+            return jsx(Spinner, {});
+        if (selectedRef.current)
+            return (jsx(ClearIcon, { onClick: (e) => {
+                    e.stopPropagation();
+                    clearSelection();
+                }, children: jsx(FaTimes, {}) }));
+        return jsx(SearchIcon, { children: jsx(FaSearch, {}) });
+    };
+    return (jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxs(FieldWrapper, { onClick: handleFocus, children: [jsx(FieldValue, { description: label, type: "string", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsx(Dropdown, { children: loading ? (jsx(DropdownItem, { disabled: true, children: jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+};
+const Wrapper = styled.div `
+  position: relative;
+  width: 100%;
+  outline: none;
+`;
+const FieldWrapper = styled.div `
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: text;
+`;
+const IconWrapper = styled.div `
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+`;
+const SearchIcon = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  font-size: 14px;
+`;
+const ClearIcon = styled.div `
+  color: ${({ theme }) => theme.colors.tertiary};
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    color: ${({ theme }) => theme.colors.red};
+  }
+`;
+const spin = keyframes `
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+const Spinner = styled.div `
+  border: 2px solid ${({ theme }) => theme.colors.tertiary};
+  border-top: 2px solid ${({ theme }) => theme.colors.white};
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: ${spin} 1s linear infinite;
+`;
+const Dropdown = styled.div `
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.quaternary};
+  border-radius: 4px;
+  margin-top: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+`;
+const DropdownItem = styled.div `
+  padding: 10px;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.white};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
+  &:hover {
+    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
+  }
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1161,5 +1309,5 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
 //# sourceMappingURL=index.js.map
