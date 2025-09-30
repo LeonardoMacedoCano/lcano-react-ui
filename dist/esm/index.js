@@ -31,13 +31,8 @@ const parseShortStringToDateTime = (dateStr) => {
         .toString()
         .padStart(2, '0')}/${dateParts[0].slice(-2)} ${dateParts[3].padStart(2, '0')}:${dateParts[4].padStart(2, '0')}`;
 };
-const formatDateToShortString = (date) => {
-    if (!date)
-        return '';
-    const dateObj = new Date(date);
-    const day = dateObj.getDate().toString().padStart(2, '0');
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear().toString().slice(-2);
+const formatIsoDateToBrDate = (dateStr) => {
+    const [year, month, day] = dateStr.split('-');
     return `${day}/${month}/${year}`;
 };
 const formatDateToYMDString = (date) => {
@@ -99,6 +94,8 @@ const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, m
         newVal = String(maxValue);
     return newVal;
 };
+
+const formatBooleanToSimNao = (value) => value === 'true' ? 'Sim' : 'Não';
 
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
     return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { color: theme.primaryColor }), jsx(ColorBlock, { color: theme.secondaryColor }), jsx(ColorBlock, { color: theme.tertiaryColor }), jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
@@ -1329,5 +1326,5 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatDateToShortString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, Panel, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
 //# sourceMappingURL=index.js.map

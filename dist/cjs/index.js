@@ -33,13 +33,8 @@ const parseShortStringToDateTime = (dateStr) => {
         .toString()
         .padStart(2, '0')}/${dateParts[0].slice(-2)} ${dateParts[3].padStart(2, '0')}:${dateParts[4].padStart(2, '0')}`;
 };
-const formatDateToShortString = (date) => {
-    if (!date)
-        return '';
-    const dateObj = new Date(date);
-    const day = dateObj.getDate().toString().padStart(2, '0');
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear().toString().slice(-2);
+const formatIsoDateToBrDate = (dateStr) => {
+    const [year, month, day] = dateStr.split('-');
     return `${day}/${month}/${year}`;
 };
 const formatDateToYMDString = (date) => {
@@ -101,6 +96,8 @@ const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, m
         newVal = String(maxValue);
     return newVal;
 };
+
+const formatBooleanToSimNao = (value) => value === 'true' ? 'Sim' : 'Não';
 
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
     return (jsxRuntime.jsx(ThemeGrid, { children: themes.map((theme) => (jsxRuntime.jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsxRuntime.jsx(ThemeName, { children: theme.title }), jsxRuntime.jsxs(ColorPalette, { children: [jsxRuntime.jsx(ColorBlock, { color: theme.primaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.secondaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.tertiaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
@@ -1352,10 +1349,11 @@ exports.ThemeFavicon = ThemeFavicon;
 exports.ThemeSelector = ThemeSelector;
 exports.ToastNotification = ToastNotification;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
-exports.formatDateToShortString = formatDateToShortString;
+exports.formatBooleanToSimNao = formatBooleanToSimNao;
 exports.formatDateToYMDString = formatDateToYMDString;
 exports.formatDateToYMString = formatDateToYMString;
 exports.formatFieldValueToString = formatFieldValueToString;
+exports.formatIsoDateToBrDate = formatIsoDateToBrDate;
 exports.formatNumericInputWithLimits = formatNumericInputWithLimits;
 exports.getCurrentDate = getCurrentDate;
 exports.getVariantColor = getVariantColor;
