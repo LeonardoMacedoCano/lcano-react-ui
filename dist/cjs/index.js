@@ -4,6 +4,38 @@ var jsxRuntime = require('react/jsx-runtime');
 var styled = require('styled-components');
 var React = require('react');
 
+const STRING_OPERATORS = [
+    { name: 'Contém', symbol: 'LIKE' },
+    { name: 'Igual', symbol: '==' },
+    { name: 'Diferente', symbol: '!=' },
+];
+const NUMBER_OPERATORS = [
+    { name: 'Igual', symbol: '==' },
+    { name: 'Diferente', symbol: '!=' },
+    { name: 'Maior', symbol: '>' },
+    { name: 'Menor', symbol: '<' },
+    { name: 'Maior ou igual', symbol: '>=' },
+    { name: 'Menor ou igual', symbol: '<=' },
+];
+const DATE_OPERATORS = [...NUMBER_OPERATORS];
+const SELECT_OPERATORS = [
+    { name: 'Igual', symbol: '==' },
+    { name: 'Diferente', symbol: '!=' },
+];
+const BOOLEAN_OPERATORS = [
+    { name: 'Igual', symbol: '==' },
+];
+const OPERATORS = {
+    STRING: STRING_OPERATORS,
+    NUMBER: NUMBER_OPERATORS,
+    DATE: DATE_OPERATORS,
+    SELECT: SELECT_OPERATORS,
+    BOOLEAN: BOOLEAN_OPERATORS,
+    MONTH: NUMBER_OPERATORS,
+};
+const PAGE_SIZE_DEFAULT = 10;
+const PAGE_SIZE_COMPACT = 5;
+
 const convertReactStyleToCSSObject = (style) => {
     return Object.fromEntries(Object.entries(style).map(([key, value]) => [key, value]));
 };
@@ -663,6 +695,8 @@ function FaAngleDoubleLeft (props) {
   return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
 }function FaInfoCircle (props) {
   return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"},"child":[]}]})(props);
+}function FaPlus (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"},"child":[]}]})(props);
 }function FaSearch (props) {
   return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"},"child":[]}]})(props);
 }function FaTimes (props) {
@@ -1279,6 +1313,133 @@ const DropdownItem = styled.div `
   }
 `;
 
+const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
+    const [selectedField, setSelectedField] = React.useState(null);
+    const [selectedOperator, setSelectedOperator] = React.useState(null);
+    const [searchValue, setSearchValue] = React.useState(null);
+    const [filters, setFilters] = React.useState([]);
+    React.useEffect(() => {
+        if (!searchValue && selectedField) {
+            const type = selectedField.type.toUpperCase();
+            if (type === 'DATE')
+                setSearchValue(formatDateToYMDString(getCurrentDate()));
+            if (type === 'BOOLEAN')
+                setSearchValue('true');
+        }
+    }, [selectedField]);
+    const resetState = () => {
+        setSelectedField(null);
+        setSelectedOperator(null);
+        setSearchValue(null);
+    };
+    const formatDate = (value) => {
+        if (value instanceof Date)
+            return formatDateToYMDString(value);
+        const parsed = parseDateStringToDate(value);
+        return parsed ? formatDateToYMDString(parsed) : '';
+    };
+    const getFormattedValue = (f) => {
+        const field = fields.find(fd => fd.name === f.field);
+        if (!field)
+            return f.value;
+        switch (f.type) {
+            case 'BOOLEAN':
+                return formatBooleanToSimNao(f.value);
+            case 'SELECT':
+                return field.type === 'SELECT'
+                    ? field.options.find(opt => opt.key === f.value)?.value || f.value
+                    : f.value;
+            case 'DATE':
+                return formatIsoDateToBrDate(f.value);
+            default:
+                return f.value;
+        }
+    };
+    const buildRsqlString = (filters) => filters
+        .map(({ field, operator, value }) => {
+        let formattedOperator = operator;
+        if (formattedOperator === 'LIKE')
+            formattedOperator = '=ilike=';
+        else if (!formattedOperator.includes('='))
+            formattedOperator = `=${formattedOperator}=`;
+        return `${field}${formattedOperator}${value}`;
+    })
+        .join(';');
+    const handleFieldChange = (fieldName) => {
+        const field = fields.find(f => f.name === fieldName);
+        if (!field)
+            return resetState();
+        setSelectedField(field);
+        setSelectedOperator(OPERATORS[field.type][0]);
+        setSearchValue(null);
+    };
+    const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
+    const handleAdd = () => {
+        if (!selectedField || !selectedOperator || searchValue === null)
+            return;
+        const valueFormatted = selectedField.type === 'DATE' ? formatDate(searchValue) : String(searchValue);
+        const newFilter = {
+            field: selectedField.name,
+            operator: selectedOperator.symbol,
+            operadorDescr: selectedOperator.name,
+            value: valueFormatted,
+            type: selectedField.type
+        };
+        if (isDuplicateFilter(newFilter)) {
+            resetState();
+            return;
+        }
+        const updatedFilters = [...filters, newFilter];
+        setFilters(updatedFilters);
+        onSearch(buildRsqlString(updatedFilters));
+        resetState();
+    };
+    const handleRemove = (index) => {
+        const updated = filters.filter((_, i) => i !== index);
+        setFilters(updated);
+        onSearch(buildRsqlString(updated));
+    };
+    const isAddButtonDisabled = () => {
+        if (!selectedField || !selectedOperator)
+            return true;
+        if (selectedField.type === 'DATE') {
+            if (!searchValue)
+                return true;
+            const date = parseDateStringToDate(String(searchValue));
+            return !date || isNaN(date.getTime());
+        }
+        return searchValue === null || searchValue === '';
+    };
+    return (jsxRuntime.jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxRuntime.jsxs(Stack, { direction: "column", divider: "top", children: [jsxRuntime.jsxs(Stack, { direction: "row", divider: "left", children: [jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
+                                : [], onUpdate: (val) => {
+                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
+                                if (op)
+                                    setSelectedOperator(op);
+                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                                    borderRadius: '50%',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                } })] }, i))) }))] }) }));
+};
+const Tags = styled.div `
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+const Tag = styled.div `
+  background-color: ${({ theme }) => theme.colors.secondary};
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [title, setTitle] = React.useState('Confirmação');
@@ -1329,17 +1490,26 @@ const useMessage = () => {
 };
 
 exports.ActionButton = ActionButton;
+exports.BOOLEAN_OPERATORS = BOOLEAN_OPERATORS;
 exports.Button = Button;
 exports.Column = Column;
 exports.ConfirmModal = ConfirmModal;
 exports.Container = Container$1;
 exports.ContextMessageProvider = ContextMessageProvider;
+exports.DATE_OPERATORS = DATE_OPERATORS;
 exports.DEFAULT_THEME_SYSTEM = DEFAULT_THEME_SYSTEM;
 exports.FieldValue = FieldValue;
 exports.ImagePicker = ImagePicker;
 exports.Loading = Loading;
 exports.Modal = Modal;
+exports.NUMBER_OPERATORS = NUMBER_OPERATORS;
+exports.OPERATORS = OPERATORS;
+exports.PAGE_SIZE_COMPACT = PAGE_SIZE_COMPACT;
+exports.PAGE_SIZE_DEFAULT = PAGE_SIZE_DEFAULT;
 exports.Panel = Panel;
+exports.SELECT_OPERATORS = SELECT_OPERATORS;
+exports.STRING_OPERATORS = STRING_OPERATORS;
+exports.SearchFilterRSQL = SearchFilterRSQL;
 exports.SearchPagination = SearchPagination;
 exports.SearchSelectField = SearchSelectField;
 exports.Stack = Stack;

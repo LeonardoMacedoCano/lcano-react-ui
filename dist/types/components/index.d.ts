@@ -32,4 +32,6 @@ export { default as Tabs } from './Tabs';
 export type { TabsProps } from './Tabs';
 export { default as SearchSelectField } from './SearchSelectField';
 export type { SearchSelectFieldProps } from './SearchSelectField';
+export { default as SearchFilterRSQL } from './SearchFilterRSQL';
+export type { SearchFilterRSQLProps } from './SearchFilterRSQL';
 //# sourceMappingURL=index.d.ts.map
