@@ -117,7 +117,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
       <FieldWrapper onClick={handleFocus}>
         <FieldValue
           description={label}
-          type="string"
+          type="STRING"
           value={query}
           placeholder={placeholder || 'Digite para pesquisar...'}
           editable

@@ -4,8 +4,9 @@ import {
   FaExclamationTriangle,
   FaTimes
 } from 'react-icons/fa';
-import { getVariantColor, VariantColor } from '../../utils';
+import { getVariantColor } from '../../utils';
 import Button from '../Button';
+import { VariantColor } from '../../types';
 
 export interface ModalProps {
   isOpen: boolean;

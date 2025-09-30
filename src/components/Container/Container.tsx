@@ -1,6 +1,6 @@
 import { ReactNode, CSSProperties, FC } from 'react';
 import styled from 'styled-components';
-import { VariantColor } from '../../utils';
+import { VariantColor } from '../../types';
 
 export interface ContainerProps {
   children: ReactNode;

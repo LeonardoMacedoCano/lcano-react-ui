@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { convertReactStyleToCSSObject, getVariantColor, VariantColor } from '../../utils';
+import { convertReactStyleToCSSObject, getVariantColor } from '../../utils';
+import { VariantColor } from '../../types';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: VariantColor;

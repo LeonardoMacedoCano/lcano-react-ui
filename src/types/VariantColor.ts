@@ -1,0 +1,1 @@
+export type VariantColor = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'success' | 'info' | 'warning';

@@ -1,5 +1,5 @@
 import { ReactNode, CSSProperties, FC } from 'react';
-import { VariantColor } from '../../utils';
+import { VariantColor } from '../../types';
 export interface ContainerProps {
     children: ReactNode;
     height?: string;

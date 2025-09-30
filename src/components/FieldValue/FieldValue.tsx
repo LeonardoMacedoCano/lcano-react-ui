@@ -1,19 +1,11 @@
 import React, { FC, ChangeEvent, KeyboardEventHandler } from 'react';
 import styled, { css } from 'styled-components';
-import { SelectValue } from '../../types';
-import {
-  formatDateToYMString,
-  formatDateToYMDString,
-  parseDateStringToDate,
-  getVariantColor,
-  VariantColor,
-} from '../../utils';
-
-type FieldValueType = 'string' | 'number' | 'boolean' | 'date' | 'month' | 'select';
+import { FieldValueType, Option, VariantColor } from '../../types';
+import { formatFieldValueToString, formatNumericInputWithLimits, getVariantColor, parseDateStringToDate } from '../../utils';
 
 export type FieldValueProps = {
   type: FieldValueType;
-  value?: string | number | boolean | SelectValue;
+  value?: string | number | boolean | Option;
   variant?: VariantColor;
   description?: string;
   hint?: string;
@@ -25,7 +17,7 @@ export type FieldValueProps = {
   maxValue?: number;
   inputWidth?: string;
   inline?: boolean;
-  options?: SelectValue[];
+  options?: Option[];
   icon?: React.ReactNode;
   padding?: string;
   placeholder?: string;
@@ -58,18 +50,20 @@ const FieldValue: FC<FieldValueProps> = ({
   onUpdate,
   onKeyDown,
 }) => {
+  const displayValue = formatFieldValueToString(type, value);
+
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!onUpdate) return;
     let val: any = event.target.value;
 
     switch (type) {
-      case 'number':
-        val = enforceNumeric(val);
+      case 'NUMBER':
+        val = formatNumericInputWithLimits(val, maxIntegerDigits, maxDecimalPlaces, minValue, maxValue);
         break;
-      case 'boolean':
+      case 'BOOLEAN':
         val = val === 'true';
         break;
-      case 'date':
+      case 'DATE':
         val = parseDateStringToDate(val);
         break;
     }
@@ -77,63 +71,51 @@ const FieldValue: FC<FieldValueProps> = ({
     onUpdate(val);
   };
 
-  const enforceNumeric = (val: string) => {
-    const [integerPart, decimalPart] = val.split('.');
-    let newVal = integerPart.slice(0, maxIntegerDigits) + (decimalPart ? `.${decimalPart.slice(0, maxDecimalPlaces)}` : '');
-    if (minValue !== undefined && parseFloat(newVal) < minValue) newVal = String(minValue);
-    if (maxValue !== undefined && parseFloat(newVal) > maxValue) newVal = String(maxValue);
-    return newVal;
-  };
+  const renderInput = () => (
+    <>
+      {icon && <Icon>{icon}</Icon>}
+      <StyledInput
+        type={editable ? type : 'string'}
+        readOnly={!editable}
+        disabled={!editable}
+        value={displayValue}
+        onChange={handleChange}
+        onKeyDown={onKeyDown}
+        inputWidth={inputWidth}
+        inline={inline}
+        placeholder={placeholder}
+        variant={variant}
+        editable={editable}
+      />
+    </>
+  );
 
-  const formattedValue = () => {
-    if (type === 'number' || type === 'string') return String(value);
-    if (type === 'boolean') return value ? 'true' : 'false';
-    if (type === 'date') return formatDateToYMDString(value as Date);
-    if (type === 'month') return formatDateToYMString(value as Date);
-    if (type === 'select') return (value as SelectValue)?.key ?? '';
-    return '';
-  };
+  const renderSelect = () => (
+    <StyledSelect
+      value={displayValue}
+      onChange={handleChange}
+      disabled={!editable}
+      inputWidth={inputWidth}
+      inline={inline}
+      variant={variant}
+      editable={editable}
+    >
+      {type === 'SELECT' && <option value="">{placeholder || 'Selecione...'}</option>}
+      {type === 'SELECT'
+        ? options?.map(opt => <option key={opt.key} value={opt.key}>{opt.value}</option>)
+        : (
+          <>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </>
+        )}
+    </StyledSelect>
+  );
 
   return (
     <FieldWrapper width={width} maxWidth={maxWidth} maxHeight={maxHeight} inline={inline} padding={padding}>
       {description && <Label title={hint}>{description}</Label>}
-
-      {type === 'select' || type === 'boolean' ? (
-        <StyledSelect
-          value={formattedValue()}
-          onChange={handleChange}
-          disabled={!editable}
-          inputWidth={inputWidth}
-          inline={inline}
-          variant={variant}
-        >
-          {type === 'select' && <option value="">{placeholder || 'Selecione...'}</option>}
-          {type === 'select'
-            ? options?.map(opt => <option key={opt.key} value={opt.key}>{opt.value}</option>)
-            : (
-              <>
-                <option value="true">Sim</option>
-                <option value="false">Não</option>
-              </>
-            )
-          }
-        </StyledSelect>
-      ) : (
-        <>
-          {icon && <Icon>{icon}</Icon>}
-          <StyledInput
-            type={editable ? type : 'string'}
-            readOnly={!editable}
-            value={formattedValue()}
-            onChange={handleChange}
-            onKeyDown={onKeyDown}
-            inputWidth={inputWidth}
-            inline={inline}
-            placeholder={placeholder}
-            variant={variant}
-          />
-        </>
-      )}
+      {type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()}
     </FieldWrapper>
   );
 };
@@ -148,6 +130,7 @@ interface StyledProps {
   padding?: string;
   inputWidth?: string;
   readOnly?: boolean;
+  editable?: boolean;
   variant?: VariantColor;
 }
 
@@ -178,7 +161,13 @@ const StyledInput = styled.input<StyledProps>`
   outline: none;
   background-color: transparent;
   margin-left: ${({ inline }) => (inline ? '5px' : '0')};
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
+
+  &[type=number]::-webkit-outer-spin-button,
+  &[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
   &::-webkit-calendar-picker-indicator {
     filter: invert(100%);
@@ -198,6 +187,7 @@ const StyledSelect = styled.select<StyledProps>`
   outline: none;
   background-color: transparent;
   margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
 
   ${({ variant, theme }) =>
     variant &&

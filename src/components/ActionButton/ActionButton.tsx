@@ -77,7 +77,7 @@ const Wrapper = styled.div`
 `;
 
 const commonButtonStyles = css`
-  color: white;
+  color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme }) => theme.colors.tertiary};
   border: none;
   border-radius: 50%;

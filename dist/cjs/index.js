@@ -70,6 +70,38 @@ const isDateValid = (date) => {
     return date instanceof Date && !isNaN(date.getTime());
 };
 
+const formatFieldValueToString = (type, value) => {
+    if (value === null || value === undefined)
+        return '';
+    switch (type) {
+        case 'DATE':
+            return value instanceof Date ? formatDateToYMDString(value) : String(value);
+        case 'MONTH':
+            return value instanceof Date ? formatDateToYMString(value) : String(value);
+        case 'BOOLEAN':
+            if (typeof value === 'boolean')
+                return value ? 'true' : 'false';
+            if (typeof value === 'string')
+                return value.toLowerCase() === 'true' ? 'true' : 'false';
+            return 'false';
+        case 'NUMBER':
+            return typeof value === 'number' ? String(value) : value ?? '';
+        case 'SELECT':
+            return typeof value === 'object' && value !== null ? value.key : String(value);
+        default:
+            return String(value);
+    }
+};
+const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, minValue, maxValue) => {
+    const [integerPart, decimalPart] = val.split('.');
+    let newVal = integerPart.slice(0, maxIntegerDigits) + (decimalPart ? `.${decimalPart.slice(0, maxDecimalPlaces)}` : '');
+    if (minValue !== undefined && parseFloat(newVal) < minValue)
+        newVal = String(minValue);
+    if (maxValue !== undefined && parseFloat(newVal) > maxValue)
+        newVal = String(maxValue);
+    return newVal;
+};
+
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
     return (jsxRuntime.jsx(ThemeGrid, { children: themes.map((theme) => (jsxRuntime.jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsxRuntime.jsx(ThemeName, { children: theme.title }), jsxRuntime.jsxs(ColorPalette, { children: [jsxRuntime.jsx(ColorBlock, { color: theme.primaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.secondaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.tertiaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
 };
@@ -194,48 +226,29 @@ const StackContainer = styled.div `
 `;
 
 const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
+    const displayValue = formatFieldValueToString(type, value);
     const handleChange = (event) => {
         if (!onUpdate)
             return;
         let val = event.target.value;
         switch (type) {
-            case 'number':
-                val = enforceNumeric(val);
+            case 'NUMBER':
+                val = formatNumericInputWithLimits(val, maxIntegerDigits, maxDecimalPlaces, minValue, maxValue);
                 break;
-            case 'boolean':
+            case 'BOOLEAN':
                 val = val === 'true';
                 break;
-            case 'date':
+            case 'DATE':
                 val = parseDateStringToDate(val);
                 break;
         }
         onUpdate(val);
     };
-    const enforceNumeric = (val) => {
-        const [integerPart, decimalPart] = val.split('.');
-        let newVal = integerPart.slice(0, maxIntegerDigits) + (decimalPart ? `.${decimalPart.slice(0, maxDecimalPlaces)}` : '');
-        if (minValue !== undefined && parseFloat(newVal) < minValue)
-            newVal = String(minValue);
-        if (maxValue !== undefined && parseFloat(newVal) > maxValue)
-            newVal = String(maxValue);
-        return newVal;
-    };
-    const formattedValue = () => {
-        if (type === 'number' || type === 'string')
-            return String(value);
-        if (type === 'boolean')
-            return value ? 'true' : 'false';
-        if (type === 'date')
-            return formatDateToYMDString(value);
-        if (type === 'month')
-            return formatDateToYMString(value);
-        if (type === 'select')
-            return value?.key ?? '';
-        return '';
-    };
-    return (jsxRuntime.jsxs(FieldWrapper$1, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsxRuntime.jsx(Label, { title: hint, children: description }), type === 'select' || type === 'boolean' ? (jsxRuntime.jsxs(StyledSelect, { value: formattedValue(), onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, children: [type === 'select' && jsxRuntime.jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'select'
-                        ? options?.map(opt => jsxRuntime.jsx("option", { value: opt.key, children: opt.value }, opt.key))
-                        : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("option", { value: "true", children: "Sim" }), jsxRuntime.jsx("option", { value: "false", children: "N\u00E3o" })] }))] })) : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [icon && jsxRuntime.jsx(Icon, { children: icon }), jsxRuntime.jsx(StyledInput, { type: editable ? type : 'string', readOnly: !editable, value: formattedValue(), onChange: handleChange, onKeyDown: onKeyDown, inputWidth: inputWidth, inline: inline, placeholder: placeholder, variant: variant })] }))] }));
+    const renderInput = () => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [icon && jsxRuntime.jsx(Icon, { children: icon }), jsxRuntime.jsx(StyledInput, { type: editable ? type : 'string', readOnly: !editable, disabled: !editable, value: displayValue, onChange: handleChange, onKeyDown: onKeyDown, inputWidth: inputWidth, inline: inline, placeholder: placeholder, variant: variant, editable: editable })] }));
+    const renderSelect = () => (jsxRuntime.jsxs(StyledSelect, { value: displayValue, onChange: handleChange, disabled: !editable, inputWidth: inputWidth, inline: inline, variant: variant, editable: editable, children: [type === 'SELECT' && jsxRuntime.jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'SELECT'
+                ? options?.map(opt => jsxRuntime.jsx("option", { value: opt.key, children: opt.value }, opt.key))
+                : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("option", { value: "true", children: "Sim" }), jsxRuntime.jsx("option", { value: "false", children: "N\u00E3o" })] }))] }));
+    return (jsxRuntime.jsxs(FieldWrapper$1, { width: width, maxWidth: maxWidth, maxHeight: maxHeight, inline: inline, padding: padding, children: [description && jsxRuntime.jsx(Label, { title: hint, children: description }), type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()] }));
 };
 const FieldWrapper$1 = styled.div `
   width: ${({ width }) => width || '100%'};
@@ -262,7 +275,13 @@ const StyledInput = styled.input `
   outline: none;
   background-color: transparent;
   margin-left: ${({ inline }) => (inline ? '5px' : '0')};
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
+
+  &[type=number]::-webkit-outer-spin-button,
+  &[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
   &::-webkit-calendar-picker-indicator {
     filter: invert(100%);
@@ -280,6 +299,7 @@ const StyledSelect = styled.select `
   outline: none;
   background-color: transparent;
   margin-left: ${({ inline }) => (inline ? '5px' : '0')};
+  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
 
   ${({ variant, theme }) => variant &&
     styled.css `
@@ -378,7 +398,7 @@ const Spinner$1 = styled.div `
   width: 30px;
   height: 30px;
   border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top: 3px solid #3498db;
+  border-top: 3px solid ${props => props.theme.colors.quaternary};
   border-radius: 50%;
   animation: ${spin$1} 1s linear infinite;
 `;
@@ -422,7 +442,7 @@ const Wrapper$1 = styled.div `
   z-index: 1000;
 `;
 const commonButtonStyles = styled.css `
-  color: white;
+  color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme }) => theme.colors.tertiary};
   border: none;
   border-radius: 50%;
@@ -1194,7 +1214,7 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
                 }, children: jsxRuntime.jsx(FaTimes, {}) }));
         return jsxRuntime.jsx(SearchIcon, { children: jsxRuntime.jsx(FaSearch, {}) });
     };
-    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "string", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
 };
 const Wrapper = styled.div `
   position: relative;
@@ -1335,6 +1355,8 @@ exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatDateToShortString = formatDateToShortString;
 exports.formatDateToYMDString = formatDateToYMDString;
 exports.formatDateToYMString = formatDateToYMString;
+exports.formatFieldValueToString = formatFieldValueToString;
+exports.formatNumericInputWithLimits = formatNumericInputWithLimits;
 exports.getCurrentDate = getCurrentDate;
 exports.getVariantColor = getVariantColor;
 exports.isDateValid = isDateValid;

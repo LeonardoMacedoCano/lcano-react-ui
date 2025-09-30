@@ -1,6 +1,6 @@
 import React from 'react';
-import { VariantColor } from '../../utils';
 import Button from '../Button';
+import { VariantColor } from '../../types';
 export interface ConfirmModalProps {
     isOpen: boolean;
     title: string;

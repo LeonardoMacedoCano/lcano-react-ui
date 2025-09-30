@@ -102,7 +102,7 @@ const Spinner = styled.div`
   width: 30px;
   height: 30px;
   border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top: 3px solid #3498db;
+  border-top: 3px solid ${props => props.theme.colors.quaternary};
   border-radius: 50%;
   animation: ${spin} 1s linear infinite;
 `;

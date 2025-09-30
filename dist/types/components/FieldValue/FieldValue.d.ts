@@ -1,10 +1,8 @@
 import React, { FC, KeyboardEventHandler } from 'react';
-import { SelectValue } from '../../types';
-import { VariantColor } from '../../utils';
-type FieldValueType = 'string' | 'number' | 'boolean' | 'date' | 'month' | 'select';
+import { FieldValueType, Option, VariantColor } from '../../types';
 export type FieldValueProps = {
     type: FieldValueType;
-    value?: string | number | boolean | SelectValue;
+    value?: string | number | boolean | Option;
     variant?: VariantColor;
     description?: string;
     hint?: string;
@@ -16,7 +14,7 @@ export type FieldValueProps = {
     maxValue?: number;
     inputWidth?: string;
     inline?: boolean;
-    options?: SelectValue[];
+    options?: Option[];
     icon?: React.ReactNode;
     padding?: string;
     placeholder?: string;

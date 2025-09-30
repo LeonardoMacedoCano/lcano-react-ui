@@ -1,5 +1,5 @@
 import React from 'react';
-import { VariantColor } from '../../utils';
+import { VariantColor } from '../../types';
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: VariantColor;
     width?: string;

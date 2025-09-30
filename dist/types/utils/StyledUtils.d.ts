@@ -1,6 +1,6 @@
 import { CSSObject } from 'styled-components';
+import { VariantColor } from '../types';
 export declare const convertReactStyleToCSSObject: (style: React.CSSProperties) => CSSObject;
-export type VariantColor = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'success' | 'info' | 'warning';
 export interface VariantProps {
     variant: VariantColor;
 }
