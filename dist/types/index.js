@@ -1113,8 +1113,6 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
     }, [query, showDropdown, loadAllOnFocus, loadOptions]);
     const handleFocus = () => {
         setShowDropdown(true);
-        if (loadAllOnFocus)
-            loadOptions('');
     };
     const handleBlur = (e) => {
         if (!containerRef.current?.contains(e.relatedTarget)) {

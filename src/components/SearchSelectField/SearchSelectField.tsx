@@ -60,7 +60,6 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
 
   const handleFocus = () => {
     setShowDropdown(true);
-    if (loadAllOnFocus) loadOptions('');
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
