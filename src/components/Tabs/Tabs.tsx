@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Container from '../Container/Container';
+import { Container } from '../Container';
 
 interface Tab {
   label: string;

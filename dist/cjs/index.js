@@ -1,8 +1,8 @@
 'use strict';
 
 var jsxRuntime = require('react/jsx-runtime');
-var styled = require('styled-components');
 var React = require('react');
+var styled = require('styled-components');
 
 const STRING_OPERATORS = [
     { name: 'Contém', symbol: 'LIKE' },
@@ -131,42 +131,268 @@ const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, m
 
 const formatBooleanToSimNao = (value) => value === 'true' ? 'Sim' : 'Não';
 
-const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
-    return (jsxRuntime.jsx(ThemeGrid, { children: themes.map((theme) => (jsxRuntime.jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsxRuntime.jsx(ThemeName, { children: theme.title }), jsxRuntime.jsxs(ColorPalette, { children: [jsxRuntime.jsx(ColorBlock, { color: theme.primaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.secondaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.tertiaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
+const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
+    const [expanded, setExpanded] = React.useState(false);
+    const toggleOptions = (show) => setExpanded(show);
+    const handleOptionClick = (action) => {
+        action();
+        setExpanded(false);
+    };
+    return (jsxRuntime.jsxs(Wrapper$1, { children: [jsxRuntime.jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsxRuntime.jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsxRuntime.jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
 };
-const ThemeGrid = styled.div `
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
-  width: 100%;
+const Wrapper$1 = styled.div `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 `;
-const ThemeItem = styled.div `
-  background-color: ${props => props.theme.colors.primary};
-  border-radius: 5px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+const commonButtonStyles = styled.css `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
+    opacity: 0.7;
   }
 `;
-const ThemeName = styled.div `
-  padding: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: ${props => props.theme.colors.white};
+const MainButton = styled.button `
+  ${commonButtonStyles};
+  width: 55px;
+  height: 55px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
-const ColorPalette = styled.div `
+const OptionsContainer = styled.div `
+  position: absolute;
+  bottom: 65px;
+  right: 0;
+  width: 55px;
   display: flex;
-  height: 30px;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 `;
-const ColorBlock = styled.div `
+const OptionButton = styled.button `
+  ${commonButtonStyles};
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+`;
+
+const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
+    return (jsxRuntime.jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper$2, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
+};
+const getButtonVariantStyles = (variant, theme) => {
+    if (!variant)
+        return '';
+    return styled.css `
+    background-color: ${getVariantColor(theme, variant)};
+    color: ${theme.colors.white};
+  `;
+};
+const StyledButton = styled.button `
+  border: none;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  outline: none;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  opacity: ${props => (props.disabled ? '0.3' : '1')};
+  width: ${props => props.width || 'auto'};
+  height: ${props => props.height || 'auto'};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
+  }
+
+  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
+
+  ${props => props.style && styled.css `${convertReactStyleToCSSObject(props.style)}`}
+`;
+const IconWrapper$2 = styled.span `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const Description = styled.span `
+  margin-left: 8px;
+`;
+
+var DefaultContext = {
+  color: undefined,
+  size: undefined,
+  className: undefined,
+  style: undefined,
+  attr: undefined
+};
+var IconContext = React.createContext && /*#__PURE__*/React.createContext(DefaultContext);
+
+var _excluded = ["attr", "size", "title"];
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } } return target; }
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), true).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function Tree2Element(tree) {
+  return tree && tree.map((node, i) => /*#__PURE__*/React.createElement(node.tag, _objectSpread({
+    key: i
+  }, node.attr), Tree2Element(node.child)));
+}
+function GenIcon(data) {
+  return props => /*#__PURE__*/React.createElement(IconBase, _extends({
+    attr: _objectSpread({}, data.attr)
+  }, props), Tree2Element(data.child));
+}
+function IconBase(props) {
+  var elem = conf => {
+    var {
+        attr,
+        size,
+        title
+      } = props,
+      svgProps = _objectWithoutProperties(props, _excluded);
+    var computedSize = size || conf.size || "1em";
+    var className;
+    if (conf.className) className = conf.className;
+    if (props.className) className = (className ? className + " " : "") + props.className;
+    return /*#__PURE__*/React.createElement("svg", _extends({
+      stroke: "currentColor",
+      fill: "currentColor",
+      strokeWidth: "0"
+    }, conf.attr, attr, svgProps, {
+      className: className,
+      style: _objectSpread(_objectSpread({
+        color: props.color || conf.color
+      }, conf.style), props.style),
+      height: computedSize,
+      width: computedSize,
+      xmlns: "http://www.w3.org/2000/svg"
+    }), title && /*#__PURE__*/React.createElement("title", null, title), props.children);
+  };
+  return IconContext !== undefined ? /*#__PURE__*/React.createElement(IconContext.Consumer, null, conf => elem(conf)) : elem(DefaultContext);
+}
+
+// THIS FILE IS AUTO GENERATED
+function FaAngleDoubleLeft (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M223.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L319.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L393.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34zm-192 34l136 136c9.4 9.4 24.6 9.4 33.9 0l22.6-22.6c9.4-9.4 9.4-24.6 0-33.9L127.9 256l96.4-96.4c9.4-9.4 9.4-24.6 0-33.9L201.7 103c-9.4-9.4-24.6-9.4-33.9 0l-136 136c-9.5 9.4-9.5 24.6-.1 34z"},"child":[]}]})(props);
+}function FaAngleDoubleRight (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"},"child":[]}]})(props);
+}function FaAngleLeft (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"},"child":[]}]})(props);
+}function FaAngleRight (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"},"child":[]}]})(props);
+}function FaCheckCircle (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"},"child":[]}]})(props);
+}function FaEdit (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"},"child":[]}]})(props);
+}function FaExclamationCircle (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"},"child":[]}]})(props);
+}function FaExclamationTriangle (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"},"child":[]}]})(props);
+}function FaEye (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
+}function FaInfoCircle (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"},"child":[]}]})(props);
+}function FaPlus (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"},"child":[]}]})(props);
+}function FaSearch (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"},"child":[]}]})(props);
+}function FaTimes (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 352 512"},"child":[{"tag":"path","attr":{"d":"M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"},"child":[]}]})(props);
+}function FaTrash (props) {
+  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"},"child":[]}]})(props);
+}
+
+const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsxRuntime.jsx(FaExclamationTriangle, {}) }) => {
+    if (!isOpen)
+        return null;
+    return (jsxRuntime.jsx(ModalOverlay, { onClick: onClose, children: jsxRuntime.jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxRuntime.jsxs(ModalHeader, { variant: variant, children: [jsxRuntime.jsxs(HeaderLeft, { children: [icon && jsxRuntime.jsx(IconWrapper$1, { children: icon }), jsxRuntime.jsx(ModalTitle, { children: title })] }), showCloseButton && (jsxRuntime.jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+                                backgroundColor: 'transparent',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }, icon: jsxRuntime.jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsxRuntime.jsx(ModalContent, { children: content }), actions && jsxRuntime.jsx(ModalActions, { children: actions })] }) }));
+};
+const ModalOverlay = styled.div `
+  z-index: 1000;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalContainer = styled.div `
+  width: ${({ width }) => width};
+  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
+  height: ${({ height }) => height};
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 8px;
+  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
+  display: flex;
+  flex-direction: column;
+`;
+const ModalHeader = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 15px;
+`;
+const HeaderLeft = styled.div `
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const IconWrapper$1 = styled.span `
+  display: flex;
+  align-items: center;
+`;
+const ModalTitle = styled.div `
+  font-size: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.white};
+`;
+const ModalContent = styled.div `
+  padding: 20px;
   flex: 1;
-  height: 100%;
-  background-color: ${props => props.color};
 `;
+const ModalActions = styled.div `
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+`;
+
+const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
+    const defaultButtonStyle = {
+        borderRadius: '5px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+    const renderButton = (label, variant, onClick, props) => (jsxRuntime.jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
+    return (jsxRuntime.jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
+                    onConfirm();
+                    onClose();
+                }, confirmButtonProps)] }) }));
+};
 
 const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsxRuntime.jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
 const StyledContainer = styled.div `
@@ -176,82 +402,6 @@ const StyledContainer = styled.div `
   padding: ${({ padding }) => padding || '0'};
   max-width: ${({ maxWidth }) => maxWidth || 'none'};
   background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
-`;
-
-const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
-                    {} :
-                    {
-                        boxShadow: '0 0 2px',
-                        borderRadius: '5px',
-                    }, children: [jsxRuntime.jsx(Body, { children: children }), footer && jsxRuntime.jsx(Footer, { children: footer })] })] }));
-};
-const Title = styled.div `
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
-  h3 {
-    color: ${({ theme }) => theme.colors.white};
-  }
-`;
-const ActionContainer = styled.div `
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-`;
-const BaseBox = styled.div `
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const Body = styled(BaseBox) `
-  justify-content: space-between;
-`;
-const Footer = styled(BaseBox) `
-  height: 35px;
-  justify-content: center;
-  border-top: 1px solid ${({ theme }) => theme.colors.gray};
-`;
-
-const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
-    return (jsxRuntime.jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
-};
-const StackContainer = styled.div `
-  display: flex;
-  flex-direction: ${({ direction }) => direction};
-  width: ${({ width }) => width || '100%'};
-  height: ${({ height }) => height || 'auto'};
-
-  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
-  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
-  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
-  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
-
-  ${({ gap }) => gap && `gap: ${gap};`}
-
-  ${({ divider, direction, theme }) => divider &&
-    styled.css `
-      > * + * {
-        ${(() => {
-        const color = theme.colors.gray;
-        if (direction === 'row') {
-            if (divider === 'left' || divider === 'x')
-                return `border-left: 1px solid ${color};`;
-            if (divider === 'right')
-                return `border-right: 1px solid ${color};`;
-        }
-        if (direction === 'column') {
-            if (divider === 'top' || divider === 'y')
-                return `border-top: 1px solid ${color};`;
-            if (divider === 'bottom')
-                return `border-bottom: 1px solid ${color};`;
-        }
-        return '';
-    })()}
-      }
-    `}
 `;
 
 const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
@@ -345,46 +495,6 @@ const Icon = styled.div `
   width: auto;
 `;
 
-const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxRuntime.jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper$2, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
-};
-const getButtonVariantStyles = (variant, theme) => {
-    if (!variant)
-        return '';
-    return styled.css `
-    background-color: ${getVariantColor(theme, variant)};
-    color: ${theme.colors.white};
-  `;
-};
-const StyledButton = styled.button `
-  border: none;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  outline: none;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
-  opacity: ${props => (props.disabled ? '0.3' : '1')};
-  width: ${props => props.width || 'auto'};
-  height: ${props => props.height || 'auto'};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
-  }
-
-  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
-
-  ${props => props.style && styled.css `${convertReactStyleToCSSObject(props.style)}`}
-`;
-const IconWrapper$2 = styled.span `
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const Description = styled.span `
-  margin-left: 8px;
-`;
-
 const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
     const fileInputRef = React.useRef(null);
     const handleImageClick = () => {
@@ -453,62 +563,6 @@ const CameraButton = styled.button `
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};
   }
-`;
-
-const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
-    const [expanded, setExpanded] = React.useState(false);
-    const toggleOptions = (show) => setExpanded(show);
-    const handleOptionClick = (action) => {
-        action();
-        setExpanded(false);
-    };
-    return (jsxRuntime.jsxs(Wrapper$1, { children: [jsxRuntime.jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsxRuntime.jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsxRuntime.jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
-};
-const Wrapper$1 = styled.div `
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-`;
-const commonButtonStyles = styled.css `
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme }) => theme.colors.tertiary};
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 25px;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
-
-  &:hover {
-    opacity: 0.7;
-  }
-`;
-const MainButton = styled.button `
-  ${commonButtonStyles};
-  width: 55px;
-  height: 55px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
-`;
-const OptionsContainer = styled.div `
-  position: absolute;
-  bottom: 65px;
-  right: 0;
-  width: 55px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-`;
-const OptionButton = styled.button `
-  ${commonButtonStyles};
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
 
 const svgAnimation = `
@@ -617,93 +671,208 @@ const Loading = ({ isLoading }) => {
         }, children: jsxRuntime.jsx("div", { dangerouslySetInnerHTML: { __html: svgContent } }) }));
 };
 
-var DefaultContext = {
-  color: undefined,
-  size: undefined,
-  className: undefined,
-  style: undefined,
-  attr: undefined
+const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
+    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+                    {} :
+                    {
+                        boxShadow: '0 0 2px',
+                        borderRadius: '5px',
+                    }, children: [jsxRuntime.jsx(Body, { children: children }), footer && jsxRuntime.jsx(Footer, { children: footer })] })] }));
 };
-var IconContext = React.createContext && /*#__PURE__*/React.createContext(DefaultContext);
+const Title = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
+  h3 {
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+const ActionContainer = styled.div `
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`;
+const BaseBox = styled.div `
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Body = styled(BaseBox) `
+  justify-content: space-between;
+`;
+const Footer = styled(BaseBox) `
+  height: 35px;
+  justify-content: center;
+  border-top: 1px solid ${({ theme }) => theme.colors.gray};
+`;
 
-var _excluded = ["attr", "size", "title"];
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } } return target; }
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), true).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-function Tree2Element(tree) {
-  return tree && tree.map((node, i) => /*#__PURE__*/React.createElement(node.tag, _objectSpread({
-    key: i
-  }, node.attr), Tree2Element(node.child)));
-}
-function GenIcon(data) {
-  return props => /*#__PURE__*/React.createElement(IconBase, _extends({
-    attr: _objectSpread({}, data.attr)
-  }, props), Tree2Element(data.child));
-}
-function IconBase(props) {
-  var elem = conf => {
-    var {
-        attr,
-        size,
-        title
-      } = props,
-      svgProps = _objectWithoutProperties(props, _excluded);
-    var computedSize = size || conf.size || "1em";
-    var className;
-    if (conf.className) className = conf.className;
-    if (props.className) className = (className ? className + " " : "") + props.className;
-    return /*#__PURE__*/React.createElement("svg", _extends({
-      stroke: "currentColor",
-      fill: "currentColor",
-      strokeWidth: "0"
-    }, conf.attr, attr, svgProps, {
-      className: className,
-      style: _objectSpread(_objectSpread({
-        color: props.color || conf.color
-      }, conf.style), props.style),
-      height: computedSize,
-      width: computedSize,
-      xmlns: "http://www.w3.org/2000/svg"
-    }), title && /*#__PURE__*/React.createElement("title", null, title), props.children);
-  };
-  return IconContext !== undefined ? /*#__PURE__*/React.createElement(IconContext.Consumer, null, conf => elem(conf)) : elem(DefaultContext);
-}
+const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
+    return (jsxRuntime.jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
+};
+const StackContainer = styled.div `
+  display: flex;
+  flex-direction: ${({ direction }) => direction};
+  width: ${({ width }) => width || '100%'};
+  height: ${({ height }) => height || 'auto'};
 
-// THIS FILE IS AUTO GENERATED
-function FaAngleDoubleLeft (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M223.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L319.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L393.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34zm-192 34l136 136c9.4 9.4 24.6 9.4 33.9 0l22.6-22.6c9.4-9.4 9.4-24.6 0-33.9L127.9 256l96.4-96.4c9.4-9.4 9.4-24.6 0-33.9L201.7 103c-9.4-9.4-24.6-9.4-33.9 0l-136 136c-9.5 9.4-9.5 24.6-.1 34z"},"child":[]}]})(props);
-}function FaAngleDoubleRight (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"},"child":[]}]})(props);
-}function FaAngleLeft (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"},"child":[]}]})(props);
-}function FaAngleRight (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 256 512"},"child":[{"tag":"path","attr":{"d":"M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"},"child":[]}]})(props);
-}function FaCheckCircle (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"},"child":[]}]})(props);
-}function FaEdit (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"},"child":[]}]})(props);
-}function FaExclamationCircle (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"},"child":[]}]})(props);
-}function FaExclamationTriangle (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"},"child":[]}]})(props);
-}function FaEye (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"},"child":[]}]})(props);
-}function FaInfoCircle (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"},"child":[]}]})(props);
-}function FaPlus (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"},"child":[]}]})(props);
-}function FaSearch (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"},"child":[]}]})(props);
-}function FaTimes (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 352 512"},"child":[{"tag":"path","attr":{"d":"M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"},"child":[]}]})(props);
-}function FaTrash (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"},"child":[]}]})(props);
-}
+  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
+  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
+  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
+  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+
+  ${({ gap }) => gap && `gap: ${gap};`}
+
+  ${({ divider, direction, theme }) => divider &&
+    styled.css `
+      > * + * {
+        ${(() => {
+        const color = theme.colors.gray;
+        if (direction === 'row') {
+            if (divider === 'left' || divider === 'x')
+                return `border-left: 1px solid ${color};`;
+            if (divider === 'right')
+                return `border-right: 1px solid ${color};`;
+        }
+        if (direction === 'column') {
+            if (divider === 'top' || divider === 'y')
+                return `border-top: 1px solid ${color};`;
+            if (divider === 'bottom')
+                return `border-bottom: 1px solid ${color};`;
+        }
+        return '';
+    })()}
+      }
+    `}
+`;
+
+const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
+    const [selectedField, setSelectedField] = React.useState(null);
+    const [selectedOperator, setSelectedOperator] = React.useState(null);
+    const [searchValue, setSearchValue] = React.useState(null);
+    const [filters, setFilters] = React.useState([]);
+    React.useEffect(() => {
+        if (!searchValue && selectedField) {
+            const type = selectedField.type.toUpperCase();
+            if (type === 'DATE')
+                setSearchValue(formatDateToYMDString(getCurrentDate()));
+            if (type === 'BOOLEAN')
+                setSearchValue('true');
+        }
+    }, [selectedField]);
+    const resetState = () => {
+        setSelectedField(null);
+        setSelectedOperator(null);
+        setSearchValue(null);
+    };
+    const formatDate = (value) => {
+        if (value instanceof Date)
+            return formatDateToYMDString(value);
+        const parsed = parseDateStringToDate(value);
+        return parsed ? formatDateToYMDString(parsed) : '';
+    };
+    const getFormattedValue = (f) => {
+        const field = fields.find(fd => fd.name === f.field);
+        if (!field)
+            return f.value;
+        switch (f.type) {
+            case 'BOOLEAN':
+                return formatBooleanToSimNao(f.value);
+            case 'SELECT':
+                return field.type === 'SELECT'
+                    ? field.options.find(opt => opt.key === f.value)?.value || f.value
+                    : f.value;
+            case 'DATE':
+                return formatIsoDateToBrDate(f.value);
+            default:
+                return f.value;
+        }
+    };
+    const buildRsqlString = (filters) => filters
+        .map(({ field, operator, value }) => {
+        let formattedOperator = operator;
+        if (formattedOperator === 'LIKE')
+            formattedOperator = '=ilike=';
+        else if (!formattedOperator.includes('='))
+            formattedOperator = `=${formattedOperator}=`;
+        return `${field}${formattedOperator}${value}`;
+    })
+        .join(';');
+    const handleFieldChange = (fieldName) => {
+        const field = fields.find(f => f.name === fieldName);
+        if (!field)
+            return resetState();
+        setSelectedField(field);
+        setSelectedOperator(OPERATORS[field.type][0]);
+        setSearchValue(null);
+    };
+    const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
+    const handleAdd = () => {
+        if (!selectedField || !selectedOperator || searchValue === null)
+            return;
+        const valueFormatted = selectedField.type === 'DATE' ? formatDate(searchValue) : String(searchValue);
+        const newFilter = {
+            field: selectedField.name,
+            operator: selectedOperator.symbol,
+            operadorDescr: selectedOperator.name,
+            value: valueFormatted,
+            type: selectedField.type
+        };
+        if (isDuplicateFilter(newFilter)) {
+            resetState();
+            return;
+        }
+        const updatedFilters = [...filters, newFilter];
+        setFilters(updatedFilters);
+        onSearch(buildRsqlString(updatedFilters));
+        resetState();
+    };
+    const handleRemove = (index) => {
+        const updated = filters.filter((_, i) => i !== index);
+        setFilters(updated);
+        onSearch(buildRsqlString(updated));
+    };
+    const isAddButtonDisabled = () => {
+        if (!selectedField || !selectedOperator)
+            return true;
+        if (selectedField.type === 'DATE') {
+            if (!searchValue)
+                return true;
+            const date = parseDateStringToDate(String(searchValue));
+            return !date || isNaN(date.getTime());
+        }
+        return searchValue === null || searchValue === '';
+    };
+    return (jsxRuntime.jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxRuntime.jsxs(Stack, { direction: "column", divider: "top", children: [jsxRuntime.jsxs(Stack, { direction: "row", divider: "left", children: [jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
+                                : [], onUpdate: (val) => {
+                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
+                                if (op)
+                                    setSelectedOperator(op);
+                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                                    borderRadius: '50%',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                } })] }, i))) }))] }) }));
+};
+const Tags = styled.div `
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+const Tag = styled.div `
+  background-color: ${({ theme }) => theme.colors.secondary};
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+`;
 
 const usePaginationState = (page) => {
     const [currentPageIndex, setCurrentPageIndex] = React.useState(page.number);
@@ -781,6 +950,163 @@ const PageIndicator = styled.span `
   margin: 0 8px;
   user-select: none;
 `;
+
+const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
+    const [query, setQuery] = React.useState(value?.value || '');
+    const [options, setOptions] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+    const [showDropdown, setShowDropdown] = React.useState(false);
+    const containerRef = React.useRef(null);
+    const selectedRef = React.useRef(value || null);
+    React.useEffect(() => {
+        selectedRef.current = value || null;
+        setQuery(value?.value || '');
+    }, [value]);
+    const loadOptions = React.useCallback(async (searchQuery) => {
+        setLoading(true);
+        try {
+            const result = await fetchOptions(searchQuery, 0);
+            setOptions(result);
+        }
+        catch {
+            setOptions([]);
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [fetchOptions]);
+    React.useEffect(() => {
+        if (!showDropdown)
+            return;
+        const timeout = setTimeout(() => {
+            if (query || loadAllOnFocus)
+                loadOptions(query);
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [query, showDropdown, loadAllOnFocus, loadOptions]);
+    const handleFocus = () => {
+        setShowDropdown(true);
+    };
+    const handleBlur = (e) => {
+        if (!containerRef.current?.contains(e.relatedTarget)) {
+            const selectedKeyNum = Number(selectedRef.current?.key || 0);
+            if (!selectedRef.current || selectedKeyNum <= 0) {
+                clearSelection();
+            }
+            else {
+                setShowDropdown(false);
+            }
+        }
+    };
+    const handleSelect = (option) => {
+        setQuery(option.value);
+        selectedRef.current = option;
+        onSelect(option);
+        setShowDropdown(false);
+    };
+    const clearSelection = () => {
+        setQuery('');
+        selectedRef.current = null;
+        onSelect(undefined);
+        setOptions([]);
+        setShowDropdown(false);
+    };
+    const handleQueryChange = (val) => {
+        setQuery(val);
+        if (selectedRef.current && val !== selectedRef.current.value) {
+            selectedRef.current = null;
+        }
+    };
+    const renderIcon = () => {
+        if (loading)
+            return jsxRuntime.jsx(Spinner, {});
+        if (selectedRef.current)
+            return (jsxRuntime.jsx(ClearIcon, { onClick: (e) => {
+                    e.stopPropagation();
+                    clearSelection();
+                }, children: jsxRuntime.jsx(FaTimes, {}) }));
+        return jsxRuntime.jsx(SearchIcon, { children: jsxRuntime.jsx(FaSearch, {}) });
+    };
+    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+};
+const Wrapper = styled.div `
+  position: relative;
+  width: 100%;
+  outline: none;
+`;
+const FieldWrapper = styled.div `
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: text;
+`;
+const IconWrapper = styled.div `
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+`;
+const SearchIcon = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  font-size: 14px;
+`;
+const ClearIcon = styled.div `
+  color: ${({ theme }) => theme.colors.tertiary};
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    color: ${({ theme }) => theme.colors.red};
+  }
+`;
+const spin = styled.keyframes `
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+const Spinner = styled.div `
+  border: 2px solid ${({ theme }) => theme.colors.tertiary};
+  border-top: 2px solid ${({ theme }) => theme.colors.white};
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: ${spin} 1s linear infinite;
+`;
+const Dropdown = styled.div `
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.quaternary};
+  border-radius: 4px;
+  margin-top: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+`;
+const DropdownItem = styled.div `
+  padding: 10px;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.white};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
+  &:hover {
+    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
+  }
+`;
+
+function buildSearchSelectAdapter({ searchOptions, mapToOption, mapFromOption, value, onUpdate, pageSize = 10, }) {
+    const fetchOptions = async (query, page) => {
+        const data = await searchOptions(query, page, pageSize);
+        return data.map(mapToOption);
+    };
+    const onSelect = (selected) => {
+        const newValue = selected ? mapFromOption(selected) : undefined;
+        onUpdate(newValue);
+    };
+    const optionValue = value ? mapToOption(value) : undefined;
+    return { fetchOptions, onSelect, optionValue };
+}
 
 const Column = ({}) => null;
 const COMMON_BUTTON_STYLES = {
@@ -940,84 +1266,124 @@ const CustomActionWrapper = styled.div `
   align-items: center;
 `;
 
-const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsxRuntime.jsx(FaExclamationTriangle, {}) }) => {
-    if (!isOpen)
-        return null;
-    return (jsxRuntime.jsx(ModalOverlay, { onClick: onClose, children: jsxRuntime.jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxRuntime.jsxs(ModalHeader, { variant: variant, children: [jsxRuntime.jsxs(HeaderLeft, { children: [icon && jsxRuntime.jsx(IconWrapper$1, { children: icon }), jsxRuntime.jsx(ModalTitle, { children: title })] }), showCloseButton && (jsxRuntime.jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
-                                backgroundColor: 'transparent',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }, icon: jsxRuntime.jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsxRuntime.jsx(ModalContent, { children: content }), actions && jsxRuntime.jsx(ModalActions, { children: actions })] }) }));
+const Tabs = ({ tabs }) => {
+    const [activeTab, setActiveTab] = React.useState(0);
+    const handleTabClick = (index) => {
+        setActiveTab(index);
+    };
+    return (jsxRuntime.jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsxRuntime.jsx(TabList, { children: tabs.map((tab, index) => (jsxRuntime.jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsxRuntime.jsx(TabContent, { children: tabs[activeTab]?.content })] }));
 };
-const ModalOverlay = styled.div `
-  z-index: 1000;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+const TabList = styled.div `
   display: flex;
-  justify-content: center;
-  align-items: center;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
 `;
-const ModalContainer = styled.div `
-  width: ${({ width }) => width};
-  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
-  height: ${({ height }) => height};
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 8px;
-  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
-  display: flex;
-  flex-direction: column;
-`;
-const ModalHeader = styled.div `
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  padding: 15px;
-`;
-const HeaderLeft = styled.div `
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-const IconWrapper$1 = styled.span `
-  display: flex;
-  align-items: center;
-`;
-const ModalTitle = styled.div `
-  font-size: 1rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.white};
-`;
-const ModalContent = styled.div `
-  padding: 20px;
+const TabButton = styled.button `
   flex: 1;
+  padding: 10px 0px;
+  border: none;
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  cursor: pointer;
+  transition: background-color 0.3s, border-right-color 0.3s;
+
+  &:not(:last-child) {
+    border-right: 2px solid ${({ theme }) => theme.colors.tertiary};
+  }
+
+  &:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 5px;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.tertiary};
+  }
+
+  ${({ active, theme }) => active &&
+    `
+    cursor: default;
+    background-color: ${theme.colors.tertiary};
+    border-right-color: transparent;
+  `}
 `;
-const ModalActions = styled.div `
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 20px;
+const TabContent = styled.div `
 `;
 
-const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
-    const defaultButtonStyle = {
-        borderRadius: '5px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    };
-    const renderButton = (label, variant, onClick, props) => (jsxRuntime.jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
-    return (jsxRuntime.jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
-                    onConfirm();
-                    onClose();
-                }, confirmButtonProps)] }) }));
+const DEFAULT_THEME_SYSTEM = {
+    title: 'DEFAULT_THEME_SYSTEM',
+    colors: {
+        primary: '#282a36',
+        secondary: '#44475a',
+        tertiary: '#6272a4',
+        quaternary: '#bd93f9',
+        white: '#f8f8f2',
+        black: '#000000',
+        gray: '#999999',
+        success: '#32cd80',
+        info: '#5ad4e6',
+        warning: '#ff944d',
+    },
 };
+
+const defaultRenderSvg = (theme) => `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
+  </svg>
+`;
+const ThemeFavicon = ({ renderSvg }) => {
+    const theme = styled.useTheme() || DEFAULT_THEME_SYSTEM;
+    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
+    React.useEffect(() => {
+        let faviconLink = document.querySelector("link[rel='icon']");
+        if (!faviconLink) {
+            faviconLink = document.createElement('link');
+            faviconLink.rel = 'icon';
+            document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    }, [svgContent]);
+    return null;
+};
+
+const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
+    return (jsxRuntime.jsx(ThemeGrid, { children: themes.map((theme) => (jsxRuntime.jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsxRuntime.jsx(ThemeName, { children: theme.title }), jsxRuntime.jsxs(ColorPalette, { children: [jsxRuntime.jsx(ColorBlock, { color: theme.primaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.secondaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.tertiaryColor }), jsxRuntime.jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
+};
+const ThemeGrid = styled.div `
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+  width: 100%;
+`;
+const ThemeItem = styled.div `
+  background-color: ${props => props.theme.colors.primary};
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+`;
+const ThemeName = styled.div `
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: ${props => props.theme.colors.white};
+`;
+const ColorPalette = styled.div `
+  display: flex;
+  height: 30px;
+`;
+const ColorBlock = styled.div `
+  flex: 1;
+  height: 100%;
+  background-color: ${props => props.color};
+`;
 
 const iconMap = {
     success: jsxRuntime.jsx(FaCheckCircle, {}),
@@ -1083,359 +1449,6 @@ const CloseButton = styled(CloseButtonBase) `
   &:hover {
     opacity: 0.7;
   }
-`;
-
-const DEFAULT_THEME_SYSTEM = {
-    title: 'DEFAULT_THEME_SYSTEM',
-    colors: {
-        primary: '#282a36',
-        secondary: '#44475a',
-        tertiary: '#6272a4',
-        quaternary: '#bd93f9',
-        white: '#f8f8f2',
-        black: '#000000',
-        gray: '#999999',
-        success: '#32cd80',
-        info: '#5ad4e6',
-        warning: '#ff944d',
-    },
-};
-
-const defaultRenderSvg = (theme) => `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
-  </svg>
-`;
-const ThemeFavicon = ({ renderSvg }) => {
-    const theme = styled.useTheme() || DEFAULT_THEME_SYSTEM;
-    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
-    React.useEffect(() => {
-        let faviconLink = document.querySelector("link[rel='icon']");
-        if (!faviconLink) {
-            faviconLink = document.createElement('link');
-            faviconLink.rel = 'icon';
-            document.head.appendChild(faviconLink);
-        }
-        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
-    }, [svgContent]);
-    return null;
-};
-
-const Tabs = ({ tabs }) => {
-    const [activeTab, setActiveTab] = React.useState(0);
-    const handleTabClick = (index) => {
-        setActiveTab(index);
-    };
-    return (jsxRuntime.jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsxRuntime.jsx(TabList, { children: tabs.map((tab, index) => (jsxRuntime.jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsxRuntime.jsx(TabContent, { children: tabs[activeTab]?.content })] }));
-};
-const TabList = styled.div `
-  display: flex;
-  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
-`;
-const TabButton = styled.button `
-  flex: 1;
-  padding: 10px 0px;
-  border: none;
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme }) => theme.colors.secondary};
-  cursor: pointer;
-  transition: background-color 0.3s, border-right-color 0.3s;
-
-  &:not(:last-child) {
-    border-right: 2px solid ${({ theme }) => theme.colors.tertiary};
-  }
-
-  &:first-child {
-    border-top-left-radius: 5px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 5px;
-  }
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.tertiary};
-  }
-
-  ${({ active, theme }) => active &&
-    `
-    cursor: default;
-    background-color: ${theme.colors.tertiary};
-    border-right-color: transparent;
-  `}
-`;
-const TabContent = styled.div `
-`;
-
-const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
-    const [query, setQuery] = React.useState(value?.value || '');
-    const [options, setOptions] = React.useState([]);
-    const [loading, setLoading] = React.useState(false);
-    const [showDropdown, setShowDropdown] = React.useState(false);
-    const containerRef = React.useRef(null);
-    const selectedRef = React.useRef(value || null);
-    React.useEffect(() => {
-        selectedRef.current = value || null;
-        setQuery(value?.value || '');
-    }, [value]);
-    const loadOptions = React.useCallback(async (searchQuery) => {
-        setLoading(true);
-        try {
-            const result = await fetchOptions(searchQuery, 0);
-            setOptions(result);
-        }
-        catch {
-            setOptions([]);
-        }
-        finally {
-            setLoading(false);
-        }
-    }, [fetchOptions]);
-    React.useEffect(() => {
-        if (!showDropdown)
-            return;
-        const timeout = setTimeout(() => {
-            if (query || loadAllOnFocus)
-                loadOptions(query);
-        }, 300);
-        return () => clearTimeout(timeout);
-    }, [query, showDropdown, loadAllOnFocus, loadOptions]);
-    const handleFocus = () => {
-        setShowDropdown(true);
-    };
-    const handleBlur = (e) => {
-        if (!containerRef.current?.contains(e.relatedTarget)) {
-            const selectedKeyNum = Number(selectedRef.current?.key || 0);
-            if (!selectedRef.current || selectedKeyNum <= 0) {
-                clearSelection();
-            }
-            else {
-                setShowDropdown(false);
-            }
-        }
-    };
-    const handleSelect = (option) => {
-        setQuery(option.value);
-        selectedRef.current = option;
-        onSelect(option);
-        setShowDropdown(false);
-    };
-    const clearSelection = () => {
-        setQuery('');
-        selectedRef.current = null;
-        onSelect(undefined);
-        setOptions([]);
-        setShowDropdown(false);
-    };
-    const handleQueryChange = (val) => {
-        setQuery(val);
-        if (selectedRef.current && val !== selectedRef.current.value) {
-            selectedRef.current = null;
-        }
-    };
-    const renderIcon = () => {
-        if (loading)
-            return jsxRuntime.jsx(Spinner, {});
-        if (selectedRef.current)
-            return (jsxRuntime.jsx(ClearIcon, { onClick: (e) => {
-                    e.stopPropagation();
-                    clearSelection();
-                }, children: jsxRuntime.jsx(FaTimes, {}) }));
-        return jsxRuntime.jsx(SearchIcon, { children: jsxRuntime.jsx(FaSearch, {}) });
-    };
-    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
-};
-const Wrapper = styled.div `
-  position: relative;
-  width: 100%;
-  outline: none;
-`;
-const FieldWrapper = styled.div `
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: text;
-`;
-const IconWrapper = styled.div `
-  position: absolute;
-  right: 10px;
-  display: flex;
-  align-items: center;
-`;
-const SearchIcon = styled.div `
-  color: ${({ theme }) => theme.colors.white};
-  font-size: 14px;
-`;
-const ClearIcon = styled.div `
-  color: ${({ theme }) => theme.colors.tertiary};
-  font-size: 14px;
-  cursor: pointer;
-  &:hover {
-    color: ${({ theme }) => theme.colors.red};
-  }
-`;
-const spin = styled.keyframes `
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-const Spinner = styled.div `
-  border: 2px solid ${({ theme }) => theme.colors.tertiary};
-  border-top: 2px solid ${({ theme }) => theme.colors.white};
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  animation: ${spin} 1s linear infinite;
-`;
-const Dropdown = styled.div `
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  background-color: ${({ theme }) => theme.colors.secondary};
-  border: 1px solid ${({ theme }) => theme.colors.quaternary};
-  border-radius: 4px;
-  margin-top: 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  max-height: 250px;
-  overflow-y: auto;
-`;
-const DropdownItem = styled.div `
-  padding: 10px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  background-color: ${({ theme }) => theme.colors.secondary};
-  color: ${({ theme }) => theme.colors.white};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
-  &:hover {
-    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
-  }
-`;
-
-const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
-    const [selectedField, setSelectedField] = React.useState(null);
-    const [selectedOperator, setSelectedOperator] = React.useState(null);
-    const [searchValue, setSearchValue] = React.useState(null);
-    const [filters, setFilters] = React.useState([]);
-    React.useEffect(() => {
-        if (!searchValue && selectedField) {
-            const type = selectedField.type.toUpperCase();
-            if (type === 'DATE')
-                setSearchValue(formatDateToYMDString(getCurrentDate()));
-            if (type === 'BOOLEAN')
-                setSearchValue('true');
-        }
-    }, [selectedField]);
-    const resetState = () => {
-        setSelectedField(null);
-        setSelectedOperator(null);
-        setSearchValue(null);
-    };
-    const formatDate = (value) => {
-        if (value instanceof Date)
-            return formatDateToYMDString(value);
-        const parsed = parseDateStringToDate(value);
-        return parsed ? formatDateToYMDString(parsed) : '';
-    };
-    const getFormattedValue = (f) => {
-        const field = fields.find(fd => fd.name === f.field);
-        if (!field)
-            return f.value;
-        switch (f.type) {
-            case 'BOOLEAN':
-                return formatBooleanToSimNao(f.value);
-            case 'SELECT':
-                return field.type === 'SELECT'
-                    ? field.options.find(opt => opt.key === f.value)?.value || f.value
-                    : f.value;
-            case 'DATE':
-                return formatIsoDateToBrDate(f.value);
-            default:
-                return f.value;
-        }
-    };
-    const buildRsqlString = (filters) => filters
-        .map(({ field, operator, value }) => {
-        let formattedOperator = operator;
-        if (formattedOperator === 'LIKE')
-            formattedOperator = '=ilike=';
-        else if (!formattedOperator.includes('='))
-            formattedOperator = `=${formattedOperator}=`;
-        return `${field}${formattedOperator}${value}`;
-    })
-        .join(';');
-    const handleFieldChange = (fieldName) => {
-        const field = fields.find(f => f.name === fieldName);
-        if (!field)
-            return resetState();
-        setSelectedField(field);
-        setSelectedOperator(OPERATORS[field.type][0]);
-        setSearchValue(null);
-    };
-    const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
-    const handleAdd = () => {
-        if (!selectedField || !selectedOperator || searchValue === null)
-            return;
-        const valueFormatted = selectedField.type === 'DATE' ? formatDate(searchValue) : String(searchValue);
-        const newFilter = {
-            field: selectedField.name,
-            operator: selectedOperator.symbol,
-            operadorDescr: selectedOperator.name,
-            value: valueFormatted,
-            type: selectedField.type
-        };
-        if (isDuplicateFilter(newFilter)) {
-            resetState();
-            return;
-        }
-        const updatedFilters = [...filters, newFilter];
-        setFilters(updatedFilters);
-        onSearch(buildRsqlString(updatedFilters));
-        resetState();
-    };
-    const handleRemove = (index) => {
-        const updated = filters.filter((_, i) => i !== index);
-        setFilters(updated);
-        onSearch(buildRsqlString(updated));
-    };
-    const isAddButtonDisabled = () => {
-        if (!selectedField || !selectedOperator)
-            return true;
-        if (selectedField.type === 'DATE') {
-            if (!searchValue)
-                return true;
-            const date = parseDateStringToDate(String(searchValue));
-            return !date || isNaN(date.getTime());
-        }
-        return searchValue === null || searchValue === '';
-    };
-    return (jsxRuntime.jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxRuntime.jsxs(Stack, { direction: "column", divider: "top", children: [jsxRuntime.jsxs(Stack, { direction: "row", divider: "left", children: [jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsxRuntime.jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
-                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
-                                : [], onUpdate: (val) => {
-                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
-                                if (op)
-                                    setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
-                                    borderRadius: '50%',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    display: 'flex'
-                                } })] }, i))) }))] }) }));
-};
-const Tags = styled.div `
-  background-color: ${({ theme }) => theme.colors.tertiary};
-  padding: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-const Tag = styled.div `
-  background-color: ${({ theme }) => theme.colors.secondary};
-  padding: 5px 10px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
 `;
 
 const useConfirmModal = () => {
@@ -1516,6 +1529,7 @@ exports.Tabs = Tabs;
 exports.ThemeFavicon = ThemeFavicon;
 exports.ThemeSelector = ThemeSelector;
 exports.ToastNotification = ToastNotification;
+exports.buildSearchSelectAdapter = buildSearchSelectAdapter;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatBooleanToSimNao = formatBooleanToSimNao;
 exports.formatDateToYMDString = formatDateToYMDString;

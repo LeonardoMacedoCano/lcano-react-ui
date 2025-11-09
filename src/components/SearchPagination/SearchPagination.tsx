@@ -6,8 +6,8 @@ import {
   FaAngleLeft,
   FaAngleRight
 } from 'react-icons/fa';
-import Container from '../Container';
-import Stack from '../Stack';
+import { Container } from '../Container';
+import { Stack } from '../Stack';
 import { PagedResponse } from '../../types';
 
 export interface SearchPaginationProps {

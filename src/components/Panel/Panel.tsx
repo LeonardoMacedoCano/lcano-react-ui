@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled, { CSSProperties } from 'styled-components';
-import Container from '../Container';
+import { Container } from '../Container';
 
 export interface PanelProps {
   title?: ReactNode;

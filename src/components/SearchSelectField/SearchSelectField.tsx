@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-import FieldValue from '../FieldValue';
+import { FieldValue } from '../FieldValue';
 
 export interface OptionItem {
   key: string;

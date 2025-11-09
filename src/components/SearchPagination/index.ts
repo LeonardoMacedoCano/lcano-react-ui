@@ -1,2 +1,2 @@
-export { default } from './SearchPagination';
+export { default as SearchPagination } from './SearchPagination';
 export type { SearchPaginationProps } from './SearchPagination';

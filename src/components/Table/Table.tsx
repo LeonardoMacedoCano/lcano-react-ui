@@ -2,9 +2,9 @@ import React, { ReactNode, useState, FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 import { PagedResponse } from '../../types';
-import SearchPagination from '../SearchPagination';
-import Button from '../Button';
-import Container from '../Container';
+import { SearchPagination } from '../SearchPagination';
+import { Button } from '../Button';
+import { Container } from '../Container';
 
 export type ColumnProps<T> = {
   header: ReactNode;

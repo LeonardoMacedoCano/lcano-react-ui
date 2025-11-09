@@ -1,4 +1,4 @@
-import { OptionItem } from "./SearchSelectField";
+import { OptionItem } from './SearchSelectField';
 export interface SearchSelectAdapterParams<T> {
     searchOptions: (query: string, page: number, pageSize: number) => Promise<T[]>;
     mapToOption: (item: T) => OptionItem;

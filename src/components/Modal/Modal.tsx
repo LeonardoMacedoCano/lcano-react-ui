@@ -5,7 +5,7 @@ import {
   FaTimes
 } from 'react-icons/fa';
 import { getVariantColor } from '../../utils';
-import Button from '../Button';
+import { Button } from '../Button';
 import { VariantColor } from '../../types';
 
 export interface ModalProps {

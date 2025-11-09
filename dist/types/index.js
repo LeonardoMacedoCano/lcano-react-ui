@@ -1,7 +1,7 @@
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
+import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
+import React, { useState, useRef, useEffect, useMemo, useCallback, createContext, useContext } from 'react';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import React, { useRef, useState, useEffect, useMemo, useCallback, createContext, useContext } from 'react';
-import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaEye, FaEdit, FaTrash, FaTimes, FaExclamationTriangle, FaExclamationCircle, FaInfoCircle, FaCheckCircle, FaSearch, FaPlus } from 'react-icons/fa';
+import { FaTimes, FaExclamationTriangle, FaPlus, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaSearch, FaEye, FaEdit, FaTrash, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 
 const STRING_OPERATORS = [
     { name: 'Contém', symbol: 'LIKE' },
@@ -130,42 +130,180 @@ const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, m
 
 const formatBooleanToSimNao = (value) => value === 'true' ? 'Sim' : 'Não';
 
-const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
-    return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { color: theme.primaryColor }), jsx(ColorBlock, { color: theme.secondaryColor }), jsx(ColorBlock, { color: theme.tertiaryColor }), jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
+const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
+    const [expanded, setExpanded] = useState(false);
+    const toggleOptions = (show) => setExpanded(show);
+    const handleOptionClick = (action) => {
+        action();
+        setExpanded(false);
+    };
+    return (jsxs(Wrapper$1, { children: [jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
 };
-const ThemeGrid = styled.div `
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
-  width: 100%;
+const Wrapper$1 = styled.div `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 `;
-const ThemeItem = styled.div `
-  background-color: ${props => props.theme.colors.primary};
-  border-radius: 5px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+const commonButtonStyles = css `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
+    opacity: 0.7;
   }
 `;
-const ThemeName = styled.div `
-  padding: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: ${props => props.theme.colors.white};
+const MainButton = styled.button `
+  ${commonButtonStyles};
+  width: 55px;
+  height: 55px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
-const ColorPalette = styled.div `
+const OptionsContainer = styled.div `
+  position: absolute;
+  bottom: 65px;
+  right: 0;
+  width: 55px;
   display: flex;
-  height: 30px;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 `;
-const ColorBlock = styled.div `
+const OptionButton = styled.button `
+  ${commonButtonStyles};
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+`;
+
+const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
+    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
+};
+const getButtonVariantStyles = (variant, theme) => {
+    if (!variant)
+        return '';
+    return css `
+    background-color: ${getVariantColor(theme, variant)};
+    color: ${theme.colors.white};
+  `;
+};
+const StyledButton = styled.button `
+  border: none;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  outline: none;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  opacity: ${props => (props.disabled ? '0.3' : '1')};
+  width: ${props => props.width || 'auto'};
+  height: ${props => props.height || 'auto'};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
+  }
+
+  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
+
+  ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
+`;
+const IconWrapper$2 = styled.span `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const Description = styled.span `
+  margin-left: 8px;
+`;
+
+const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsx(FaExclamationTriangle, {}) }) => {
+    if (!isOpen)
+        return null;
+    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper$1, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+                                backgroundColor: 'transparent',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }, icon: jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsx(ModalContent, { children: content }), actions && jsx(ModalActions, { children: actions })] }) }));
+};
+const ModalOverlay = styled.div `
+  z-index: 1000;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalContainer = styled.div `
+  width: ${({ width }) => width};
+  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
+  height: ${({ height }) => height};
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 8px;
+  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
+  display: flex;
+  flex-direction: column;
+`;
+const ModalHeader = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 15px;
+`;
+const HeaderLeft = styled.div `
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const IconWrapper$1 = styled.span `
+  display: flex;
+  align-items: center;
+`;
+const ModalTitle = styled.div `
+  font-size: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.white};
+`;
+const ModalContent = styled.div `
+  padding: 20px;
   flex: 1;
-  height: 100%;
-  background-color: ${props => props.color};
 `;
+const ModalActions = styled.div `
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+`;
+
+const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
+    const defaultButtonStyle = {
+        borderRadius: '5px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+    const renderButton = (label, variant, onClick, props) => (jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
+    return (jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxs(Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
+                    onConfirm();
+                    onClose();
+                }, confirmButtonProps)] }) }));
+};
 
 const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
 const StyledContainer = styled.div `
@@ -175,82 +313,6 @@ const StyledContainer = styled.div `
   padding: ${({ padding }) => padding || '0'};
   max-width: ${({ maxWidth }) => maxWidth || 'none'};
   background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
-`;
-
-const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxs(Title, { children: [jsx("h3", { children: title }), actionButton && jsx(ActionContainer, { children: actionButton })] })), jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
-                    {} :
-                    {
-                        boxShadow: '0 0 2px',
-                        borderRadius: '5px',
-                    }, children: [jsx(Body, { children: children }), footer && jsx(Footer, { children: footer })] })] }));
-};
-const Title = styled.div `
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
-  h3 {
-    color: ${({ theme }) => theme.colors.white};
-  }
-`;
-const ActionContainer = styled.div `
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-`;
-const BaseBox = styled.div `
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const Body = styled(BaseBox) `
-  justify-content: space-between;
-`;
-const Footer = styled(BaseBox) `
-  height: 35px;
-  justify-content: center;
-  border-top: 1px solid ${({ theme }) => theme.colors.gray};
-`;
-
-const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
-    return (jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
-};
-const StackContainer = styled.div `
-  display: flex;
-  flex-direction: ${({ direction }) => direction};
-  width: ${({ width }) => width || '100%'};
-  height: ${({ height }) => height || 'auto'};
-
-  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
-  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
-  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
-  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
-
-  ${({ gap }) => gap && `gap: ${gap};`}
-
-  ${({ divider, direction, theme }) => divider &&
-    css `
-      > * + * {
-        ${(() => {
-        const color = theme.colors.gray;
-        if (direction === 'row') {
-            if (divider === 'left' || divider === 'x')
-                return `border-left: 1px solid ${color};`;
-            if (divider === 'right')
-                return `border-right: 1px solid ${color};`;
-        }
-        if (direction === 'column') {
-            if (divider === 'top' || divider === 'y')
-                return `border-top: 1px solid ${color};`;
-            if (divider === 'bottom')
-                return `border-bottom: 1px solid ${color};`;
-        }
-        return '';
-    })()}
-      }
-    `}
 `;
 
 const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
@@ -344,46 +406,6 @@ const Icon = styled.div `
   width: auto;
 `;
 
-const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
-};
-const getButtonVariantStyles = (variant, theme) => {
-    if (!variant)
-        return '';
-    return css `
-    background-color: ${getVariantColor(theme, variant)};
-    color: ${theme.colors.white};
-  `;
-};
-const StyledButton = styled.button `
-  border: none;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  outline: none;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
-  opacity: ${props => (props.disabled ? '0.3' : '1')};
-  width: ${props => props.width || 'auto'};
-  height: ${props => props.height || 'auto'};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
-  }
-
-  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
-
-  ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
-`;
-const IconWrapper$2 = styled.span `
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const Description = styled.span `
-  margin-left: 8px;
-`;
-
 const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
     const fileInputRef = useRef(null);
     const handleImageClick = () => {
@@ -452,62 +474,6 @@ const CameraButton = styled.button `
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'scale(1.1)'};
   }
-`;
-
-const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
-    const [expanded, setExpanded] = useState(false);
-    const toggleOptions = (show) => setExpanded(show);
-    const handleOptionClick = (action) => {
-        action();
-        setExpanded(false);
-    };
-    return (jsxs(Wrapper$1, { children: [jsx(MainButton, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), onClick: onClick, title: hint, disabled: disabled, "aria-label": hint, children: icon }), options && expanded && (jsx(OptionsContainer, { onMouseEnter: () => toggleOptions(true), onMouseLeave: () => toggleOptions(false), children: options.map((option, index) => (jsx(OptionButton, { onClick: () => handleOptionClick(option.action), title: option.hint, disabled: option.disabled, "aria-label": option.hint, children: option.icon }, index))) }))] }));
-};
-const Wrapper$1 = styled.div `
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-`;
-const commonButtonStyles = css `
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme }) => theme.colors.tertiary};
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 25px;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
-
-  &:hover {
-    opacity: 0.7;
-  }
-`;
-const MainButton = styled.button `
-  ${commonButtonStyles};
-  width: 55px;
-  height: 55px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
-`;
-const OptionsContainer = styled.div `
-  position: absolute;
-  bottom: 65px;
-  right: 0;
-  width: 55px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-`;
-const OptionButton = styled.button `
-  ${commonButtonStyles};
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
 `;
 
 const svgAnimation = `
@@ -616,6 +582,209 @@ const Loading = ({ isLoading }) => {
         }, children: jsx("div", { dangerouslySetInnerHTML: { __html: svgContent } }) }));
 };
 
+const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
+    return (jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxs(Title, { children: [jsx("h3", { children: title }), actionButton && jsx(ActionContainer, { children: actionButton })] })), jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+                    {} :
+                    {
+                        boxShadow: '0 0 2px',
+                        borderRadius: '5px',
+                    }, children: [jsx(Body, { children: children }), footer && jsx(Footer, { children: footer })] })] }));
+};
+const Title = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
+  h3 {
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+const ActionContainer = styled.div `
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`;
+const BaseBox = styled.div `
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Body = styled(BaseBox) `
+  justify-content: space-between;
+`;
+const Footer = styled(BaseBox) `
+  height: 35px;
+  justify-content: center;
+  border-top: 1px solid ${({ theme }) => theme.colors.gray};
+`;
+
+const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
+    return (jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
+};
+const StackContainer = styled.div `
+  display: flex;
+  flex-direction: ${({ direction }) => direction};
+  width: ${({ width }) => width || '100%'};
+  height: ${({ height }) => height || 'auto'};
+
+  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
+  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
+  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
+  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+
+  ${({ gap }) => gap && `gap: ${gap};`}
+
+  ${({ divider, direction, theme }) => divider &&
+    css `
+      > * + * {
+        ${(() => {
+        const color = theme.colors.gray;
+        if (direction === 'row') {
+            if (divider === 'left' || divider === 'x')
+                return `border-left: 1px solid ${color};`;
+            if (divider === 'right')
+                return `border-right: 1px solid ${color};`;
+        }
+        if (direction === 'column') {
+            if (divider === 'top' || divider === 'y')
+                return `border-top: 1px solid ${color};`;
+            if (divider === 'bottom')
+                return `border-bottom: 1px solid ${color};`;
+        }
+        return '';
+    })()}
+      }
+    `}
+`;
+
+const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
+    const [selectedField, setSelectedField] = useState(null);
+    const [selectedOperator, setSelectedOperator] = useState(null);
+    const [searchValue, setSearchValue] = useState(null);
+    const [filters, setFilters] = useState([]);
+    useEffect(() => {
+        if (!searchValue && selectedField) {
+            const type = selectedField.type.toUpperCase();
+            if (type === 'DATE')
+                setSearchValue(formatDateToYMDString(getCurrentDate()));
+            if (type === 'BOOLEAN')
+                setSearchValue('true');
+        }
+    }, [selectedField]);
+    const resetState = () => {
+        setSelectedField(null);
+        setSelectedOperator(null);
+        setSearchValue(null);
+    };
+    const formatDate = (value) => {
+        if (value instanceof Date)
+            return formatDateToYMDString(value);
+        const parsed = parseDateStringToDate(value);
+        return parsed ? formatDateToYMDString(parsed) : '';
+    };
+    const getFormattedValue = (f) => {
+        const field = fields.find(fd => fd.name === f.field);
+        if (!field)
+            return f.value;
+        switch (f.type) {
+            case 'BOOLEAN':
+                return formatBooleanToSimNao(f.value);
+            case 'SELECT':
+                return field.type === 'SELECT'
+                    ? field.options.find(opt => opt.key === f.value)?.value || f.value
+                    : f.value;
+            case 'DATE':
+                return formatIsoDateToBrDate(f.value);
+            default:
+                return f.value;
+        }
+    };
+    const buildRsqlString = (filters) => filters
+        .map(({ field, operator, value }) => {
+        let formattedOperator = operator;
+        if (formattedOperator === 'LIKE')
+            formattedOperator = '=ilike=';
+        else if (!formattedOperator.includes('='))
+            formattedOperator = `=${formattedOperator}=`;
+        return `${field}${formattedOperator}${value}`;
+    })
+        .join(';');
+    const handleFieldChange = (fieldName) => {
+        const field = fields.find(f => f.name === fieldName);
+        if (!field)
+            return resetState();
+        setSelectedField(field);
+        setSelectedOperator(OPERATORS[field.type][0]);
+        setSearchValue(null);
+    };
+    const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
+    const handleAdd = () => {
+        if (!selectedField || !selectedOperator || searchValue === null)
+            return;
+        const valueFormatted = selectedField.type === 'DATE' ? formatDate(searchValue) : String(searchValue);
+        const newFilter = {
+            field: selectedField.name,
+            operator: selectedOperator.symbol,
+            operadorDescr: selectedOperator.name,
+            value: valueFormatted,
+            type: selectedField.type
+        };
+        if (isDuplicateFilter(newFilter)) {
+            resetState();
+            return;
+        }
+        const updatedFilters = [...filters, newFilter];
+        setFilters(updatedFilters);
+        onSearch(buildRsqlString(updatedFilters));
+        resetState();
+    };
+    const handleRemove = (index) => {
+        const updated = filters.filter((_, i) => i !== index);
+        setFilters(updated);
+        onSearch(buildRsqlString(updated));
+    };
+    const isAddButtonDisabled = () => {
+        if (!selectedField || !selectedOperator)
+            return true;
+        if (selectedField.type === 'DATE') {
+            if (!searchValue)
+                return true;
+            const date = parseDateStringToDate(String(searchValue));
+            return !date || isNaN(date.getTime());
+        }
+        return searchValue === null || searchValue === '';
+    };
+    return (jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
+                                : [], onUpdate: (val) => {
+                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
+                                if (op)
+                                    setSelectedOperator(op);
+                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                                    borderRadius: '50%',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                } })] }, i))) }))] }) }));
+};
+const Tags = styled.div `
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+const Tag = styled.div `
+  background-color: ${({ theme }) => theme.colors.secondary};
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+`;
+
 const usePaginationState = (page) => {
     const [currentPageIndex, setCurrentPageIndex] = useState(page.number);
     useEffect(() => {
@@ -692,6 +861,163 @@ const PageIndicator = styled.span `
   margin: 0 8px;
   user-select: none;
 `;
+
+const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
+    const [query, setQuery] = useState(value?.value || '');
+    const [options, setOptions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const containerRef = useRef(null);
+    const selectedRef = useRef(value || null);
+    useEffect(() => {
+        selectedRef.current = value || null;
+        setQuery(value?.value || '');
+    }, [value]);
+    const loadOptions = useCallback(async (searchQuery) => {
+        setLoading(true);
+        try {
+            const result = await fetchOptions(searchQuery, 0);
+            setOptions(result);
+        }
+        catch {
+            setOptions([]);
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [fetchOptions]);
+    useEffect(() => {
+        if (!showDropdown)
+            return;
+        const timeout = setTimeout(() => {
+            if (query || loadAllOnFocus)
+                loadOptions(query);
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [query, showDropdown, loadAllOnFocus, loadOptions]);
+    const handleFocus = () => {
+        setShowDropdown(true);
+    };
+    const handleBlur = (e) => {
+        if (!containerRef.current?.contains(e.relatedTarget)) {
+            const selectedKeyNum = Number(selectedRef.current?.key || 0);
+            if (!selectedRef.current || selectedKeyNum <= 0) {
+                clearSelection();
+            }
+            else {
+                setShowDropdown(false);
+            }
+        }
+    };
+    const handleSelect = (option) => {
+        setQuery(option.value);
+        selectedRef.current = option;
+        onSelect(option);
+        setShowDropdown(false);
+    };
+    const clearSelection = () => {
+        setQuery('');
+        selectedRef.current = null;
+        onSelect(undefined);
+        setOptions([]);
+        setShowDropdown(false);
+    };
+    const handleQueryChange = (val) => {
+        setQuery(val);
+        if (selectedRef.current && val !== selectedRef.current.value) {
+            selectedRef.current = null;
+        }
+    };
+    const renderIcon = () => {
+        if (loading)
+            return jsx(Spinner, {});
+        if (selectedRef.current)
+            return (jsx(ClearIcon, { onClick: (e) => {
+                    e.stopPropagation();
+                    clearSelection();
+                }, children: jsx(FaTimes, {}) }));
+        return jsx(SearchIcon, { children: jsx(FaSearch, {}) });
+    };
+    return (jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxs(FieldWrapper, { onClick: handleFocus, children: [jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsx(Dropdown, { children: loading ? (jsx(DropdownItem, { disabled: true, children: jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+};
+const Wrapper = styled.div `
+  position: relative;
+  width: 100%;
+  outline: none;
+`;
+const FieldWrapper = styled.div `
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: text;
+`;
+const IconWrapper = styled.div `
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+`;
+const SearchIcon = styled.div `
+  color: ${({ theme }) => theme.colors.white};
+  font-size: 14px;
+`;
+const ClearIcon = styled.div `
+  color: ${({ theme }) => theme.colors.tertiary};
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    color: ${({ theme }) => theme.colors.red};
+  }
+`;
+const spin = keyframes `
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+const Spinner = styled.div `
+  border: 2px solid ${({ theme }) => theme.colors.tertiary};
+  border-top: 2px solid ${({ theme }) => theme.colors.white};
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: ${spin} 1s linear infinite;
+`;
+const Dropdown = styled.div `
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.quaternary};
+  border-radius: 4px;
+  margin-top: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+`;
+const DropdownItem = styled.div `
+  padding: 10px;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.white};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
+  &:hover {
+    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
+  }
+`;
+
+function buildSearchSelectAdapter({ searchOptions, mapToOption, mapFromOption, value, onUpdate, pageSize = 10, }) {
+    const fetchOptions = async (query, page) => {
+        const data = await searchOptions(query, page, pageSize);
+        return data.map(mapToOption);
+    };
+    const onSelect = (selected) => {
+        const newValue = selected ? mapFromOption(selected) : undefined;
+        onUpdate(newValue);
+    };
+    const optionValue = value ? mapToOption(value) : undefined;
+    return { fetchOptions, onSelect, optionValue };
+}
 
 const Column = ({}) => null;
 const COMMON_BUTTON_STYLES = {
@@ -851,84 +1177,124 @@ const CustomActionWrapper = styled.div `
   align-items: center;
 `;
 
-const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsx(FaExclamationTriangle, {}) }) => {
-    if (!isOpen)
-        return null;
-    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper$1, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
-                                backgroundColor: 'transparent',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }, icon: jsx(FaTimes, {}), hint: "Fechar", onClick: onClose }))] }), jsx(ModalContent, { children: content }), actions && jsx(ModalActions, { children: actions })] }) }));
+const Tabs = ({ tabs }) => {
+    const [activeTab, setActiveTab] = useState(0);
+    const handleTabClick = (index) => {
+        setActiveTab(index);
+    };
+    return (jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsx(TabList, { children: tabs.map((tab, index) => (jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsx(TabContent, { children: tabs[activeTab]?.content })] }));
 };
-const ModalOverlay = styled.div `
-  z-index: 1000;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+const TabList = styled.div `
   display: flex;
-  justify-content: center;
-  align-items: center;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
 `;
-const ModalContainer = styled.div `
-  width: ${({ width }) => width};
-  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
-  height: ${({ height }) => height};
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 8px;
-  box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
-  display: flex;
-  flex-direction: column;
-`;
-const ModalHeader = styled.div `
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  padding: 15px;
-`;
-const HeaderLeft = styled.div `
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-const IconWrapper$1 = styled.span `
-  display: flex;
-  align-items: center;
-`;
-const ModalTitle = styled.div `
-  font-size: 1rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.white};
-`;
-const ModalContent = styled.div `
-  padding: 20px;
+const TabButton = styled.button `
   flex: 1;
+  padding: 10px 0px;
+  border: none;
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.secondary};
+  cursor: pointer;
+  transition: background-color 0.3s, border-right-color 0.3s;
+
+  &:not(:last-child) {
+    border-right: 2px solid ${({ theme }) => theme.colors.tertiary};
+  }
+
+  &:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 5px;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.tertiary};
+  }
+
+  ${({ active, theme }) => active &&
+    `
+    cursor: default;
+    background-color: ${theme.colors.tertiary};
+    border-right-color: transparent;
+  `}
 `;
-const ModalActions = styled.div `
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 20px;
+const TabContent = styled.div `
 `;
 
-const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth = '400px', variantPrimary = 'warning', variantSecondary = 'secondary', confirmLabel = 'ACEITAR', cancelLabel = 'CANCELAR', confirmButtonProps, cancelButtonProps, }) => {
-    const defaultButtonStyle = {
-        borderRadius: '5px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    };
-    const renderButton = (label, variant, onClick, props) => (jsx(Button, { variant: variant, width: "100px", height: "30px", style: defaultButtonStyle, description: label, onClick: onClick, ...props }));
-    return (jsx(Modal, { isOpen: isOpen, variant: variantPrimary, title: title, content: content, modalWidth: modalWidth, maxWidth: "85%", onClose: onClose, showCloseButton: false, actions: jsxs(Fragment, { children: [renderButton(cancelLabel, variantSecondary, onClose, cancelButtonProps), renderButton(confirmLabel, variantPrimary, () => {
-                    onConfirm();
-                    onClose();
-                }, confirmButtonProps)] }) }));
+const DEFAULT_THEME_SYSTEM = {
+    title: 'DEFAULT_THEME_SYSTEM',
+    colors: {
+        primary: '#282a36',
+        secondary: '#44475a',
+        tertiary: '#6272a4',
+        quaternary: '#bd93f9',
+        white: '#f8f8f2',
+        black: '#000000',
+        gray: '#999999',
+        success: '#32cd80',
+        info: '#5ad4e6',
+        warning: '#ff944d',
+    },
 };
+
+const defaultRenderSvg = (theme) => `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
+  </svg>
+`;
+const ThemeFavicon = ({ renderSvg }) => {
+    const theme = useTheme() || DEFAULT_THEME_SYSTEM;
+    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
+    useEffect(() => {
+        let faviconLink = document.querySelector("link[rel='icon']");
+        if (!faviconLink) {
+            faviconLink = document.createElement('link');
+            faviconLink.rel = 'icon';
+            document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+    }, [svgContent]);
+    return null;
+};
+
+const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
+    return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { color: theme.primaryColor }), jsx(ColorBlock, { color: theme.secondaryColor }), jsx(ColorBlock, { color: theme.tertiaryColor }), jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
+};
+const ThemeGrid = styled.div `
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+  width: 100%;
+`;
+const ThemeItem = styled.div `
+  background-color: ${props => props.theme.colors.primary};
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+`;
+const ThemeName = styled.div `
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: ${props => props.theme.colors.white};
+`;
+const ColorPalette = styled.div `
+  display: flex;
+  height: 30px;
+`;
+const ColorBlock = styled.div `
+  flex: 1;
+  height: 100%;
+  background-color: ${props => props.color};
+`;
 
 const iconMap = {
     success: jsx(FaCheckCircle, {}),
@@ -996,359 +1362,6 @@ const CloseButton = styled(CloseButtonBase) `
   }
 `;
 
-const DEFAULT_THEME_SYSTEM = {
-    title: 'DEFAULT_THEME_SYSTEM',
-    colors: {
-        primary: '#282a36',
-        secondary: '#44475a',
-        tertiary: '#6272a4',
-        quaternary: '#bd93f9',
-        white: '#f8f8f2',
-        black: '#000000',
-        gray: '#999999',
-        success: '#32cd80',
-        info: '#5ad4e6',
-        warning: '#ff944d',
-    },
-};
-
-const defaultRenderSvg = (theme) => `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-    <circle cx="256" cy="256" r="256" fill="${theme.colors.quaternary}" />
-  </svg>
-`;
-const ThemeFavicon = ({ renderSvg }) => {
-    const theme = useTheme() || DEFAULT_THEME_SYSTEM;
-    const svgContent = renderSvg ? renderSvg(theme) : defaultRenderSvg(theme);
-    useEffect(() => {
-        let faviconLink = document.querySelector("link[rel='icon']");
-        if (!faviconLink) {
-            faviconLink = document.createElement('link');
-            faviconLink.rel = 'icon';
-            document.head.appendChild(faviconLink);
-        }
-        faviconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
-    }, [svgContent]);
-    return null;
-};
-
-const Tabs = ({ tabs }) => {
-    const [activeTab, setActiveTab] = useState(0);
-    const handleTabClick = (index) => {
-        setActiveTab(index);
-    };
-    return (jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsx(TabList, { children: tabs.map((tab, index) => (jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsx(TabContent, { children: tabs[activeTab]?.content })] }));
-};
-const TabList = styled.div `
-  display: flex;
-  border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
-`;
-const TabButton = styled.button `
-  flex: 1;
-  padding: 10px 0px;
-  border: none;
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme }) => theme.colors.secondary};
-  cursor: pointer;
-  transition: background-color 0.3s, border-right-color 0.3s;
-
-  &:not(:last-child) {
-    border-right: 2px solid ${({ theme }) => theme.colors.tertiary};
-  }
-
-  &:first-child {
-    border-top-left-radius: 5px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 5px;
-  }
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.tertiary};
-  }
-
-  ${({ active, theme }) => active &&
-    `
-    cursor: default;
-    background-color: ${theme.colors.tertiary};
-    border-right-color: transparent;
-  `}
-`;
-const TabContent = styled.div `
-`;
-
-const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
-    const [query, setQuery] = useState(value?.value || '');
-    const [options, setOptions] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const containerRef = useRef(null);
-    const selectedRef = useRef(value || null);
-    useEffect(() => {
-        selectedRef.current = value || null;
-        setQuery(value?.value || '');
-    }, [value]);
-    const loadOptions = useCallback(async (searchQuery) => {
-        setLoading(true);
-        try {
-            const result = await fetchOptions(searchQuery, 0);
-            setOptions(result);
-        }
-        catch {
-            setOptions([]);
-        }
-        finally {
-            setLoading(false);
-        }
-    }, [fetchOptions]);
-    useEffect(() => {
-        if (!showDropdown)
-            return;
-        const timeout = setTimeout(() => {
-            if (query || loadAllOnFocus)
-                loadOptions(query);
-        }, 300);
-        return () => clearTimeout(timeout);
-    }, [query, showDropdown, loadAllOnFocus, loadOptions]);
-    const handleFocus = () => {
-        setShowDropdown(true);
-    };
-    const handleBlur = (e) => {
-        if (!containerRef.current?.contains(e.relatedTarget)) {
-            const selectedKeyNum = Number(selectedRef.current?.key || 0);
-            if (!selectedRef.current || selectedKeyNum <= 0) {
-                clearSelection();
-            }
-            else {
-                setShowDropdown(false);
-            }
-        }
-    };
-    const handleSelect = (option) => {
-        setQuery(option.value);
-        selectedRef.current = option;
-        onSelect(option);
-        setShowDropdown(false);
-    };
-    const clearSelection = () => {
-        setQuery('');
-        selectedRef.current = null;
-        onSelect(undefined);
-        setOptions([]);
-        setShowDropdown(false);
-    };
-    const handleQueryChange = (val) => {
-        setQuery(val);
-        if (selectedRef.current && val !== selectedRef.current.value) {
-            selectedRef.current = null;
-        }
-    };
-    const renderIcon = () => {
-        if (loading)
-            return jsx(Spinner, {});
-        if (selectedRef.current)
-            return (jsx(ClearIcon, { onClick: (e) => {
-                    e.stopPropagation();
-                    clearSelection();
-                }, children: jsx(FaTimes, {}) }));
-        return jsx(SearchIcon, { children: jsx(FaSearch, {}) });
-    };
-    return (jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxs(FieldWrapper, { onClick: handleFocus, children: [jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsx(Dropdown, { children: loading ? (jsx(DropdownItem, { disabled: true, children: jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
-};
-const Wrapper = styled.div `
-  position: relative;
-  width: 100%;
-  outline: none;
-`;
-const FieldWrapper = styled.div `
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: text;
-`;
-const IconWrapper = styled.div `
-  position: absolute;
-  right: 10px;
-  display: flex;
-  align-items: center;
-`;
-const SearchIcon = styled.div `
-  color: ${({ theme }) => theme.colors.white};
-  font-size: 14px;
-`;
-const ClearIcon = styled.div `
-  color: ${({ theme }) => theme.colors.tertiary};
-  font-size: 14px;
-  cursor: pointer;
-  &:hover {
-    color: ${({ theme }) => theme.colors.red};
-  }
-`;
-const spin = keyframes `
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-const Spinner = styled.div `
-  border: 2px solid ${({ theme }) => theme.colors.tertiary};
-  border-top: 2px solid ${({ theme }) => theme.colors.white};
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  animation: ${spin} 1s linear infinite;
-`;
-const Dropdown = styled.div `
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  background-color: ${({ theme }) => theme.colors.secondary};
-  border: 1px solid ${({ theme }) => theme.colors.quaternary};
-  border-radius: 4px;
-  margin-top: 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  max-height: 250px;
-  overflow-y: auto;
-`;
-const DropdownItem = styled.div `
-  padding: 10px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  background-color: ${({ theme }) => theme.colors.secondary};
-  color: ${({ theme }) => theme.colors.white};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
-  &:hover {
-    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
-  }
-`;
-
-const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
-    const [selectedField, setSelectedField] = useState(null);
-    const [selectedOperator, setSelectedOperator] = useState(null);
-    const [searchValue, setSearchValue] = useState(null);
-    const [filters, setFilters] = useState([]);
-    useEffect(() => {
-        if (!searchValue && selectedField) {
-            const type = selectedField.type.toUpperCase();
-            if (type === 'DATE')
-                setSearchValue(formatDateToYMDString(getCurrentDate()));
-            if (type === 'BOOLEAN')
-                setSearchValue('true');
-        }
-    }, [selectedField]);
-    const resetState = () => {
-        setSelectedField(null);
-        setSelectedOperator(null);
-        setSearchValue(null);
-    };
-    const formatDate = (value) => {
-        if (value instanceof Date)
-            return formatDateToYMDString(value);
-        const parsed = parseDateStringToDate(value);
-        return parsed ? formatDateToYMDString(parsed) : '';
-    };
-    const getFormattedValue = (f) => {
-        const field = fields.find(fd => fd.name === f.field);
-        if (!field)
-            return f.value;
-        switch (f.type) {
-            case 'BOOLEAN':
-                return formatBooleanToSimNao(f.value);
-            case 'SELECT':
-                return field.type === 'SELECT'
-                    ? field.options.find(opt => opt.key === f.value)?.value || f.value
-                    : f.value;
-            case 'DATE':
-                return formatIsoDateToBrDate(f.value);
-            default:
-                return f.value;
-        }
-    };
-    const buildRsqlString = (filters) => filters
-        .map(({ field, operator, value }) => {
-        let formattedOperator = operator;
-        if (formattedOperator === 'LIKE')
-            formattedOperator = '=ilike=';
-        else if (!formattedOperator.includes('='))
-            formattedOperator = `=${formattedOperator}=`;
-        return `${field}${formattedOperator}${value}`;
-    })
-        .join(';');
-    const handleFieldChange = (fieldName) => {
-        const field = fields.find(f => f.name === fieldName);
-        if (!field)
-            return resetState();
-        setSelectedField(field);
-        setSelectedOperator(OPERATORS[field.type][0]);
-        setSearchValue(null);
-    };
-    const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
-    const handleAdd = () => {
-        if (!selectedField || !selectedOperator || searchValue === null)
-            return;
-        const valueFormatted = selectedField.type === 'DATE' ? formatDate(searchValue) : String(searchValue);
-        const newFilter = {
-            field: selectedField.name,
-            operator: selectedOperator.symbol,
-            operadorDescr: selectedOperator.name,
-            value: valueFormatted,
-            type: selectedField.type
-        };
-        if (isDuplicateFilter(newFilter)) {
-            resetState();
-            return;
-        }
-        const updatedFilters = [...filters, newFilter];
-        setFilters(updatedFilters);
-        onSearch(buildRsqlString(updatedFilters));
-        resetState();
-    };
-    const handleRemove = (index) => {
-        const updated = filters.filter((_, i) => i !== index);
-        setFilters(updated);
-        onSearch(buildRsqlString(updated));
-    };
-    const isAddButtonDisabled = () => {
-        if (!selectedField || !selectedOperator)
-            return true;
-        if (selectedField.type === 'DATE') {
-            if (!searchValue)
-                return true;
-            const date = parseDateStringToDate(String(searchValue));
-            return !date || isNaN(date.getTime());
-        }
-        return searchValue === null || searchValue === '';
-    };
-    return (jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
-                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
-                                : [], onUpdate: (val) => {
-                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
-                                if (op)
-                                    setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
-                                    borderRadius: '50%',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    display: 'flex'
-                                } })] }, i))) }))] }) }));
-};
-const Tags = styled.div `
-  background-color: ${({ theme }) => theme.colors.tertiary};
-  padding: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-const Tag = styled.div `
-  background-color: ${({ theme }) => theme.colors.secondary};
-  padding: 5px 10px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-`;
-
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1398,4 +1411,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };

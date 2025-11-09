@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from 'styled-components';
-import Container from '../Container';
+import { Container } from '../Container';
 
 export interface LoadingProps {
   isLoading: boolean;
