@@ -17,3 +17,4 @@ export * from './Tabs';
 export * from './ThemeFavicon';
 export * from './ThemeSelector';
 export * from './ToastNotification';
+export * from './HighlightBox';

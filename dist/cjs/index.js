@@ -1455,6 +1455,37 @@ const CloseButton = styled(CloseButtonBase) `
   }
 `;
 
+const HighlightBox = ({ variant = 'info', width = '100%', height = '100%', bordered = false, style, children, }) => {
+    return (jsxRuntime.jsx(CenterWrapper, { children: jsxRuntime.jsx(Box, { variant: variant, width: width, height: height, bordered: bordered, style: style, children: children }) }));
+};
+const CenterWrapper = styled.div `
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+const Box = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+
+  border-radius: 50px;
+  background-color: transparent;
+  font-weight: bold;
+  text-align: center;
+
+  color: ${({ theme, variant }) => getVariantColor(theme, variant)};
+
+  ${({ bordered, theme, variant }) => bordered &&
+    styled.css `
+      border: 1px solid ${getVariantColor(theme, variant)};
+    `}
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [title, setTitle] = React.useState('Confirmação');
@@ -1514,6 +1545,7 @@ exports.ContextMessageProvider = ContextMessageProvider;
 exports.DATE_OPERATORS = DATE_OPERATORS;
 exports.DEFAULT_THEME_SYSTEM = DEFAULT_THEME_SYSTEM;
 exports.FieldValue = FieldValue;
+exports.HighlightBox = HighlightBox;
 exports.ImagePicker = ImagePicker;
 exports.Loading = Loading;
 exports.Modal = Modal;

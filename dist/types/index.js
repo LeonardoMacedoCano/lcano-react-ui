@@ -1366,6 +1366,37 @@ const CloseButton = styled(CloseButtonBase) `
   }
 `;
 
+const HighlightBox = ({ variant = 'info', width = '100%', height = '100%', bordered = false, style, children, }) => {
+    return (jsx(CenterWrapper, { children: jsx(Box, { variant: variant, width: width, height: height, bordered: bordered, style: style, children: children }) }));
+};
+const CenterWrapper = styled.div `
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+const Box = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+
+  border-radius: 50px;
+  background-color: transparent;
+  font-weight: bold;
+  text-align: center;
+
+  color: ${({ theme, variant }) => getVariantColor(theme, variant)};
+
+  ${({ bordered, theme, variant }) => bordered &&
+    css `
+      border: 1px solid ${getVariantColor(theme, variant)};
+    `}
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1415,4 +1446,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
