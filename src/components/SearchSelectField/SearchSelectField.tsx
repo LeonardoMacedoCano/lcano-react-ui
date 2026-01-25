@@ -15,6 +15,7 @@ export interface SearchSelectFieldProps {
   onSelect: (selected?: OptionItem) => void;
   value?: OptionItem;
   loadAllOnFocus?: boolean;
+  disabled?: boolean;
 }
 
 const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
@@ -24,6 +25,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
   onSelect,
   value,
   loadAllOnFocus = true,
+  disabled = false
 }) => {
   const [query, setQuery] = useState(value?.value || '');
   const [options, setOptions] = useState<OptionItem[]>([]);
@@ -59,6 +61,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
   }, [query, showDropdown, loadAllOnFocus, loadOptions]);
 
   const handleFocus = () => {
+    if (disabled) return;
     setShowDropdown(true);
   };
 
@@ -89,6 +92,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
   };
 
   const handleQueryChange = (val: string) => {
+    if (disabled) return;
     setQuery(val);
     if (selectedRef.current && val !== selectedRef.current.value) {
       selectedRef.current = null;
@@ -119,7 +123,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
           type="STRING"
           value={query}
           placeholder={placeholder || 'Digite para pesquisar...'}
-          editable
+          editable={!disabled}
           onUpdate={handleQueryChange}
         />
         <IconWrapper>{renderIcon()}</IconWrapper>

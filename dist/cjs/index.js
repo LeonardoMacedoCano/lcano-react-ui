@@ -951,7 +951,7 @@ const PageIndicator = styled.span `
   user-select: none;
 `;
 
-const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, }) => {
+const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, loadAllOnFocus = true, disabled = false }) => {
     const [query, setQuery] = React.useState(value?.value || '');
     const [options, setOptions] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -985,6 +985,8 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
         return () => clearTimeout(timeout);
     }, [query, showDropdown, loadAllOnFocus, loadOptions]);
     const handleFocus = () => {
+        if (disabled)
+            return;
         setShowDropdown(true);
     };
     const handleBlur = (e) => {
@@ -1012,6 +1014,8 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
         setShowDropdown(false);
     };
     const handleQueryChange = (val) => {
+        if (disabled)
+            return;
         setQuery(val);
         if (selectedRef.current && val !== selectedRef.current.value) {
             selectedRef.current = null;
@@ -1027,7 +1031,7 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
                 }, children: jsxRuntime.jsx(FaTimes, {}) }));
         return jsxRuntime.jsx(SearchIcon, { children: jsxRuntime.jsx(FaSearch, {}) });
     };
-    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: true, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+    return (jsxRuntime.jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxRuntime.jsxs(FieldWrapper, { onClick: handleFocus, children: [jsxRuntime.jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: !disabled, onUpdate: handleQueryChange }), jsxRuntime.jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsxRuntime.jsx(Dropdown, { children: loading ? (jsxRuntime.jsx(DropdownItem, { disabled: true, children: jsxRuntime.jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsxRuntime.jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsxRuntime.jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
 };
 const Wrapper = styled.div `
   position: relative;

@@ -10,6 +10,7 @@ export interface SearchSelectFieldProps {
     onSelect: (selected?: OptionItem) => void;
     value?: OptionItem;
     loadAllOnFocus?: boolean;
+    disabled?: boolean;
 }
 declare const SearchSelectField: React.FC<SearchSelectFieldProps>;
 export default SearchSelectField;
