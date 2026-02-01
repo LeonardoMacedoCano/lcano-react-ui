@@ -17,14 +17,14 @@ export interface ModalProps {
 declare const Modal: React.FC<ModalProps>;
 export default Modal;
 interface ModalContainerProps {
-    width: string;
-    maxWidth?: string;
-    height: string;
+    $width: string;
+    $maxWidth?: string;
+    $height: string;
 }
 export declare const ModalOverlay: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components").FastOmit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, never>> & string;
 export declare const ModalContainer: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components/dist/types").Substitute<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, ModalContainerProps>> & string;
 interface ModalHeaderProps {
-    variant: VariantColor;
+    $variant: VariantColor;
 }
 export declare const ModalHeader: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components/dist/types").Substitute<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, ModalHeaderProps>> & string;
 export declare const HeaderLeft: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components").FastOmit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, never>> & string;

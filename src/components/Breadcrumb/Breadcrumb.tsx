@@ -7,12 +7,12 @@ export interface BreadcrumbItem {
 
 export interface BreadcrumbProps {
   items: BreadcrumbItem[];
-  LinkComponent?: React.ElementType;
+  LinkComponent?: React.ElementType | null;
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({
   items,
-  LinkComponent = "",
+  LinkComponent = null
 }) => {
   if (!items.length) return null;
 
@@ -20,7 +20,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
     <BreadcrumbContainer>
       {items.map((item, index) => (
         <span key={item.path ?? item.label}>
-          {item.path && index < items.length - 1 ? (
+          {item.path && LinkComponent && index < items.length - 1 ? (
             <LinkComponent to={item.path}>
               {item.label}
             </LinkComponent>

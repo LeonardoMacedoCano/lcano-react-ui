@@ -23,10 +23,10 @@ const HighlightBox: React.FC<HighlightBoxProps> = ({
   return (
     <CenterWrapper>
       <Box
-        variant={variant}
-        width={width}
-        height={height}
-        bordered={bordered}
+        $variant={variant}
+        $width={width}
+        $height={height}
+        $bordered={bordered}
         style={style}
         >
         {children}
@@ -46,10 +46,10 @@ const CenterWrapper = styled.div`
 `;
 
 interface BoxProps {
-  variant: VariantColor;
-  width: string;
-  height: string;
-  bordered: boolean;
+  $variant: VariantColor;
+  $width: string;
+  $height: string;
+  $bordered: boolean;
 }
 
 const Box = styled.div<BoxProps>`
@@ -57,19 +57,19 @@ const Box = styled.div<BoxProps>`
   align-items: center;
   justify-content: center;
 
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
+  width: ${({ $width }) => $width};
+  height: ${({ $height }) => $height};
 
   border-radius: 50px;
   background-color: transparent;
   font-weight: bold;
   text-align: center;
 
-  color: ${({ theme, variant }) => getVariantColor(theme, variant)};
+  color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
 
-  ${({ bordered, theme, variant }) =>
-    bordered &&
+  ${({ $bordered, theme, $variant }) =>
+    $bordered &&
     css`
-      border: 1px solid ${getVariantColor(theme, variant)};
+      border: 1px solid ${getVariantColor(theme, $variant)};
     `}
 `;

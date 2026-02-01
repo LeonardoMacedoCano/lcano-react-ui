@@ -89,11 +89,11 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({ state, handlers
 
   return (
     <StyledPaginationControls>
-      <ControlItem onClick={goToFirst} disabled={isFirstPage}>
+      <ControlItem onClick={goToFirst} $disabled={isFirstPage}>
         <FaAngleDoubleLeft />
       </ControlItem>
       
-      <ControlItem onClick={goToPrevious} disabled={isFirstPage}>
+      <ControlItem onClick={goToPrevious} $disabled={isFirstPage}>
         <FaAngleLeft />
       </ControlItem>
 
@@ -101,11 +101,11 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({ state, handlers
         {currentPage + 1} / {totalPages}
       </PageIndicator>
 
-      <ControlItem onClick={goToNext} disabled={isLastPage}>
+      <ControlItem onClick={goToNext} $disabled={isLastPage}>
         <FaAngleRight />
       </ControlItem>
       
-      <ControlItem onClick={goToLast} disabled={isLastPage}>
+      <ControlItem onClick={goToLast} $disabled={isLastPage}>
         <FaAngleDoubleRight />
       </ControlItem>
     </StyledPaginationControls>
@@ -147,7 +147,7 @@ const StyledPaginationControls = styled.ul`
 `;
 
 interface ControlItemProps {
-  disabled?: boolean;
+  $disabled?: boolean;
 }
 
 const ControlItem = styled.li<ControlItemProps>`
@@ -158,12 +158,12 @@ const ControlItem = styled.li<ControlItemProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
-  opacity: ${({ disabled }) => disabled ? '0.2' : '1'};
+  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ $disabled }) => $disabled ? '0.2' : '1'};
 
   &:hover {
-    color: ${({ theme, disabled }) => 
-      disabled ? theme.colors.white : theme.colors.gray
+    color: ${({ theme, $disabled }) => 
+      $disabled ? theme.colors.white : theme.colors.gray
     };
   }
 `;

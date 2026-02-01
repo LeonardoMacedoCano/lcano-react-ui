@@ -187,7 +187,7 @@ const OptionButton = styled.button `
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { variant: variant, width: width, height: height, title: hint, disabled: disabled, disabledHover: disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
+    return (jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -203,17 +203,17 @@ const StyledButton = styled.button `
   outline: none;
   transition: background-color 0.3s ease, opacity 0.3s ease;
   opacity: ${props => (props.disabled ? '0.3' : '1')};
-  width: ${props => props.width || 'auto'};
-  height: ${props => props.height || 'auto'};
+  width: ${props => props.$width || 'auto'};
+  height: ${props => props.$height || 'auto'};
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
+    opacity: ${props => (props.$disabledHover ? '1' : '0.85')};
   }
 
-  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
+  ${({ $variant, theme }) => getButtonVariantStyles($variant, theme)}
 
   ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
 `;
@@ -229,7 +229,7 @@ const Description = styled.span `
 const Modal = ({ isOpen, title, content, onClose, variant = 'warning', actions, showCloseButton = true, closeButtonSize = '20px', modalWidth = '500px', maxWidth, modalHeight = 'auto', icon = jsx(FaExclamationTriangle, {}) }) => {
     if (!isOpen)
         return null;
-    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), width: modalWidth, maxWidth: maxWidth, height: modalHeight, children: [jsxs(ModalHeader, { variant: variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper$1, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
+    return (jsx(ModalOverlay, { onClick: onClose, children: jsxs(ModalContainer, { onClick: (e) => e.stopPropagation(), "$width": modalWidth, "$maxWidth": maxWidth, "$height": modalHeight, children: [jsxs(ModalHeader, { "$variant": variant, children: [jsxs(HeaderLeft, { children: [icon && jsx(IconWrapper$1, { children: icon }), jsx(ModalTitle, { children: title })] }), showCloseButton && (jsx(Button, { width: closeButtonSize, height: closeButtonSize, style: {
                                 backgroundColor: 'transparent',
                                 borderRadius: '50%',
                                 display: 'flex',
@@ -247,9 +247,9 @@ const ModalOverlay = styled.div `
   align-items: center;
 `;
 const ModalContainer = styled.div `
-  width: ${({ width }) => width};
-  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
-  height: ${({ height }) => height};
+  width: ${({ $width }) => $width};
+  max-width: ${({ $maxWidth }) => $maxWidth ?? '90%'};
+  height: ${({ $height }) => $height};
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 8px;
   box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
@@ -258,7 +258,7 @@ const ModalContainer = styled.div `
 `;
 const ModalHeader = styled.div `
   color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  background-color: ${({ $variant, theme }) => getVariantColor(theme, $variant)};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -423,12 +423,12 @@ const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoadin
             onChange(file);
         }
     };
-    return (jsxs(Container, { size: size, children: [jsx(Avatar, { src: imageUrl || '/default-profile-image.png', alt: "Profile", borderColor: borderColor, isLoading: isLoading }), isLoading && jsx(Spinner$1, {}), jsx(CameraButton, { onClick: handleImageClick, borderColor: borderColor, disabled: isLoading, "aria-label": "Upload image", children: icon }), jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
+    return (jsxs(Container, { "$size": size, children: [jsx(Avatar, { src: imageUrl || '/default-profile-image.png', alt: "Profile", "$borderColor": borderColor, "$isLoading": isLoading }), isLoading && jsx(Spinner$1, {}), jsx(CameraButton, { onClick: handleImageClick, "$borderColor": borderColor, disabled: isLoading, "aria-label": "Upload image", children: icon }), jsx("input", { type: "file", ref: fileInputRef, onChange: handleFileChange, accept: "image/*", style: { display: 'none' } })] }));
 };
 const Container = styled.div `
   position: relative;
-  width: ${props => props.size};
-  height: ${props => props.size};
+  width: ${props => props.$size};
+  height: ${props => props.$size};
   margin: 0 auto;
 `;
 const Avatar = styled.img `
@@ -436,9 +436,9 @@ const Avatar = styled.img `
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid ${props => props.borderColor || props.theme.colors.quaternary};
+  border: 4px solid ${props => props.$borderColor || props.theme.colors.quaternary};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  opacity: ${props => props.isLoading ? 0.7 : 1};
+  opacity: ${props => props.$isLoading ? 0.7 : 1};
 `;
 const spin$1 = keyframes `
   0% { transform: translate(-50%, -50%) rotate(0deg); }
@@ -460,7 +460,7 @@ const CameraButton = styled.button `
   position: absolute;
   bottom: 0;
   right: 0;
-  background-color: ${props => props.borderColor || props.theme.colors.quaternary};
+  background-color: ${props => props.$borderColor || props.theme.colors.quaternary};
   color: ${props => props.theme.colors.primary};
   width: 40px;
   height: 40px;
@@ -626,37 +626,37 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
-const Stack = ({ children, direction = 'row', divider, gap, ...rest }) => {
-    return (jsx(StackContainer, { direction: direction, divider: divider, gap: gap, ...rest, children: children }));
+const Stack = ({ children, width, height, direction = 'row', divider, style, alignCenter, alignRight, justifyCenter, justifyBetween, gap }) => {
+    return (jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, style: style, children: children }));
 };
 const StackContainer = styled.div `
   display: flex;
-  flex-direction: ${({ direction }) => direction};
-  width: ${({ width }) => width || '100%'};
-  height: ${({ height }) => height || 'auto'};
+  flex-direction: ${({ $direction }) => $direction};
+  width: ${({ $width }) => $width || '100%'};
+  height: ${({ $height }) => $height || 'auto'};
 
-  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
-  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
-  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
-  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+  ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
+  ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
+  ${({ $justifyCenter }) => $justifyCenter && 'justify-content: center;'}
+  ${({ $justifyBetween }) => $justifyBetween && 'justify-content: space-between;'}
 
-  ${({ gap }) => gap && `gap: ${gap};`}
+  ${({ $gap }) => $gap && `gap: ${$gap};`}
 
-  ${({ divider, direction, theme }) => divider &&
+  ${({ $divider, $direction, theme }) => $divider &&
     css `
       > * + * {
         ${(() => {
         const color = theme.colors.gray;
-        if (direction === 'row') {
-            if (divider === 'left' || divider === 'x')
+        if ($direction === 'row') {
+            if ($divider === 'left' || $divider === 'x')
                 return `border-left: 1px solid ${color};`;
-            if (divider === 'right')
+            if ($divider === 'right')
                 return `border-right: 1px solid ${color};`;
         }
-        if (direction === 'column') {
-            if (divider === 'top' || divider === 'y')
+        if ($direction === 'column') {
+            if ($divider === 'top' || $divider === 'y')
                 return `border-top: 1px solid ${color};`;
-            if (divider === 'bottom')
+            if ($divider === 'bottom')
                 return `border-bottom: 1px solid ${color};`;
         }
         return '';
@@ -836,7 +836,7 @@ const useNavigationHandlers = (loadPage, state) => {
 const PaginationControls = ({ state, handlers }) => {
     const { isFirstPage, isLastPage, currentPage, totalPages } = state;
     const { goToFirst, goToPrevious, goToNext, goToLast } = handlers;
-    return (jsxs(StyledPaginationControls, { children: [jsx(ControlItem, { onClick: goToFirst, disabled: isFirstPage, children: jsx(FaAngleDoubleLeft, {}) }), jsx(ControlItem, { onClick: goToPrevious, disabled: isFirstPage, children: jsx(FaAngleLeft, {}) }), jsxs(PageIndicator, { children: [currentPage + 1, " / ", totalPages] }), jsx(ControlItem, { onClick: goToNext, disabled: isLastPage, children: jsx(FaAngleRight, {}) }), jsx(ControlItem, { onClick: goToLast, disabled: isLastPage, children: jsx(FaAngleDoubleRight, {}) })] }));
+    return (jsxs(StyledPaginationControls, { children: [jsx(ControlItem, { onClick: goToFirst, "$disabled": isFirstPage, children: jsx(FaAngleDoubleLeft, {}) }), jsx(ControlItem, { onClick: goToPrevious, "$disabled": isFirstPage, children: jsx(FaAngleLeft, {}) }), jsxs(PageIndicator, { children: [currentPage + 1, " / ", totalPages] }), jsx(ControlItem, { onClick: goToNext, "$disabled": isLastPage, children: jsx(FaAngleRight, {}) }), jsx(ControlItem, { onClick: goToLast, "$disabled": isLastPage, children: jsx(FaAngleDoubleRight, {}) })] }));
 };
 const SearchPagination = ({ page, height, width, loadPage }) => {
     const state = usePaginationState(page);
@@ -860,11 +860,11 @@ const ControlItem = styled.li `
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
-  opacity: ${({ disabled }) => disabled ? '0.2' : '1'};
+  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ $disabled }) => $disabled ? '0.2' : '1'};
 
   &:hover {
-    color: ${({ theme, disabled }) => disabled ? theme.colors.white : theme.colors.gray};
+    color: ${({ theme, $disabled }) => $disabled ? theme.colors.white : theme.colors.gray};
   }
 `;
 const PageIndicator = styled.span `
@@ -952,7 +952,7 @@ const SearchSelectField = ({ label, placeholder, fetchOptions, onSelect, value, 
                 }, children: jsx(FaTimes, {}) }));
         return jsx(SearchIcon, { children: jsx(FaSearch, {}) });
     };
-    return (jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxs(FieldWrapper, { onClick: handleFocus, children: [jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: !disabled, onUpdate: handleQueryChange }), jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsx(Dropdown, { children: loading ? (jsx(DropdownItem, { disabled: true, children: jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsx(DropdownItem, { disabled: true, children: "Nenhum resultado" })) }))] }));
+    return (jsxs(Wrapper, { ref: containerRef, tabIndex: -1, onBlur: handleBlur, children: [jsxs(FieldWrapper, { onClick: handleFocus, children: [jsx(FieldValue, { description: label, type: "STRING", value: query, placeholder: placeholder || 'Digite para pesquisar...', editable: !disabled, onUpdate: handleQueryChange }), jsx(IconWrapper, { children: renderIcon() })] }), showDropdown && (jsx(Dropdown, { children: loading ? (jsx(DropdownItem, { "$disabled": true, children: jsx(Spinner, {}) })) : options.length > 0 ? (options.map(option => (jsx(DropdownItem, { onClick: () => handleSelect(option), children: option.value }, option.key)))) : (jsx(DropdownItem, { "$disabled": true, children: "Nenhum resultado" })) }))] }));
 };
 const Wrapper = styled.div `
   position: relative;
@@ -1011,12 +1011,12 @@ const Dropdown = styled.div `
 `;
 const DropdownItem = styled.div `
   padding: 10px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
   background-color: ${({ theme }) => theme.colors.secondary};
   color: ${({ theme }) => theme.colors.white};
   border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
   &:hover {
-    background-color: ${({ theme, disabled }) => disabled ? theme.colors.secondary : theme.colors.tertiary};
+    background-color: ${({ theme, $disabled }) => $disabled ? theme.colors.secondary : theme.colors.tertiary};
   }
 `;
 
@@ -1042,7 +1042,7 @@ const COMMON_BUTTON_STYLES = {
     height: '25px',
     width: '25px',
 };
-const TableActions = ({ onView, onEdit, onDelete, visible, customActions }) => (jsx(ActionsContainer, { children: jsxs(ActionsWrapper, { visible: visible, children: [customActions && (jsx(CustomActionWrapper, { children: customActions() })), onView && (jsx(Button, { onClick: onView, variant: "success", icon: jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsx(Button, { variant: "info", icon: jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsx(Button, { variant: "warning", icon: jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
+const TableActions = ({ onView, onEdit, onDelete, visible, customActions }) => (jsx(ActionsContainer, { children: jsxs(ActionsWrapper, { "$visible": visible, children: [customActions && (jsx(CustomActionWrapper, { children: customActions() })), onView && (jsx(Button, { onClick: onView, variant: "success", icon: jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsx(Button, { variant: "info", icon: jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsx(Button, { variant: "warning", icon: jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
 const isPagedResponse = (values) => typeof values === 'object' && values !== null && 'content' in values;
 const getTableData = (values) => isPagedResponse(values) ? values.content || [] : values;
 const TableHeader = ({ columns }) => (jsx("thead", { children: jsx(TableHeadRow, { children: columns.map((column, index) => {
@@ -1060,7 +1060,7 @@ const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowS
                         return null;
                     const { value, width, align } = column.props;
                     const isSelected = rowSelected?.(item) ?? false;
-                    return (jsx(TableColumn, { isSelected: isSelected, width: width, align: align, children: jsx(TruncatedContent, { children: value(item, index) }) }, columnIndex));
+                    return (jsx(TableColumn, { "$isSelected": isSelected, "$width": width, "$align": align, children: jsx(TruncatedContent, { children: value(item, index) }) }, columnIndex));
                 }), jsx(ActionColumn, { children: jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined }) })] }, keyExtractor(item, index)))) }));
 };
 const TablePagination = ({ values, loadPage }) => {
@@ -1106,14 +1106,14 @@ const TableHeadColumn = styled.th `
 const TableColumn = styled.td `
   font-size: 13px;
   height: 35px;
-  text-align: ${({ align }) => align || 'left'};
+  text-align: ${({ $align }) => $align || 'left'};
   border-left: 1px solid ${({ theme }) => theme.colors.gray};
   position: relative;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: ${({ width }) => width || 'auto'};
-  width: ${({ width }) => width || 'auto'};
+  max-width: ${({ $width }) => $width || 'auto'};
+  width: ${({ $width }) => $width || 'auto'};
   padding: 0 5px;
   display: table-cell;
 
@@ -1124,7 +1124,7 @@ const TableColumn = styled.td `
     left: 0;
     bottom: 0;
     width: 5px;
-    background-color: ${({ theme, isSelected }) => isSelected ? theme.colors.quaternary : 'transparent'};
+    background-color: ${({ theme, $isSelected }) => $isSelected ? theme.colors.quaternary : 'transparent'};
   }
 
   &:first-child {
@@ -1180,8 +1180,8 @@ const ActionsWrapper = styled.div `
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  opacity: ${({ visible }) => visible ? 1 : 0};
-  pointer-events: ${({ visible }) => visible ? 'auto' : 'none'};
+  opacity: ${({ $visible }) => $visible ? 1 : 0};
+  pointer-events: ${({ $visible }) => $visible ? 'auto' : 'none'};
   transition: opacity 0.2s ease-in-out;
 `;
 const CustomActionWrapper = styled.div `
@@ -1196,7 +1196,7 @@ const Tabs = ({ tabs }) => {
     const handleTabClick = (index) => {
         setActiveTab(index);
     };
-    return (jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsx(TabList, { children: tabs.map((tab, index) => (jsx(TabButton, { active: index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsx(TabContent, { children: tabs[activeTab]?.content })] }));
+    return (jsxs(Container$1, { width: '100%', backgroundColor: 'transparent', children: [jsx(TabList, { children: tabs.map((tab, index) => (jsx(TabButton, { "$active": index === activeTab, onClick: () => handleTabClick(index), children: tab.label }, index))) }), jsx(TabContent, { children: tabs[activeTab]?.content })] }));
 };
 const TabList = styled.div `
   display: flex;
@@ -1227,7 +1227,7 @@ const TabButton = styled.button `
     background-color: ${({ theme }) => theme.colors.tertiary};
   }
 
-  ${({ active, theme }) => active &&
+  ${({ $active, theme }) => $active &&
     `
     cursor: default;
     background-color: ${theme.colors.tertiary};
@@ -1274,7 +1274,7 @@ const ThemeFavicon = ({ renderSvg }) => {
 };
 
 const ThemeSelector = ({ themes, currentTheme, onThemeChange, }) => {
-    return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { isSelected: theme.id === currentTheme, onClick: () => onThemeChange(theme.id), borderColor: theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { color: theme.primaryColor }), jsx(ColorBlock, { color: theme.secondaryColor }), jsx(ColorBlock, { color: theme.tertiaryColor }), jsx(ColorBlock, { color: theme.quaternaryColor })] })] }, theme.title))) }));
+    return (jsx(ThemeGrid, { children: themes.map((theme) => (jsxs(ThemeItem, { "$isSelected": theme.id === currentTheme, onClick: () => onThemeChange(theme.id), "$borderColor": theme.quaternaryColor, children: [jsx(ThemeName, { children: theme.title }), jsxs(ColorPalette, { children: [jsx(ColorBlock, { "$color": theme.primaryColor }), jsx(ColorBlock, { "$color": theme.secondaryColor }), jsx(ColorBlock, { "$color": theme.tertiaryColor }), jsx(ColorBlock, { "$color": theme.quaternaryColor })] })] }, theme.title))) }));
 };
 const ThemeGrid = styled.div `
   display: grid;
@@ -1288,7 +1288,7 @@ const ThemeItem = styled.div `
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+  border: 2px solid ${props => props.$isSelected ? props.$borderColor : 'transparent'};
 
   &:hover {
     transform: translateY(-3px);
@@ -1307,7 +1307,7 @@ const ColorPalette = styled.div `
 const ColorBlock = styled.div `
   flex: 1;
   height: 100%;
-  background-color: ${props => props.color};
+  background-color: ${props => props.$color};
 `;
 
 const iconMap = {
@@ -1328,7 +1328,7 @@ const getVariant = (type) => {
 const ToastNotification = ({ type, message, onClose }) => {
     const icon = iconMap[type];
     const variant = getVariant(type);
-    return (jsx(ToastContainer, { children: jsxs(ToastCard, { variant: variant, children: [jsx(ToastIcon, { variant: variant, children: icon }), jsx(ToastMessage, { children: message }), jsx(CloseButton, { variant: variant, onClick: onClose })] }) }));
+    return (jsx(ToastContainer, { children: jsxs(ToastCard, { "$variant": variant, children: [jsx(ToastIcon, { "$variant": variant, children: icon }), jsx(ToastMessage, { children: message }), jsx(CloseButton, { "$variant": variant, onClick: onClose })] }) }));
 };
 const ToastContainer = styled.div `
   position: fixed;
@@ -1340,8 +1340,8 @@ const ToastCard = styled.div `
   display: flex;
   align-items: center;
   background-color: ${({ theme }) => theme.colors.tertiary};
-  color: ${({ theme, variant }) => theme.colors[variant]};
-  border-left: 5px solid ${({ theme, variant }) => theme.colors[variant]};
+  color: ${({ theme, $variant }) => theme.colors[$variant]};
+  border-left: 5px solid ${({ theme, $variant }) => theme.colors[$variant]};
   border-radius: 6px;
   padding: 12px 16px;
   min-width: 280px;
@@ -1359,11 +1359,11 @@ const ToastMessage = styled.div `
   flex: 1;
   font-size: 14px;
 `;
-const CloseButtonBase = ({ variant, ...props }) => (jsx("button", { ...props, children: jsx(FaTimes, {}) }));
+const CloseButtonBase = ({ $variant, ...props }) => (jsx("button", { ...props, children: jsx(FaTimes, {}) }));
 const CloseButton = styled(CloseButtonBase) `
   background: none;
   border: none;
-  color: ${({ theme, variant }) => theme.colors[variant]};
+  color: ${({ theme, $variant }) => theme.colors[$variant]};
   font-size: 14px;
   cursor: pointer;
   padding: 4px;
@@ -1377,7 +1377,7 @@ const CloseButton = styled(CloseButtonBase) `
 `;
 
 const HighlightBox = ({ variant = 'info', width = '100%', height = '100%', bordered = false, style, children, }) => {
-    return (jsx(CenterWrapper, { children: jsx(Box, { variant: variant, width: width, height: height, bordered: bordered, style: style, children: children }) }));
+    return (jsx(CenterWrapper, { children: jsx(Box, { "$variant": variant, "$width": width, "$height": height, "$bordered": bordered, style: style, children: children }) }));
 };
 const CenterWrapper = styled.div `
   display: flex;
@@ -1391,26 +1391,26 @@ const Box = styled.div `
   align-items: center;
   justify-content: center;
 
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
+  width: ${({ $width }) => $width};
+  height: ${({ $height }) => $height};
 
   border-radius: 50px;
   background-color: transparent;
   font-weight: bold;
   text-align: center;
 
-  color: ${({ theme, variant }) => getVariantColor(theme, variant)};
+  color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
 
-  ${({ bordered, theme, variant }) => bordered &&
+  ${({ $bordered, theme, $variant }) => $bordered &&
     css `
-      border: 1px solid ${getVariantColor(theme, variant)};
+      border: 1px solid ${getVariantColor(theme, $variant)};
     `}
 `;
 
-const Breadcrumb = ({ items, LinkComponent = "", }) => {
+const Breadcrumb = ({ items, LinkComponent = null }) => {
     if (!items.length)
         return null;
-    return (jsx(BreadcrumbContainer, { children: items.map((item, index) => (jsx("span", { children: item.path && index < items.length - 1 ? (jsx(LinkComponent, { to: item.path, children: item.label })) : (jsx("strong", { children: item.label })) }, item.path ?? item.label))) }));
+    return (jsx(BreadcrumbContainer, { children: items.map((item, index) => (jsx("span", { children: item.path && LinkComponent && index < items.length - 1 ? (jsx(LinkComponent, { to: item.path, children: item.label })) : (jsx("strong", { children: item.label })) }, item.path ?? item.label))) }));
 };
 const BreadcrumbContainer = styled.nav `
   display: flex;

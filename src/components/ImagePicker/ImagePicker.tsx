@@ -34,17 +34,17 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   };
 
   return (
-    <Container size={size}>
+    <Container $size={size}>
       <Avatar
         src={imageUrl || '/default-profile-image.png'}
         alt="Profile"
-        borderColor={borderColor}
-        isLoading={isLoading}
+        $borderColor={borderColor}
+        $isLoading={isLoading}
       />
       {isLoading && <Spinner />}
       <CameraButton
         onClick={handleImageClick}
-        borderColor={borderColor}
+        $borderColor={borderColor}
         disabled={isLoading}
         aria-label="Upload image"
       >
@@ -64,19 +64,19 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
 export default ImagePicker;
 
 interface ContainerProps {
-  size: string;
+  $size: string;
 }
 
 const Container = styled.div<ContainerProps>`
   position: relative;
-  width: ${props => props.size};
-  height: ${props => props.size};
+  width: ${props => props.$size};
+  height: ${props => props.$size};
   margin: 0 auto;
 `;
 
 interface AvatarProps {
-  borderColor?: string;
-  isLoading?: boolean;
+  $borderColor?: string;
+  $isLoading?: boolean;
 }
 
 const Avatar = styled.img<AvatarProps>`
@@ -84,9 +84,9 @@ const Avatar = styled.img<AvatarProps>`
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid ${props => props.borderColor || props.theme.colors.quaternary};
+  border: 4px solid ${props => props.$borderColor || props.theme.colors.quaternary};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  opacity: ${props => props.isLoading ? 0.7 : 1};
+  opacity: ${props => props.$isLoading ? 0.7 : 1};
 `;
 
 const spin = keyframes`
@@ -108,7 +108,7 @@ const Spinner = styled.div`
 `;
 
 interface CameraButtonProps {
-  borderColor?: string;
+  $borderColor?: string;
   disabled?: boolean;
 }
 
@@ -116,7 +116,7 @@ const CameraButton = styled.button<CameraButtonProps>`
   position: absolute;
   bottom: 0;
   right: 0;
-  background-color: ${props => props.borderColor || props.theme.colors.quaternary};
+  background-color: ${props => props.$borderColor || props.theme.colors.quaternary};
   color: ${props => props.theme.colors.primary};
   width: 40px;
   height: 40px;

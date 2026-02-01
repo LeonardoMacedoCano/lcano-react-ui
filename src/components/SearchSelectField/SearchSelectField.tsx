@@ -132,7 +132,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
       {showDropdown && (
         <Dropdown>
           {loading ? (
-            <DropdownItem disabled><Spinner /></DropdownItem>
+            <DropdownItem $disabled><Spinner /></DropdownItem>
           ) : options.length > 0 ? (
             options.map(option => (
               <DropdownItem key={option.key} onClick={() => handleSelect(option)}>
@@ -140,7 +140,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
               </DropdownItem>
             ))
           ) : (
-            <DropdownItem disabled>Nenhum resultado</DropdownItem>
+            <DropdownItem $disabled>Nenhum resultado</DropdownItem>
           )}
         </Dropdown>
       )}
@@ -213,14 +213,14 @@ const Dropdown = styled.div`
   overflow-y: auto;
 `;
 
-const DropdownItem = styled.div<{ disabled?: boolean }>`
+const DropdownItem = styled.div<{ $disabled?: boolean }>`
   padding: 10px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
   background-color: ${({ theme }) => theme.colors.secondary};
   color: ${({ theme }) => theme.colors.white};
   border-bottom: 1px solid ${({ theme }) => theme.colors.tertiary};
   &:hover {
-    background-color: ${({ theme, disabled }) =>
-      disabled ? theme.colors.secondary : theme.colors.tertiary};
+    background-color: ${({ theme, $disabled }) =>
+      $disabled ? theme.colors.secondary : theme.colors.tertiary};
   }
 `;

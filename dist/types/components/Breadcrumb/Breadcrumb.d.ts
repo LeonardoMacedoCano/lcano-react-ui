@@ -4,7 +4,7 @@ export interface BreadcrumbItem {
 }
 export interface BreadcrumbProps {
     items: BreadcrumbItem[];
-    LinkComponent?: React.ElementType;
+    LinkComponent?: React.ElementType | null;
 }
 declare const Breadcrumb: React.FC<BreadcrumbProps>;
 export default Breadcrumb;

@@ -27,7 +27,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
         {tabs.map((tab, index) => (
           <TabButton
             key={index}
-            active={index === activeTab}
+            $active={index === activeTab}
             onClick={() => handleTabClick(index)}
           >
             {tab.label}
@@ -48,7 +48,7 @@ const TabList = styled.div`
   border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
 `;
 
-const TabButton = styled.button<{ active: boolean }>`
+const TabButton = styled.button<{ $active: boolean }>`
   flex: 1;
   padding: 10px 0px;
   border: none;
@@ -73,8 +73,8 @@ const TabButton = styled.button<{ active: boolean }>`
     background-color: ${({ theme }) => theme.colors.tertiary};
   }
 
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     `
     cursor: default;
     background-color: ${theme.colors.tertiary};

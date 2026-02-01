@@ -43,10 +43,10 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
 
   return (
     <ToastContainer>
-      <ToastCard variant={variant}>
-        <ToastIcon variant={variant}>{icon}</ToastIcon>
+      <ToastCard $variant={variant}>
+        <ToastIcon $variant={variant}>{icon}</ToastIcon>
         <ToastMessage>{message}</ToastMessage>
-        <CloseButton variant={variant} onClick={onClose} />
+        <CloseButton $variant={variant} onClick={onClose} />
       </ToastCard>
     </ToastContainer>
   );
@@ -62,15 +62,15 @@ export const ToastContainer = styled.div`
 `;
 
 interface ToastCardProps {
-  variant: ToastVariant;
+  $variant: ToastVariant;
 }
 
 export const ToastCard = styled.div<ToastCardProps>`
   display: flex;
   align-items: center;
   background-color: ${({ theme }) => theme.colors.tertiary};
-  color: ${({ theme, variant }) => theme.colors[variant]};
-  border-left: 5px solid ${({ theme, variant }) => theme.colors[variant]};
+  color: ${({ theme, $variant }) => theme.colors[$variant]};
+  border-left: 5px solid ${({ theme, $variant }) => theme.colors[$variant]};
   border-radius: 6px;
   padding: 12px 16px;
   min-width: 280px;
@@ -92,10 +92,10 @@ export const ToastMessage = styled.div`
 `;
 
 interface CloseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: ToastVariant;
+  $variant: ToastVariant;
 }
 
-const CloseButtonBase: React.FC<CloseButtonProps> = ({ variant, ...props }) => (
+const CloseButtonBase: React.FC<CloseButtonProps> = ({ $variant, ...props }) => (
   <button {...props}>
     <FaTimes />
   </button>
@@ -104,7 +104,7 @@ const CloseButtonBase: React.FC<CloseButtonProps> = ({ variant, ...props }) => (
 export const CloseButton = styled(CloseButtonBase)<CloseButtonProps>`
   background: none;
   border: none;
-  color: ${({ theme, variant }) => theme.colors[variant]};
+  color: ${({ theme, $variant }) => theme.colors[$variant]};
   font-size: 14px;
   cursor: pointer;
   padding: 4px;

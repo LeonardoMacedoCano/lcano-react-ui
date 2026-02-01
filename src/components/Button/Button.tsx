@@ -27,12 +27,12 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <StyledButton 
-      variant={variant} 
-      width={width} 
-      height={height} 
+      $variant={variant} 
+      $width={width} 
+      $height={height} 
       title={hint} 
       disabled={disabled}
-      disabledHover={disabledHover}
+      $disabledHover={disabledHover}
       {...props}
     >
       {icon && <IconWrapper>{icon}</IconWrapper>}
@@ -44,14 +44,14 @@ const Button: React.FC<ButtonProps> = ({
 export default Button;
 
 interface StyledButtonProps {
-  variant?: VariantColor;
-  width?: string;
-  height?: string;
-  disabledHover?: boolean;
+  $variant?: VariantColor;
+  $width?: string;
+  $height?: string;
+  $disabledHover?: boolean;
   style?: React.CSSProperties;
 }
 
-const getButtonVariantStyles = (variant: StyledButtonProps['variant'], theme: any) => {
+const getButtonVariantStyles = (variant: StyledButtonProps['$variant'], theme: any) => {
   if (!variant) return '';
   return css`
     background-color: ${getVariantColor(theme, variant)};
@@ -65,17 +65,17 @@ const StyledButton = styled.button<StyledButtonProps>`
   outline: none;
   transition: background-color 0.3s ease, opacity 0.3s ease;
   opacity: ${props => (props.disabled ? '0.3' : '1')};
-  width: ${props => props.width || 'auto'};
-  height: ${props => props.height || 'auto'};
+  width: ${props => props.$width || 'auto'};
+  height: ${props => props.$height || 'auto'};
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    opacity: ${props => (props.disabledHover ? '1' : '0.85')};
+    opacity: ${props => (props.$disabledHover ? '1' : '0.85')};
   }
 
-  ${({ variant, theme }) => getButtonVariantStyles(variant, theme)}
+  ${({ $variant, theme }) => getButtonVariantStyles($variant, theme)}
 
   ${props => props.style && css`${convertReactStyleToCSSObject(props.style)}`}
 `;

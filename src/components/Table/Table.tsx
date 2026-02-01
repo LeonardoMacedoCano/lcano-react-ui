@@ -41,7 +41,7 @@ const TableActions: FC<TableActionsProps> = ({
   customActions 
 }) => (
   <ActionsContainer>
-    <ActionsWrapper visible={visible}>
+    <ActionsWrapper $visible={visible}>
       {customActions && (
         <CustomActionWrapper>
           {customActions()}
@@ -178,9 +178,9 @@ const TableBody = <T,>({
             return (
               <TableColumn
                 key={columnIndex}
-                isSelected={isSelected}
-                width={width}
-                align={align}
+                $isSelected={isSelected}
+                $width={width}
+                $align={align}
               >
                 <TruncatedContent>
                   {value(item, index)}
@@ -308,20 +308,20 @@ const TableHeadColumn = styled.th`
 `;
 
 const TableColumn = styled.td<{ 
-  isSelected?: boolean; 
-  width?: string; 
-  align?: string;
+  $isSelected?: boolean; 
+  $width?: string; 
+  $align?: string;
 }>`
   font-size: 13px;
   height: 35px;
-  text-align: ${({ align }) => align || 'left'};
+  text-align: ${({ $align }) => $align || 'left'};
   border-left: 1px solid ${({ theme }) => theme.colors.gray};
   position: relative;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: ${({ width }) => width || 'auto'};
-  width: ${({ width }) => width || 'auto'};
+  max-width: ${({ $width }) => $width || 'auto'};
+  width: ${({ $width }) => $width || 'auto'};
   padding: 0 5px;
   display: table-cell;
 
@@ -332,8 +332,8 @@ const TableColumn = styled.td<{
     left: 0;
     bottom: 0;
     width: 5px;
-    background-color: ${({ theme, isSelected }) => 
-      isSelected ? theme.colors.quaternary : 'transparent'
+    background-color: ${({ theme, $isSelected }) => 
+      $isSelected ? theme.colors.quaternary : 'transparent'
     };
   }
 
@@ -389,7 +389,7 @@ const ActionsContainer = styled.div`
   height: 100%;
 `;
 
-const ActionsWrapper = styled.div<{ visible: boolean }>`
+const ActionsWrapper = styled.div<{ $visible: boolean }>`
   position: sticky;
   top: 0;
   right: 5px;
@@ -398,8 +398,8 @@ const ActionsWrapper = styled.div<{ visible: boolean }>`
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  opacity: ${({ visible }) => visible ? 1 : 0};
-  pointer-events: ${({ visible }) => visible ? 'auto' : 'none'};
+  opacity: ${({ $visible }) => $visible ? 1 : 0};
+  pointer-events: ${({ $visible }) => $visible ? 'auto' : 'none'};
   transition: opacity 0.2s ease-in-out;
 `;
 

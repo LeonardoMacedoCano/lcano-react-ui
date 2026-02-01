@@ -43,11 +43,11 @@ const Modal: React.FC<ModalProps> = ({
     <ModalOverlay onClick={onClose}>
       <ModalContainer
         onClick={(e) => e.stopPropagation()}
-        width={modalWidth}
-        maxWidth={maxWidth}
-        height={modalHeight}
+        $width={modalWidth}
+        $maxWidth={maxWidth}
+        $height={modalHeight}
       >
-        <ModalHeader variant={variant}>
+        <ModalHeader $variant={variant}>
           <HeaderLeft>
             {icon && <IconWrapper>{icon}</IconWrapper>}
             <ModalTitle>{title}</ModalTitle>
@@ -81,9 +81,9 @@ const Modal: React.FC<ModalProps> = ({
 export default Modal;
 
 interface ModalContainerProps {
-  width: string;
-  maxWidth?: string;
-  height: string;
+  $width: string;
+  $maxWidth?: string;
+  $height: string;
 }
 
 export const ModalOverlay = styled.div`
@@ -97,9 +97,9 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalContainer = styled.div<ModalContainerProps>`
-  width: ${({ width }) => width};
-  max-width: ${({ maxWidth }) => maxWidth ?? '90%'};
-  height: ${({ height }) => height};
+  width: ${({ $width }) => $width};
+  max-width: ${({ $maxWidth }) => $maxWidth ?? '90%'};
+  height: ${({ $height }) => $height};
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 8px;
   box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
@@ -108,11 +108,11 @@ export const ModalContainer = styled.div<ModalContainerProps>`
 `;
 
 interface ModalHeaderProps {
-  variant: VariantColor;
+  $variant: VariantColor;
 }
 export const ModalHeader = styled.div<ModalHeaderProps>`
   color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ variant, theme }) => getVariantColor(theme, variant)};
+  background-color: ${({ $variant, theme }) => getVariantColor(theme, $variant)};
   display: flex;
   justify-content: space-between;
   align-items: center;

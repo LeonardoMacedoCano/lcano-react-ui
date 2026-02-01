@@ -19,13 +19,30 @@ export interface StackProps {
 
 export const Stack: FC<StackProps> = ({
   children,
+  width,
+  height,
   direction = 'row',
   divider,
-  gap,
-  ...rest
+  style,
+  alignCenter,
+  alignRight,
+  justifyCenter,
+  justifyBetween,
+  gap
 }) => {
   return (
-    <StackContainer direction={direction} divider={divider} gap={gap} {...rest}>
+    <StackContainer
+      $direction={direction}
+      $divider={divider}
+      $gap={gap}
+      $width={width}
+      $height={height}
+      $alignCenter={alignCenter}
+      $alignRight={alignRight}
+      $justifyCenter={justifyCenter}
+      $justifyBetween={justifyBetween}
+      style={style}
+    >
       {children}
     </StackContainer>
   );
@@ -33,36 +50,46 @@ export const Stack: FC<StackProps> = ({
 
 export default Stack;
 
-interface StackContainerProps extends StackProps {}
+interface StackContainerProps {
+  $direction?: 'row' | 'column';
+  $width?: string;
+  $height?: string;
+  $divider?: DividerPosition;
+  $alignCenter?: boolean;
+  $alignRight?: boolean;
+  $justifyCenter?: boolean;
+  $justifyBetween?: boolean;
+  $gap?: string;
+}
 
 const StackContainer = styled.div<StackContainerProps>`
   display: flex;
-  flex-direction: ${({ direction }) => direction};
-  width: ${({ width }) => width || '100%'};
-  height: ${({ height }) => height || 'auto'};
+  flex-direction: ${({ $direction }) => $direction};
+  width: ${({ $width }) => $width || '100%'};
+  height: ${({ $height }) => $height || 'auto'};
 
-  ${({ alignCenter }) => alignCenter && 'align-items: center;'}
-  ${({ alignRight }) => alignRight && 'align-items: flex-end;'}
-  ${({ justifyCenter }) => justifyCenter && 'justify-content: center;'}
-  ${({ justifyBetween }) => justifyBetween && 'justify-content: space-between;'}
+  ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
+  ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
+  ${({ $justifyCenter }) => $justifyCenter && 'justify-content: center;'}
+  ${({ $justifyBetween }) => $justifyBetween && 'justify-content: space-between;'}
 
-  ${({ gap }) => gap && `gap: ${gap};`}
+  ${({ $gap }) => $gap && `gap: ${$gap};`}
 
-  ${({ divider, direction, theme }) =>
-    divider &&
+  ${({ $divider, $direction, theme }) =>
+    $divider &&
     css`
       > * + * {
         ${(() => {
           const color = theme.colors.gray;
 
-          if (direction === 'row') {
-            if (divider === 'left' || divider === 'x') return `border-left: 1px solid ${color};`;
-            if (divider === 'right') return `border-right: 1px solid ${color};`;
+          if ($direction === 'row') {
+            if ($divider === 'left' || $divider === 'x') return `border-left: 1px solid ${color};`;
+            if ($divider === 'right') return `border-right: 1px solid ${color};`;
           }
 
-          if (direction === 'column') {
-            if (divider === 'top' || divider === 'y') return `border-top: 1px solid ${color};`;
-            if (divider === 'bottom') return `border-bottom: 1px solid ${color};`;
+          if ($direction === 'column') {
+            if ($divider === 'top' || $divider === 'y') return `border-top: 1px solid ${color};`;
+            if ($divider === 'bottom') return `border-bottom: 1px solid ${color};`;
           }
 
           return '';

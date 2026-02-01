@@ -29,16 +29,16 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       {themes.map((theme) => (
         <ThemeItem 
           key={theme.title}
-          isSelected={theme.id === currentTheme}
+          $isSelected={theme.id === currentTheme}
           onClick={() => onThemeChange(theme.id)}
-          borderColor={theme.quaternaryColor}
+          $borderColor={theme.quaternaryColor}
         >
           <ThemeName>{theme.title}</ThemeName>
           <ColorPalette>
-            <ColorBlock color={theme.primaryColor} />
-            <ColorBlock color={theme.secondaryColor} />
-            <ColorBlock color={theme.tertiaryColor} />
-            <ColorBlock color={theme.quaternaryColor} />
+            <ColorBlock $color={theme.primaryColor} />
+            <ColorBlock $color={theme.secondaryColor} />
+            <ColorBlock $color={theme.tertiaryColor} />
+            <ColorBlock $color={theme.quaternaryColor} />
           </ColorPalette>
         </ThemeItem>
       ))}
@@ -54,8 +54,8 @@ const ThemeGrid = styled.div`
 `;
 
 interface ThemeItemProps {
-  isSelected: boolean;
-  borderColor: string;
+  $isSelected: boolean;
+  $borderColor: string;
 }
 
 const ThemeItem = styled.div<ThemeItemProps>`
@@ -64,7 +64,7 @@ const ThemeItem = styled.div<ThemeItemProps>`
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  border: 2px solid ${props => props.isSelected ? props.borderColor : 'transparent'};
+  border: 2px solid ${props => props.$isSelected ? props.$borderColor : 'transparent'};
 
   &:hover {
     transform: translateY(-3px);
@@ -79,7 +79,7 @@ const ThemeName = styled.div`
 `;
 
 interface ColorBlockProps {
-  color: string;
+  $color: string;
 }
 
 const ColorPalette = styled.div`
@@ -90,7 +90,7 @@ const ColorPalette = styled.div`
 const ColorBlock = styled.div<ColorBlockProps>`
   flex: 1;
   height: 100%;
-  background-color: ${props => props.color};
+  background-color: ${props => props.$color};
 `;
 
 export default ThemeSelector;
