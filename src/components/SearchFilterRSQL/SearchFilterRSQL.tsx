@@ -1,9 +1,9 @@
 import React, { useState, useEffect, ReactNode } from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { Field, FilterDTO, Operator, OPERATORS } from '../../types';
 import { formatBooleanToSimNao, formatDateToYMDString, formatIsoDateToBrDate, getCurrentDate, parseDateStringToDate } from '../../utils';
-import { Panel } from '../Panel';
+import { Container } from '../Container';
 import { Stack } from '../Stack';
 import { FieldValue } from '../FieldValue';
 import { Button } from '../Button';
@@ -11,23 +11,11 @@ import { Button } from '../Button';
 export type SearchFilterRSQLProps = {
   fields: Field[];
   onSearch: (rsql: string) => void;
-  title?: ReactNode;
-  width?: string;
-  maxWidth?: string;
-  padding?: string;
-  transparent?: boolean;
-  style?: CSSProperties;
 };
 
 const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
   fields,
-  onSearch,
-  title,
-  width,
-  maxWidth,
-  padding,
-  transparent,
-  style
+  onSearch
 }) => {
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
@@ -136,14 +124,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
   };
 
   return (
-    <Panel
-      title={title}
-      width={width}
-      maxWidth={maxWidth}
-      padding={padding}
-      transparent={transparent}
-      style={style}
-    >
+    <Container>
       <Stack direction="column" divider="top">
         <Stack direction="row" divider="left">
           <FieldValue
@@ -189,7 +170,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
           />
         </Stack>
 
-        {filters.length > 0 && (
+        {filters.length > 0 ? (
           <Tags>
             {filters.map((f, i) => (
               <Tag key={i}>
@@ -212,9 +193,11 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
               </Tag>
             ))}
           </Tags>
+        ) : (
+          <EmptyTags></EmptyTags>
         )}
       </Stack>
-    </Panel>
+    </Container>
   );
 };
 
@@ -226,6 +209,10 @@ const Tags = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+`;
+
+const EmptyTags = styled.div`
+  background-color: ${({ theme }) => theme.colors.tertiary};
 `;
 
 const Tag = styled.div`

@@ -745,7 +745,7 @@ const StackContainer = styled.div `
     `}
 `;
 
-const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, transparent, style }) => {
+const SearchFilterRSQL = ({ fields, onSearch }) => {
     const [selectedField, setSelectedField] = useState(null);
     const [selectedOperator, setSelectedOperator] = useState(null);
     const [searchValue, setSearchValue] = useState(null);
@@ -842,18 +842,18 @@ const SearchFilterRSQL = ({ fields, onSearch, title, width, maxWidth, padding, t
         }
         return searchValue === null || searchValue === '';
     };
-    return (jsx(Panel, { title: title, width: width, maxWidth: maxWidth, padding: padding, transparent: transparent, style: style, children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
                                 ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
                                 : [], onUpdate: (val) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 && (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 ? (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     display: 'flex'
-                                } })] }, i))) }))] }) }));
+                                } })] }, i))) })) : (jsx(EmptyTags, {}))] }) }));
 };
 const Tags = styled.div `
   background-color: ${({ theme }) => theme.colors.tertiary};
@@ -861,6 +861,9 @@ const Tags = styled.div `
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+`;
+const EmptyTags = styled.div `
+  background-color: ${({ theme }) => theme.colors.tertiary};
 `;
 const Tag = styled.div `
   background-color: ${({ theme }) => theme.colors.secondary};
