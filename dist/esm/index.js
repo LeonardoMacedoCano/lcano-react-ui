@@ -395,7 +395,7 @@ const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth =
 const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
 const StyledContainer = styled.div `
   height: ${({ height }) => height || 'auto'};
-  width: ${({ width }) => width || 'auto'};
+  width: ${({ width }) => width || '100%'};
   margin: ${({ margin }) => margin || '0'};
   padding: ${({ padding }) => padding || '0'};
   max-width: ${({ maxWidth }) => maxWidth || 'none'};

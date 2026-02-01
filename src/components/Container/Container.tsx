@@ -43,7 +43,7 @@ export default Container;
 
 const StyledContainer = styled.div<ContainerProps>`
   height: ${({ height }) => height || 'auto'};
-  width: ${({ width }) => width || 'auto'};
+  width: ${({ width }) => width || '100%'};
   margin: ${({ margin }) => margin || '0'};
   padding: ${({ padding }) => padding || '0'};
   max-width: ${({ maxWidth }) => maxWidth || 'none'};
