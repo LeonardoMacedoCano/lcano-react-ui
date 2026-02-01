@@ -44,7 +44,7 @@ const Panel: React.FC<PanelProps> = ({
         width="100%"
         variantColor={transparent ? undefined : "secondary"}
         backgroundColor={transparent ? "transparent" : undefined}
-        margin="20px 0 0 0"
+        margin={title ? undefined : "20px 0 0 0"}
         style={
           transparent ?
           {} :

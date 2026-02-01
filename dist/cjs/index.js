@@ -672,7 +672,7 @@ const Loading = ({ isLoading }) => {
 };
 
 const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: title ? undefined : "20px 0 0 0", style: transparent ?
                     {} :
                     {
                         boxShadow: '0 0 2px',
