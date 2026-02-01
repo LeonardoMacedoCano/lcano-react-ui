@@ -17,4 +17,5 @@ export * from './ThemeFavicon';
 export * from './ThemeSelector';
 export * from './ToastNotification';
 export * from './HighlightBox';
+export * from './Breadcrumb';
 //# sourceMappingURL=index.d.ts.map

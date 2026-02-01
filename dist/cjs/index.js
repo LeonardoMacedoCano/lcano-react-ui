@@ -672,7 +672,7 @@ const Loading = ({ isLoading }) => {
 };
 
 const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx("h3", { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+    return (jsxRuntime.jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxRuntime.jsxs(Title, { children: [jsxRuntime.jsx(TitleContent, { children: title }), actionButton && jsxRuntime.jsx(ActionContainer, { children: actionButton })] })), jsxRuntime.jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
                     {} :
                     {
                         boxShadow: '0 0 2px',
@@ -682,11 +682,14 @@ const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton
 const Title = styled.div `
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
   border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
-  h3 {
-    color: ${({ theme }) => theme.colors.white};
-  }
+`;
+const TitleContent = styled.div `
+  min-width: 0;
+  flex: 1;
 `;
 const ActionContainer = styled.div `
   margin-left: auto;
@@ -1489,6 +1492,72 @@ const Box = styled.div `
     `}
 `;
 
+const Breadcrumb = ({ items, LinkComponent = "", }) => {
+    if (!items.length)
+        return null;
+    return (jsxRuntime.jsx(BreadcrumbContainer, { children: items.map((item, index) => (jsxRuntime.jsx("span", { children: item.path && index < items.length - 1 ? (jsxRuntime.jsx(LinkComponent, { to: item.path, children: item.label })) : (jsxRuntime.jsx("strong", { children: item.label })) }, item.path ?? item.label))) }));
+};
+const BreadcrumbContainer = styled.nav `
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  font-size: 13px;
+
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  min-width: 0;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  a,
+  strong {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a {
+    text-decoration: none;
+    color: ${({ theme }) => theme.colors.tertiary};
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: ${({ theme }) => theme.colors.quaternary};
+      color: ${({ theme }) => theme.colors.black};
+    }
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.quaternary};
+  }
+
+  span:not(:last-child)::after {
+    content: "›";
+    margin: 0 6px;
+    color: ${({ theme }) => theme.colors.quaternary};
+    flex-shrink: 0;
+  }
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [title, setTitle] = React.useState('Confirmação');
@@ -1540,6 +1609,7 @@ const useMessage = () => {
 
 exports.ActionButton = ActionButton;
 exports.BOOLEAN_OPERATORS = BOOLEAN_OPERATORS;
+exports.Breadcrumb = Breadcrumb;
 exports.Button = Button;
 exports.Column = Column;
 exports.ConfirmModal = ConfirmModal;

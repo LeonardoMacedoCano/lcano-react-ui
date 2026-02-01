@@ -36,7 +36,7 @@ const Panel: React.FC<PanelProps> = ({
     >
       {(title || actionButton) && (
         <Title>
-          <h3>{title}</h3>
+          <TitleContent>{title}</TitleContent>
           {actionButton && <ActionContainer>{actionButton}</ActionContainer>}
         </Title>
       )}
@@ -66,11 +66,15 @@ export default Panel;
 const Title = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
   border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
-  h3 {
-    color: ${({ theme }) => theme.colors.white};
-  }
+`;
+
+const TitleContent = styled.div`
+  min-width: 0;
+  flex: 1;
 `;
 
 const ActionContainer = styled.div`

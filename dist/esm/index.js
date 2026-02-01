@@ -670,7 +670,7 @@ const Loading = ({ isLoading }) => {
 };
 
 const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton, style, transparent = false }) => {
-    return (jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxs(Title, { children: [jsx("h3", { children: title }), actionButton && jsx(ActionContainer, { children: actionButton })] })), jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
+    return (jsxs(Container$1, { width: width || '100%', maxWidth: maxWidth, padding: padding, margin: "auto", backgroundColor: "transparent", style: style, children: [(title || actionButton) && (jsxs(Title, { children: [jsx(TitleContent, { children: title }), actionButton && jsx(ActionContainer, { children: actionButton })] })), jsxs(Container$1, { width: "100%", variantColor: transparent ? undefined : "secondary", backgroundColor: transparent ? "transparent" : undefined, margin: "20px 0 0 0", style: transparent ?
                     {} :
                     {
                         boxShadow: '0 0 2px',
@@ -680,11 +680,14 @@ const Panel = ({ title, children, footer, width, maxWidth, padding, actionButton
 const Title = styled.div `
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
   border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
-  h3 {
-    color: ${({ theme }) => theme.colors.white};
-  }
+`;
+const TitleContent = styled.div `
+  min-width: 0;
+  flex: 1;
 `;
 const ActionContainer = styled.div `
   margin-left: auto;
@@ -1487,6 +1490,72 @@ const Box = styled.div `
     `}
 `;
 
+const Breadcrumb = ({ items, LinkComponent = "", }) => {
+    if (!items.length)
+        return null;
+    return (jsx(BreadcrumbContainer, { children: items.map((item, index) => (jsx("span", { children: item.path && index < items.length - 1 ? (jsx(LinkComponent, { to: item.path, children: item.label })) : (jsx("strong", { children: item.label })) }, item.path ?? item.label))) }));
+};
+const BreadcrumbContainer = styled.nav `
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  font-size: 13px;
+
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  min-width: 0;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  a,
+  strong {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a {
+    text-decoration: none;
+    color: ${({ theme }) => theme.colors.tertiary};
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: ${({ theme }) => theme.colors.quaternary};
+      color: ${({ theme }) => theme.colors.black};
+    }
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.quaternary};
+  }
+
+  span:not(:last-child)::after {
+    content: "›";
+    margin: 0 6px;
+    color: ${({ theme }) => theme.colors.quaternary};
+    flex-shrink: 0;
+  }
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1536,5 +1605,5 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
 //# sourceMappingURL=index.js.map
