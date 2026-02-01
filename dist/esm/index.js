@@ -392,14 +392,16 @@ const ConfirmModal = ({ isOpen, title, content, onClose, onConfirm, modalWidth =
                 }, confirmButtonProps)] }) }));
 };
 
-const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style }) => (jsx(StyledContainer, { height: height, width: width, margin: margin, padding: padding, backgroundColor: backgroundColor, variantColor: variantColor, style: style, maxWidth: maxWidth, children: children }));
+const Container$1 = ({ children, height, width, maxWidth, margin, padding, backgroundColor, variantColor, style, }) => (jsx(StyledContainer, { "$height": height, "$width": width, "$maxWidth": maxWidth, "$margin": margin, "$padding": padding, "$backgroundColor": backgroundColor, "$variantColor": variantColor, style: style, children: children }));
 const StyledContainer = styled.div `
-  height: ${({ height }) => height || 'auto'};
-  width: ${({ width }) => width || '100%'};
-  margin: ${({ margin }) => margin || '0'};
-  padding: ${({ padding }) => padding || '0'};
-  max-width: ${({ maxWidth }) => maxWidth || 'none'};
-  background-color: ${({ backgroundColor, theme, variantColor }) => variantColor && theme.colors[variantColor] || backgroundColor};
+  box-sizing: border-box;
+  height: ${({ $height }) => $height || 'auto'};
+  width: ${({ $width }) => $width || '100%'};
+  margin: ${({ $margin }) => $margin || '0'};
+  padding: ${({ $padding }) => $padding || '0'};
+  max-width: ${({ $maxWidth }) => $maxWidth || 'none'};
+
+  background-color: ${({ theme, $variantColor, $backgroundColor }) => $variantColor ? theme.colors[$variantColor] : $backgroundColor};
 `;
 
 const FieldValue = ({ type, value = '', variant, description, hint, editable = true, width, maxWidth, maxHeight, minValue, maxValue, inputWidth, inline, options, icon, padding, placeholder, maxDecimalPlaces = 2, maxIntegerDigits = 8, onUpdate, onKeyDown, }) => {
