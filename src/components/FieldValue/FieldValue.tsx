@@ -81,11 +81,11 @@ const FieldValue: FC<FieldValueProps> = ({
         value={displayValue}
         onChange={handleChange}
         onKeyDown={onKeyDown}
-        inputWidth={inputWidth}
-        inline={inline}
         placeholder={placeholder}
-        variant={variant}
-        editable={editable}
+        $inputWidth={inputWidth}
+        $inline={inline}
+        $variant={variant}
+        $editable={editable}
       />
     </>
   );
@@ -95,10 +95,10 @@ const FieldValue: FC<FieldValueProps> = ({
       value={displayValue}
       onChange={handleChange}
       disabled={!editable}
-      inputWidth={inputWidth}
-      inline={inline}
-      variant={variant}
-      editable={editable}
+      $inputWidth={inputWidth}
+      $inline={inline}
+      $variant={variant}
+      $editable={editable}
     >
       {type === 'SELECT' && <option value="">{placeholder || 'Selecione...'}</option>}
       {type === 'SELECT'
@@ -113,7 +113,7 @@ const FieldValue: FC<FieldValueProps> = ({
   );
 
   return (
-    <FieldWrapper width={width} maxWidth={maxWidth} maxHeight={maxHeight} inline={inline} padding={padding}>
+    <FieldWrapper $width={width} $maxWidth={maxWidth} $maxHeight={maxHeight} $inline={inline} $padding={padding}>
       {description && <Label title={hint}>{description}</Label>}
       {type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()}
     </FieldWrapper>
@@ -123,26 +123,27 @@ const FieldValue: FC<FieldValueProps> = ({
 export default FieldValue;
 
 interface StyledProps {
-  width?: string;
-  maxWidth?: string;
-  maxHeight?: string;
-  inline?: boolean;
-  padding?: string;
-  inputWidth?: string;
-  readOnly?: boolean;
-  editable?: boolean;
-  variant?: VariantColor;
+  $width?: string;
+  $maxWidth?: string;
+  $maxHeight?: string;
+  $inline?: boolean;
+  $padding?: string;
+  $inputWidth?: string;
+  $readOnly?: boolean;
+  $editable?: boolean;
+  $variant?: VariantColor;
 }
 
 const FieldWrapper = styled.div<StyledProps>`
-  width: ${({ width }) => width || '100%'};
-  max-width: ${({ maxWidth }) => maxWidth || 'none'};
-  max-height: ${({ maxHeight }) => maxHeight || 'none'};
+  box-sizing: border-box;
+  width: ${({ $width }) => $width || '100%'};
+  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
+  max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
   height: 100%;
-  padding: ${({ padding }) => padding || '5px'};
+  padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
-  flex-direction: ${({ inline }) => (inline ? 'row' : 'column')};
-  align-items: ${({ inline }) => (inline ? 'center' : 'stretch')};
+  flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
+  align-items: ${({ $inline }) => ($inline ? 'center' : 'stretch')};
 `;
 
 const Label = styled.span`
@@ -155,13 +156,14 @@ const Label = styled.span`
 `;
 
 const StyledInput = styled.input<StyledProps>`
-  width: ${({ inputWidth }) => inputWidth || '100%'};
+  box-sizing: border-box;
+  width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
   outline: none;
   background-color: transparent;
-  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
-  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
+  margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
+  cursor: ${({ $editable }) => ($editable === false ? 'not-allowed' : 'pointer')};
 
   &[type=number]::-webkit-outer-spin-button,
   &[type=number]::-webkit-inner-spin-button {
@@ -173,26 +175,26 @@ const StyledInput = styled.input<StyledProps>`
     filter: invert(100%);
   }
 
-  ${({ variant, theme }) =>
-    variant &&
+  ${({ $variant, theme }) =>
+    $variant &&
     css`
-      color: ${getVariantColor(theme, variant)};
+      color: ${getVariantColor(theme, $variant)};
     `}
 `;
 
 const StyledSelect = styled.select<StyledProps>`
-  width: ${({ inputWidth }) => inputWidth || '100%'};
+  width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
   outline: none;
   background-color: transparent;
-  margin-left: ${({ inline }) => (inline ? '5px' : '0')};
-  cursor: ${({ editable }) => (editable === false ? 'not-allowed' : 'pointer')};
+  margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
+  cursor: ${({ $editable }) => ($editable === false ? 'not-allowed' : 'pointer')};
 
-  ${({ variant, theme }) =>
-    variant &&
+  ${({ $variant, theme }) =>
+    $variant &&
     css`
-      color: ${getVariantColor(theme, variant)};
+      color: ${getVariantColor(theme, $variant)};
     `}
 
   option {
