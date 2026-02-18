@@ -168,7 +168,8 @@ const MainButton = styled.button `
 `;
 const OptionsContainer = styled.div `
   position: absolute;
-  bottom: 65px;
+  bottom: 100%;
+  padding-bottom: 10px;
   right: 0;
   width: 55px;
   display: flex;
