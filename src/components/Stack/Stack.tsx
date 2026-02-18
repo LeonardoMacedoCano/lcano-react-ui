@@ -63,10 +63,20 @@ interface StackContainerProps {
 }
 
 const StackContainer = styled.div<StackContainerProps>`
-  display: flex;
-  flex-direction: ${({ $direction }) => $direction};
   width: ${({ $width }) => $width || '100%'};
   height: ${({ $height }) => $height || 'auto'};
+
+  ${({ $divider, $direction }) =>
+    $divider === 'x' && $direction === 'row'
+      ? css`
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: 1fr;
+        `
+      : css`
+          display: flex;
+          flex-direction: ${$direction};
+        `}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
   ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
@@ -83,13 +93,17 @@ const StackContainer = styled.div<StackContainerProps>`
           const color = theme.colors.gray;
 
           if ($direction === 'row') {
-            if ($divider === 'left' || $divider === 'x') return `border-left: 1px solid ${color};`;
-            if ($divider === 'right') return `border-right: 1px solid ${color};`;
+            if ($divider === 'left' || $divider === 'x')
+              return `border-left: 1px solid ${color};`;
+            if ($divider === 'right')
+              return `border-right: 1px solid ${color};`;
           }
 
           if ($direction === 'column') {
-            if ($divider === 'top' || $divider === 'y') return `border-top: 1px solid ${color};`;
-            if ($divider === 'bottom') return `border-bottom: 1px solid ${color};`;
+            if ($divider === 'top' || $divider === 'y')
+              return `border-top: 1px solid ${color};`;
+            if ($divider === 'bottom')
+              return `border-bottom: 1px solid ${color};`;
           }
 
           return '';

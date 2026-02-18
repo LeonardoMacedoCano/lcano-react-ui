@@ -719,10 +719,19 @@ const Stack = ({ children, width, height, direction = 'row', divider, style, ali
     return (jsxRuntime.jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, style: style, children: children }));
 };
 const StackContainer = styled.div `
-  display: flex;
-  flex-direction: ${({ $direction }) => $direction};
   width: ${({ $width }) => $width || '100%'};
   height: ${({ $height }) => $height || 'auto'};
+
+  ${({ $divider, $direction }) => $divider === 'x' && $direction === 'row'
+    ? styled.css `
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: 1fr;
+        `
+    : styled.css `
+          display: flex;
+          flex-direction: ${$direction};
+        `}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
   ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
