@@ -69,6 +69,15 @@ const formatIsoDateToBrDate = (dateStr) => {
     const [year, month, day] = dateStr.split('-');
     return `${day}/${month}/${year}`;
 };
+const formatDateToBrString = (date) => {
+    if (!date)
+        return '';
+    const dateObj = new Date(date);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+};
 const formatDateToYMDString = (date) => {
     if (!date)
         return '';
@@ -1655,6 +1664,7 @@ exports.ToastNotification = ToastNotification;
 exports.buildSearchSelectAdapter = buildSearchSelectAdapter;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatBooleanToSimNao = formatBooleanToSimNao;
+exports.formatDateToBrString = formatDateToBrString;
 exports.formatDateToYMDString = formatDateToYMDString;
 exports.formatDateToYMString = formatDateToYMString;
 exports.formatFieldValueToString = formatFieldValueToString;
