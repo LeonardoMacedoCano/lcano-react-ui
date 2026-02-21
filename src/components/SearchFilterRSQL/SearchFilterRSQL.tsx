@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { Field, FilterDTO, Operator, OPERATORS } from '../../types';
@@ -116,7 +116,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
 
     if (selectedField.type === 'DATE') {
       if (!searchValue) return true;
-      const date = parseDateStringToDate(String(searchValue));
+      const date = parseDateStringToDate(formatDate(searchValue));
       return !date || isNaN(date.getTime());
     }
 

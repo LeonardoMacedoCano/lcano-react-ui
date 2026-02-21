@@ -865,7 +865,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         if (selectedField.type === 'DATE') {
             if (!searchValue)
                 return true;
-            const date = parseDateStringToDate(String(searchValue));
+            const date = parseDateStringToDate(formatDate(searchValue));
             return !date || isNaN(date.getTime());
         }
         return searchValue === null || searchValue === '';
