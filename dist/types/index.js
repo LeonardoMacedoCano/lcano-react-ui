@@ -1,7 +1,8 @@
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
-import React, { useState, useRef, useEffect, useMemo, useCallback, createContext, useContext } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo, createContext, useContext } from 'react';
 import styled, { css, keyframes, useTheme } from 'styled-components';
-import { FaTimes, FaExclamationTriangle, FaPlus, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaSearch, FaEye, FaEdit, FaTrash, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
+import { useDropzone } from 'react-dropzone';
+import { FaUpload, FaEye, FaTrash, FaTimes, FaExclamationTriangle, FaPlus, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaSearch, FaEdit, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 
 const STRING_OPERATORS = [
     { name: 'Contém', symbol: 'LIKE' },
@@ -194,6 +195,101 @@ const OptionButton = styled.button `
   font-size: 20px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+`;
+
+const DragDropFile = ({ onFileChange, acceptedFileFormats }) => {
+    const [file, setFile] = useState(null);
+    const onDrop = useCallback((acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+            setFile(acceptedFiles[0]);
+            onFileChange(acceptedFiles[0]);
+        }
+    }, [onFileChange]);
+    const accept = acceptedFileFormats && acceptedFileFormats.length > 0
+        ? acceptedFileFormats.reduce((acc, format) => {
+            acc[format] = [];
+            return acc;
+        }, {})
+        : undefined;
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        multiple: false,
+        accept,
+    });
+    const removeFile = () => {
+        setFile(null);
+        onFileChange(null);
+    };
+    const viewFile = () => {
+        if (file) {
+            const url = URL.createObjectURL(file);
+            window.open(url, '_blank');
+        }
+    };
+    return (jsxs(DropzoneContainer, { ...getRootProps(), "$isDragActive": isDragActive, children: [jsx("input", { ...getInputProps() }), jsxs(DropzoneContent, { children: [jsx(IconWrapper$3, { children: jsx(FaUpload, {}) }), jsx("p", { children: "Clique ou arraste arquivos aqui." }), acceptedFileFormats && acceptedFileFormats.length > 0 && (jsxs("p", { children: ["Formatos aceitos: ", acceptedFileFormats.join(', ')] }))] }), file && (jsxs(FileInfoContainer, { children: [jsx(FileName, { children: file.name }), jsxs(ButtonContainer, { children: [jsx(FileActionButton, { onClick: (e) => { e.stopPropagation(); viewFile(); }, children: jsx(FaEye, {}) }), jsx(FileActionButton, { onClick: (e) => { e.stopPropagation(); removeFile(); }, children: jsx(FaTrash, {}) })] })] }))] }));
+};
+const DropzoneContainer = styled.div `
+  width: 100%;
+  padding: 20px 10px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px dashed ${({ theme, $isDragActive }) => $isDragActive ? getVariantColor(theme, 'info') : theme.colors.tertiary};
+  border-radius: 6px;
+  background: ${({ theme, $isDragActive }) => $isDragActive ? getVariantColor(theme, 'info') : 'transparent'};
+  color: ${({ theme }) => theme.colors.white};
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => getVariantColor(theme, 'info')};
+    background: ${({ theme }) => getVariantColor(theme, 'tertiary')};
+  }
+`;
+const DropzoneContent = styled.div `
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+`;
+const IconWrapper$3 = styled.div `
+  font-size: 32px;
+  margin-bottom: 4px;
+`;
+const FileInfoContainer = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid ${({ theme }) => theme.colors.tertiary};
+  border-radius: 4px;
+`;
+const FileName = styled.span `
+  color: ${({ theme }) => getVariantColor(theme, 'info')};
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+const ButtonContainer = styled.div `
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+`;
+const FileActionButton = styled.button `
+  padding: 6px 8px;
+  border: 1px solid ${({ theme }) => theme.colors.tertiary};
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.white};
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.7;
+  }
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
@@ -1541,4 +1637,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };

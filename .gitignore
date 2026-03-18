@@ -82,3 +82,9 @@ storybook-static
 # Temporary folders
 tmp/
 temp/
+
+# Instrucoes Claude
+CLAUDE.md
+
+# oh-my-claudecode
+.omc/

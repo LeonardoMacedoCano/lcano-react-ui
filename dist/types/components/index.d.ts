@@ -1,4 +1,5 @@
 export * from './ActionButton';
+export * from './DragDropFile';
 export * from './Button';
 export * from './ConfirmModal';
 export * from './Container';
