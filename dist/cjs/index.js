@@ -56,7 +56,6 @@ const getVariantColor = (theme, variant) => {
     }
 };
 
-const getCurrentDate = () => new Date();
 const parseShortStringToDateTime = (dateStr) => {
     if (!dateStr)
         return '';
@@ -78,6 +77,16 @@ const formatDateToBrString = (date) => {
     const year = dateObj.getFullYear().toString();
     return `${day}/${month}/${year}`;
 };
+function formatDateTimeToBrString(date) {
+    const d = new Date(date);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    const hora = String(d.getHours()).padStart(2, '0');
+    const minuto = String(d.getMinutes()).padStart(2, '0');
+    const segundo = String(d.getSeconds()).padStart(2, '0');
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`;
+}
 const formatDateToYMDString = (date) => {
     if (!date)
         return '';
@@ -4959,7 +4968,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         if (!searchValue && selectedField) {
             const type = selectedField.type.toUpperCase();
             if (type === 'DATE')
-                setSearchValue(formatDateToYMDString(getCurrentDate()));
+                setSearchValue(formatDateToYMDString(new Date()));
             if (type === 'BOOLEAN')
                 setSearchValue('true');
         }
@@ -5842,13 +5851,13 @@ exports.ToastNotification = ToastNotification;
 exports.buildSearchSelectAdapter = buildSearchSelectAdapter;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatBooleanToSimNao = formatBooleanToSimNao;
+exports.formatDateTimeToBrString = formatDateTimeToBrString;
 exports.formatDateToBrString = formatDateToBrString;
 exports.formatDateToYMDString = formatDateToYMDString;
 exports.formatDateToYMString = formatDateToYMString;
 exports.formatFieldValueToString = formatFieldValueToString;
 exports.formatIsoDateToBrDate = formatIsoDateToBrDate;
 exports.formatNumericInputWithLimits = formatNumericInputWithLimits;
-exports.getCurrentDate = getCurrentDate;
 exports.getVariantColor = getVariantColor;
 exports.isDateValid = isDateValid;
 exports.parseDateStringToDate = parseDateStringToDate;

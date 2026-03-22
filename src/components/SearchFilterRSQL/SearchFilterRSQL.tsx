@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { Field, FilterDTO, Operator, OPERATORS } from '../../types';
-import { formatBooleanToSimNao, formatDateToYMDString, formatIsoDateToBrDate, getCurrentDate, parseDateStringToDate } from '../../utils';
+import { formatBooleanToSimNao, formatDateToYMDString, formatIsoDateToBrDate, parseDateStringToDate } from '../../utils';
 import { Container } from '../Container';
 import { Stack } from '../Stack';
 import { FieldValue } from '../FieldValue';
@@ -25,7 +25,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
   useEffect(() => {
     if (!searchValue && selectedField) {
       const type = selectedField.type.toUpperCase();
-      if (type === 'DATE') setSearchValue(formatDateToYMDString(getCurrentDate()));
+      if (type === 'DATE') setSearchValue(formatDateToYMDString(new Date()));
       if (type === 'BOOLEAN') setSearchValue('true');
     }
   }, [selectedField]);

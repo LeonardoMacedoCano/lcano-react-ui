@@ -56,7 +56,6 @@ const getVariantColor = (theme, variant) => {
     }
 };
 
-const getCurrentDate = () => new Date();
 const parseShortStringToDateTime = (dateStr) => {
     if (!dateStr)
         return '';
@@ -78,6 +77,16 @@ const formatDateToBrString = (date) => {
     const year = dateObj.getFullYear().toString();
     return `${day}/${month}/${year}`;
 };
+function formatDateTimeToBrString(date) {
+    const d = new Date(date);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    const hora = String(d.getHours()).padStart(2, '0');
+    const minuto = String(d.getMinutes()).padStart(2, '0');
+    const segundo = String(d.getSeconds()).padStart(2, '0');
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`;
+}
 const formatDateToYMDString = (date) => {
     if (!date)
         return '';
@@ -789,7 +798,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         if (!searchValue && selectedField) {
             const type = selectedField.type.toUpperCase();
             if (type === 'DATE')
-                setSearchValue(formatDateToYMDString(getCurrentDate()));
+                setSearchValue(formatDateToYMDString(new Date()));
             if (type === 'BOOLEAN')
                 setSearchValue('true');
         }
@@ -1637,4 +1646,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getCurrentDate, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
