@@ -28,7 +28,7 @@ const FieldTextArea: React.FC<FieldTextAreaProps> = memo(({
   width,
   maxWidth,
   maxLength = 500,
-  minRows = 2,
+  minRows = 1,
   inline,
   padding,
   placeholder,

@@ -4695,7 +4695,7 @@ const Icon = styled.div `
   width: auto;
 `;
 
-const FieldTextArea = React.memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 2, inline, padding, placeholder, onUpdate, }) => {
+const FieldTextArea = React.memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 1, inline, padding, placeholder, onUpdate, }) => {
     const textareaRef = React.useRef(null);
     React.useEffect(() => {
         const el = textareaRef.current;

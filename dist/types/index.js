@@ -525,7 +525,7 @@ const Icon = styled.div `
   width: auto;
 `;
 
-const FieldTextArea = memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 2, inline, padding, placeholder, onUpdate, }) => {
+const FieldTextArea = memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 1, inline, padding, placeholder, onUpdate, }) => {
     const textareaRef = useRef(null);
     useEffect(() => {
         const el = textareaRef.current;
