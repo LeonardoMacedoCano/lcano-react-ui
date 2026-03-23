@@ -4625,9 +4625,9 @@ const FieldValue = ({ type, value = '', variant, description, hint, editable = t
     const renderSelect = () => (jsxRuntime.jsxs(StyledSelect, { value: displayValue, onChange: handleChange, disabled: !editable, "$inputWidth": inputWidth, "$inline": inline, "$variant": variant, "$editable": editable, children: [type === 'SELECT' && jsxRuntime.jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'SELECT'
                 ? options?.map(opt => jsxRuntime.jsx("option", { value: opt.key, children: opt.value }, opt.key))
                 : (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("option", { value: "true", children: "Sim" }), jsxRuntime.jsx("option", { value: "false", children: "N\u00E3o" })] }))] }));
-    return (jsxRuntime.jsxs(FieldWrapper$1, { "$width": width, "$maxWidth": maxWidth, "$maxHeight": maxHeight, "$inline": inline, "$padding": padding, children: [description && jsxRuntime.jsx(Label, { title: hint, children: description }), type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()] }));
+    return (jsxRuntime.jsxs(FieldWrapper$2, { "$width": width, "$maxWidth": maxWidth, "$maxHeight": maxHeight, "$inline": inline, "$padding": padding, children: [description && jsxRuntime.jsx(Label$1, { title: hint, children: description }), type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()] }));
 };
-const FieldWrapper$1 = styled.div `
+const FieldWrapper$2 = styled.div `
   box-sizing: border-box;
   width: ${({ $width }) => $width || '100%'};
   max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
@@ -4638,7 +4638,7 @@ const FieldWrapper$1 = styled.div `
   flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
   align-items: ${({ $inline }) => ($inline ? 'center' : 'stretch')};
 `;
-const Label = styled.span `
+const Label$1 = styled.span `
   color: ${({ theme }) => theme.colors.quaternary};
   font-weight: bold;
   font-size: 15px;
@@ -4693,6 +4693,62 @@ const StyledSelect = styled.select `
 const Icon = styled.div `
   height: 100%;
   width: auto;
+`;
+
+const FieldTextArea = React.memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 2, inline, padding, placeholder, onUpdate, }) => {
+    const textareaRef = React.useRef(null);
+    React.useEffect(() => {
+        const el = textareaRef.current;
+        if (!el)
+            return;
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight}px`;
+    }, [value]);
+    const handleChange = (event) => {
+        if (!onUpdate)
+            return;
+        onUpdate(event.target.value);
+    };
+    return (jsxRuntime.jsxs(FieldWrapper$1, { "$width": width, "$maxWidth": maxWidth, "$inline": inline, "$padding": padding, children: [description && jsxRuntime.jsx(Label, { title: hint, children: description }), jsxRuntime.jsx(StyledTextArea, { ref: textareaRef, value: value, onChange: handleChange, readOnly: !editable, disabled: !editable, maxLength: maxLength, placeholder: placeholder, rows: minRows, "$variant": variant, "$editable": editable, "$inline": inline })] }));
+});
+const FieldWrapper$1 = styled.div `
+  box-sizing: border-box;
+  width: ${({ $width }) => $width || '100%'};
+  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
+  height: auto;
+  padding: ${({ $padding }) => $padding || '5px'};
+  display: flex;
+  flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
+  align-items: ${({ $inline }) => ($inline ? 'flex-start' : 'stretch')};
+`;
+const Label = styled.span `
+  color: ${({ theme }) => theme.colors.quaternary};
+  font-weight: bold;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-right: 5px;
+`;
+const StyledTextArea = styled.textarea `
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 15px;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
+  cursor: ${({ $editable }) => ($editable === false ? 'not-allowed' : 'text')};
+  resize: ${({ $editable }) => ($editable === false ? 'none' : 'vertical')};
+  overflow: hidden;
+  min-height: 25px;
+  line-height: 1.4;
+  font-family: inherit;
+  padding: 4px;
+
+  ${({ $variant, theme }) => $variant &&
+    styled.css `
+      color: ${getVariantColor(theme, $variant)};
+    `}
 `;
 
 const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
@@ -5827,6 +5883,7 @@ exports.ContextMessageProvider = ContextMessageProvider;
 exports.DATE_OPERATORS = DATE_OPERATORS;
 exports.DEFAULT_THEME_SYSTEM = DEFAULT_THEME_SYSTEM;
 exports.DragDropFile = DragDropFile;
+exports.FieldTextArea = FieldTextArea;
 exports.FieldValue = FieldValue;
 exports.HighlightBox = HighlightBox;
 exports.ImagePicker = ImagePicker;

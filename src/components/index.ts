@@ -5,6 +5,7 @@ export * from './Button';
 export * from './ConfirmModal';
 export * from './Container';
 export * from './FieldValue';
+export * from './FieldTextArea';
 export * from './ImagePicker';
 export * from './Loading';
 export * from './Modal';

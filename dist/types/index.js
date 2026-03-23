@@ -1,5 +1,5 @@
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
-import React, { useState, useCallback, useRef, useEffect, useMemo, createContext, useContext } from 'react';
+import React, { useState, useCallback, memo, useRef, useEffect, useMemo, createContext, useContext } from 'react';
 import styled, { css, keyframes, useTheme } from 'styled-components';
 import { useDropzone } from 'react-dropzone';
 import { FaUpload, FaEye, FaTrash, FaTimes, FaExclamationTriangle, FaPlus, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaSearch, FaEdit, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
@@ -455,9 +455,9 @@ const FieldValue = ({ type, value = '', variant, description, hint, editable = t
     const renderSelect = () => (jsxs(StyledSelect, { value: displayValue, onChange: handleChange, disabled: !editable, "$inputWidth": inputWidth, "$inline": inline, "$variant": variant, "$editable": editable, children: [type === 'SELECT' && jsx("option", { value: "", children: placeholder || 'Selecione...' }), type === 'SELECT'
                 ? options?.map(opt => jsx("option", { value: opt.key, children: opt.value }, opt.key))
                 : (jsxs(Fragment, { children: [jsx("option", { value: "true", children: "Sim" }), jsx("option", { value: "false", children: "N\u00E3o" })] }))] }));
-    return (jsxs(FieldWrapper$1, { "$width": width, "$maxWidth": maxWidth, "$maxHeight": maxHeight, "$inline": inline, "$padding": padding, children: [description && jsx(Label, { title: hint, children: description }), type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()] }));
+    return (jsxs(FieldWrapper$2, { "$width": width, "$maxWidth": maxWidth, "$maxHeight": maxHeight, "$inline": inline, "$padding": padding, children: [description && jsx(Label$1, { title: hint, children: description }), type === 'SELECT' || type === 'BOOLEAN' ? renderSelect() : renderInput()] }));
 };
-const FieldWrapper$1 = styled.div `
+const FieldWrapper$2 = styled.div `
   box-sizing: border-box;
   width: ${({ $width }) => $width || '100%'};
   max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
@@ -468,7 +468,7 @@ const FieldWrapper$1 = styled.div `
   flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
   align-items: ${({ $inline }) => ($inline ? 'center' : 'stretch')};
 `;
-const Label = styled.span `
+const Label$1 = styled.span `
   color: ${({ theme }) => theme.colors.quaternary};
   font-weight: bold;
   font-size: 15px;
@@ -523,6 +523,62 @@ const StyledSelect = styled.select `
 const Icon = styled.div `
   height: 100%;
   width: auto;
+`;
+
+const FieldTextArea = memo(({ value = '', variant, description, hint, editable = true, width, maxWidth, maxLength = 500, minRows = 2, inline, padding, placeholder, onUpdate, }) => {
+    const textareaRef = useRef(null);
+    useEffect(() => {
+        const el = textareaRef.current;
+        if (!el)
+            return;
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight}px`;
+    }, [value]);
+    const handleChange = (event) => {
+        if (!onUpdate)
+            return;
+        onUpdate(event.target.value);
+    };
+    return (jsxs(FieldWrapper$1, { "$width": width, "$maxWidth": maxWidth, "$inline": inline, "$padding": padding, children: [description && jsx(Label, { title: hint, children: description }), jsx(StyledTextArea, { ref: textareaRef, value: value, onChange: handleChange, readOnly: !editable, disabled: !editable, maxLength: maxLength, placeholder: placeholder, rows: minRows, "$variant": variant, "$editable": editable, "$inline": inline })] }));
+});
+const FieldWrapper$1 = styled.div `
+  box-sizing: border-box;
+  width: ${({ $width }) => $width || '100%'};
+  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
+  height: auto;
+  padding: ${({ $padding }) => $padding || '5px'};
+  display: flex;
+  flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
+  align-items: ${({ $inline }) => ($inline ? 'flex-start' : 'stretch')};
+`;
+const Label = styled.span `
+  color: ${({ theme }) => theme.colors.quaternary};
+  font-weight: bold;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-right: 5px;
+`;
+const StyledTextArea = styled.textarea `
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 15px;
+  outline: none;
+  background-color: transparent;
+  margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
+  cursor: ${({ $editable }) => ($editable === false ? 'not-allowed' : 'text')};
+  resize: ${({ $editable }) => ($editable === false ? 'none' : 'vertical')};
+  overflow: hidden;
+  min-height: 25px;
+  line-height: 1.4;
+  font-family: inherit;
+  padding: 4px;
+
+  ${({ $variant, theme }) => $variant &&
+    css `
+      color: ${getVariantColor(theme, $variant)};
+    `}
 `;
 
 const ImagePicker = ({ imageUrl, onChange, size = '150px', borderColor, isLoading = false, icon, }) => {
@@ -1646,4 +1702,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
