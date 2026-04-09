@@ -20,4 +20,6 @@ export * from './ThemeSelector';
 export * from './ToastNotification';
 export * from './HighlightBox';
 export * from './Breadcrumb';
+export * from './ToggleSwitch';
+export * from './SummaryCard';
 //# sourceMappingURL=index.d.ts.map

@@ -5823,6 +5823,50 @@ const BreadcrumbContainer = styled.nav `
   }
 `;
 
+const ToggleSwitch = ({ optionA, optionB, value, onChange }) => (jsxRuntime.jsx(ToggleSwitchContainer, { children: [optionA, optionB].map((opt) => (jsxRuntime.jsx(ToggleButtonStyled, { "$active": value === opt.value, onClick: () => onChange(opt.value), children: opt.label }, opt.value))) }));
+const ToggleSwitchContainer = styled.div `
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.tertiary};
+`;
+const ToggleButtonStyled = styled.button `
+  padding: 6px 16px;
+  cursor: pointer;
+  border: none;
+  background: ${({ theme, $active }) => $active ? getVariantColor(theme, 'primary') : theme.colors.primary};
+  color: ${({ theme, $active }) => $active ? theme.colors.white : theme.colors.tertiary};
+  font-size: 14px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: ${({ theme }) => getVariantColor(theme, 'primary')};
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+
+const SummaryCard = ({ label, value, variant }) => (jsxRuntime.jsxs(Card, { "$variant": variant, children: [jsxRuntime.jsx(CardLabel, { children: label }), jsxRuntime.jsx(CardValue, { "$variant": variant, children: value })] }));
+const Card = styled.div `
+  flex: 1;
+  min-width: 180px;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid ${({ theme, $variant }) => getVariantColor(theme, $variant)};
+  background: ${({ theme }) => theme.colors.primary};
+`;
+const CardLabel = styled.div `
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.tertiary};
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+const CardValue = styled.div `
+  font-size: 20px;
+  font-weight: bold;
+  color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [title, setTitle] = React.useState('Confirmação');
@@ -5900,11 +5944,13 @@ exports.SearchFilterRSQL = SearchFilterRSQL;
 exports.SearchPagination = SearchPagination;
 exports.SearchSelectField = SearchSelectField;
 exports.Stack = Stack;
+exports.SummaryCard = SummaryCard;
 exports.Table = Table;
 exports.Tabs = Tabs;
 exports.ThemeFavicon = ThemeFavicon;
 exports.ThemeSelector = ThemeSelector;
 exports.ToastNotification = ToastNotification;
+exports.ToggleSwitch = ToggleSwitch;
 exports.buildSearchSelectAdapter = buildSearchSelectAdapter;
 exports.convertReactStyleToCSSObject = convertReactStyleToCSSObject;
 exports.formatBooleanToSimNao = formatBooleanToSimNao;

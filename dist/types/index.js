@@ -1653,6 +1653,50 @@ const BreadcrumbContainer = styled.nav `
   }
 `;
 
+const ToggleSwitch = ({ optionA, optionB, value, onChange }) => (jsx(ToggleSwitchContainer, { children: [optionA, optionB].map((opt) => (jsx(ToggleButtonStyled, { "$active": value === opt.value, onClick: () => onChange(opt.value), children: opt.label }, opt.value))) }));
+const ToggleSwitchContainer = styled.div `
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.tertiary};
+`;
+const ToggleButtonStyled = styled.button `
+  padding: 6px 16px;
+  cursor: pointer;
+  border: none;
+  background: ${({ theme, $active }) => $active ? getVariantColor(theme, 'primary') : theme.colors.primary};
+  color: ${({ theme, $active }) => $active ? theme.colors.white : theme.colors.tertiary};
+  font-size: 14px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: ${({ theme }) => getVariantColor(theme, 'primary')};
+    color: ${({ theme }) => theme.colors.white};
+  }
+`;
+
+const SummaryCard = ({ label, value, variant }) => (jsxs(Card, { "$variant": variant, children: [jsx(CardLabel, { children: label }), jsx(CardValue, { "$variant": variant, children: value })] }));
+const Card = styled.div `
+  flex: 1;
+  min-width: 180px;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid ${({ theme, $variant }) => getVariantColor(theme, $variant)};
+  background: ${({ theme }) => theme.colors.primary};
+`;
+const CardLabel = styled.div `
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.tertiary};
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+const CardValue = styled.div `
+  font-size: 20px;
+  font-weight: bold;
+  color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
+`;
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1702,4 +1746,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, SummaryCard, Table, Tabs, ThemeFavicon, ThemeSelector, ToastNotification, ToggleSwitch, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
