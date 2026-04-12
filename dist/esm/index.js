@@ -5823,16 +5823,19 @@ const BreadcrumbContainer = styled.nav `
 
 const ToggleSwitch = ({ optionA, optionB, value, onChange }) => (jsx(ToggleSwitchContainer, { children: [optionA, optionB].map((opt) => (jsx(ToggleButtonStyled, { "$active": value === opt.value, onClick: () => onChange(opt.value), children: opt.label }, opt.value))) }));
 const ToggleSwitchContainer = styled.div `
+  box-sizing: border-box;
+  width: ${({ $width }) => $width || '100%'};
+  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
+  max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
+  height: 100%;
+  padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.tertiary};
 `;
 const ToggleButtonStyled = styled.button `
-  padding: 6px 16px;
   cursor: pointer;
   border: none;
-  background: ${({ theme, $active }) => $active ? getVariantColor(theme, 'primary') : theme.colors.primary};
+  width: 100%;
+  background: transparent;
   color: ${({ theme, $active }) => $active ? theme.colors.white : theme.colors.tertiary};
   font-size: 14px;
   transition: background-color 0.2s;

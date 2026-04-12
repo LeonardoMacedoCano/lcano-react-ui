@@ -10,6 +10,8 @@ export interface ToggleSwitchProps<T extends string> {
   optionA: ToggleSwitchOption<T>;
   optionB: ToggleSwitchOption<T>;
   value: T;
+  $width?: string;
+  $maxWidth?: string;
   onChange: (value: T) => void;
 }
 
@@ -29,19 +31,28 @@ const ToggleSwitch = <T extends string,>({ optionA, optionB, value, onChange }: 
 
 export default ToggleSwitch;
 
-const ToggleSwitchContainer = styled.div`
+interface StyledProps {
+  $width?: string;
+  $maxWidth?: string;
+  $maxHeight?: string;
+  $padding?: string;
+}
+
+const ToggleSwitchContainer = styled.div<StyledProps>`
+  box-sizing: border-box;
+  width: ${({ $width }) => $width || '100%'};
+  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
+  max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
+  height: 100%;
+  padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.tertiary};
 `;
 
 const ToggleButtonStyled = styled.button<{ $active: boolean }>`
-  padding: 6px 16px;
   cursor: pointer;
   border: none;
-  background: ${({ theme, $active }) =>
-    $active ? getVariantColor(theme, 'primary') : theme.colors.primary};
+  width: 100%;
+  background: transparent;
   color: ${({ theme, $active }) =>
     $active ? theme.colors.white : theme.colors.tertiary};
   font-size: 14px;
