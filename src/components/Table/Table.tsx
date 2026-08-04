@@ -12,6 +12,7 @@ export type ColumnProps<T> = {
   width?: string;
   align?: 'left' | 'center' | 'right';
   titleAlign?: 'left' | 'center' | 'right';
+  wrap?: boolean;
 };
 
 export const Column = <T extends any>({}: ColumnProps<T>) => null;
@@ -91,6 +92,7 @@ interface TableProps<T> {
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   customActions?: (item: T) => ReactNode;
+  rowHeight?: string;
 }
 
 const isPagedResponse = <T,>(values: T[] | PagedResponse<T>): values is PagedResponse<T> => 
@@ -132,6 +134,7 @@ interface TableBodyProps<T> {
   customActions?: (item: T) => ReactNode;
   hoveredRowIndex: number | null;
   onRowHover: (index: number | null) => void;
+  rowHeight?: string;
 }
 
 const TableBody = <T,>({
@@ -147,6 +150,7 @@ const TableBody = <T,>({
   customActions,
   hoveredRowIndex,
   onRowHover,
+  rowHeight,
 }: TableBodyProps<T>) => {
   if (data.length === 0) {
     return (
@@ -171,18 +175,20 @@ const TableBody = <T,>({
         >
           {columns.map((column, columnIndex) => {
             if (!React.isValidElement(column)) return null;
-            
-            const { value, width, align } = column.props as ColumnProps<T>;
+
+            const { value, width, align, wrap } = column.props as ColumnProps<T>;
             const isSelected = rowSelected?.(item) ?? false;
-            
+
             return (
               <TableColumn
                 key={columnIndex}
                 $isSelected={isSelected}
                 $width={width}
                 $align={align}
+                $rowHeight={rowHeight}
+                $wrap={wrap}
               >
-                <TruncatedContent>
+                <TruncatedContent $wrap={wrap}>
                   {value(item, index)}
                 </TruncatedContent>
               </TableColumn>
@@ -235,6 +241,7 @@ export const Table = <T extends any>({
   onEdit,
   onDelete,
   customActions,
+  rowHeight,
 }: TableProps<T>) => {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
@@ -268,6 +275,7 @@ export const Table = <T extends any>({
             customActions={customActions}
             hoveredRowIndex={hoveredRowIndex}
             onRowHover={setHoveredRowIndex}
+            rowHeight={rowHeight}
           />
         </StyledTable>
       </TableContainer>
@@ -307,19 +315,22 @@ const TableHeadColumn = styled.th`
   }
 `;
 
-const TableColumn = styled.td<{ 
-  $isSelected?: boolean; 
-  $width?: string; 
+const TableColumn = styled.td<{
+  $isSelected?: boolean;
+  $width?: string;
   $align?: string;
+  $rowHeight?: string;
+  $wrap?: boolean;
 }>`
   font-size: 13px;
-  height: 35px;
+  height: ${({ $rowHeight }) => $rowHeight || '35px'};
   text-align: ${({ $align }) => $align || 'left'};
+  vertical-align: middle;
   border-left: 1px solid ${({ theme }) => theme.colors.gray};
   position: relative;
-  white-space: nowrap;
+  white-space: ${({ $wrap }) => ($wrap ? 'normal' : 'nowrap')};
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ${({ $wrap }) => ($wrap ? 'clip' : 'ellipsis')};
   max-width: ${({ $width }) => $width || 'auto'};
   width: ${({ $width }) => $width || 'auto'};
   padding: 0 5px;
@@ -332,7 +343,7 @@ const TableColumn = styled.td<{
     left: 0;
     bottom: 0;
     width: 5px;
-    background-color: ${({ theme, $isSelected }) => 
+    background-color: ${({ theme, $isSelected }) =>
       $isSelected ? theme.colors.quaternary : 'transparent'
     };
   }
@@ -342,10 +353,10 @@ const TableColumn = styled.td<{
   }
 `;
 
-const TruncatedContent = styled.div`
-  white-space: nowrap;
+const TruncatedContent = styled.div<{ $wrap?: boolean }>`
+  white-space: ${({ $wrap }) => ($wrap ? 'normal' : 'nowrap')};
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ${({ $wrap }) => ($wrap ? 'clip' : 'ellipsis')};
   display: block;
   width: 100%;
 `;

@@ -5401,16 +5401,16 @@ const TableHeader = ({ columns }) => (jsxRuntime.jsx("thead", { children: jsxRun
             const { header, titleAlign = 'center' } = column.props;
             return (jsxRuntime.jsx(TableHeadColumn, { children: jsxRuntime.jsx(TableColumnTitle, { align: titleAlign, children: header }) }, index));
         }) }) }));
-const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, }) => {
+const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, rowHeight, }) => {
     if (data.length === 0) {
         return (jsxRuntime.jsx("tbody", { children: jsxRuntime.jsx("tr", { children: jsxRuntime.jsx("td", { colSpan: columns.length + 1, children: jsxRuntime.jsx(EmptyMessage, { children: messageEmpty }) }) }) }));
     }
     return (jsxRuntime.jsx("tbody", { children: data.map((item, index) => (jsxRuntime.jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), children: [columns.map((column, columnIndex) => {
                     if (!React.isValidElement(column))
                         return null;
-                    const { value, width, align } = column.props;
+                    const { value, width, align, wrap } = column.props;
                     const isSelected = rowSelected?.(item) ?? false;
-                    return (jsxRuntime.jsx(TableColumn, { "$isSelected": isSelected, "$width": width, "$align": align, children: jsxRuntime.jsx(TruncatedContent, { children: value(item, index) }) }, columnIndex));
+                    return (jsxRuntime.jsx(TableColumn, { "$isSelected": isSelected, "$width": width, "$align": align, "$rowHeight": rowHeight, "$wrap": wrap, children: jsxRuntime.jsx(TruncatedContent, { "$wrap": wrap, children: value(item, index) }) }, columnIndex));
                 }), jsxRuntime.jsx(ActionColumn, { children: jsxRuntime.jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined }) })] }, keyExtractor(item, index)))) }));
 };
 const TablePagination = ({ values, loadPage }) => {
@@ -5419,14 +5419,14 @@ const TablePagination = ({ values, loadPage }) => {
     }
     return (jsxRuntime.jsx(SearchPagination, { height: "35px", page: values, loadPage: loadPage }));
 };
-const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, }) => {
+const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, }) => {
     const [hoveredRowIndex, setHoveredRowIndex] = React.useState(null);
     const tableData = React.useMemo(() => getTableData(values), [values]);
     const isEmpty = tableData.length === 0;
     if (isEmpty) {
         return (jsxRuntime.jsx(Container$1, { backgroundColor: "transparent", width: "100%", children: jsxRuntime.jsx(EmptyMessage, { children: messageEmpty }) }));
     }
-    return (jsxRuntime.jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsxRuntime.jsx(TableContainer, { children: jsxRuntime.jsxs(StyledTable, { children: [jsxRuntime.jsx(TableHeader, { columns: columns }), jsxRuntime.jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex })] }) }), jsxRuntime.jsx(TablePagination, { values: values, loadPage: loadPage })] }));
+    return (jsxRuntime.jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsxRuntime.jsx(TableContainer, { children: jsxRuntime.jsxs(StyledTable, { children: [jsxRuntime.jsx(TableHeader, { columns: columns }), jsxRuntime.jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex, rowHeight: rowHeight })] }) }), jsxRuntime.jsx(TablePagination, { values: values, loadPage: loadPage })] }));
 };
 const TableContainer = styled.div `
   width: 100%;
@@ -5455,13 +5455,14 @@ const TableHeadColumn = styled.th `
 `;
 const TableColumn = styled.td `
   font-size: 13px;
-  height: 35px;
+  height: ${({ $rowHeight }) => $rowHeight || '35px'};
   text-align: ${({ $align }) => $align || 'left'};
+  vertical-align: middle;
   border-left: 1px solid ${({ theme }) => theme.colors.gray};
   position: relative;
-  white-space: nowrap;
+  white-space: ${({ $wrap }) => ($wrap ? 'normal' : 'nowrap')};
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ${({ $wrap }) => ($wrap ? 'clip' : 'ellipsis')};
   max-width: ${({ $width }) => $width || 'auto'};
   width: ${({ $width }) => $width || 'auto'};
   padding: 0 5px;
@@ -5482,9 +5483,9 @@ const TableColumn = styled.td `
   }
 `;
 const TruncatedContent = styled.div `
-  white-space: nowrap;
+  white-space: ${({ $wrap }) => ($wrap ? 'normal' : 'nowrap')};
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ${({ $wrap }) => ($wrap ? 'clip' : 'ellipsis')};
   display: block;
   width: 100%;
 `;

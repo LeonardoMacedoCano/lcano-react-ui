@@ -6,6 +6,7 @@ export type ColumnProps<T> = {
     width?: string;
     align?: 'left' | 'center' | 'right';
     titleAlign?: 'left' | 'center' | 'right';
+    wrap?: boolean;
 };
 export declare const Column: <T extends any>({}: ColumnProps<T>) => any;
 export interface TableActionsProps {
@@ -27,7 +28,8 @@ interface TableProps<T> {
     onEdit?: (item: T) => void;
     onDelete?: (item: T) => void;
     customActions?: (item: T) => ReactNode;
+    rowHeight?: string;
 }
-export declare const Table: <T extends any>({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
+export declare const Table: <T extends any>({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default Table;
 //# sourceMappingURL=Table.d.ts.map
