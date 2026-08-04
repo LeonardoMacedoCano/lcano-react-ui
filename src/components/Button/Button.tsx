@@ -26,11 +26,12 @@ const Button: React.FC<ButtonProps> = ({
   ...props 
 }) => {
   return (
-    <StyledButton 
-      $variant={variant} 
-      $width={width} 
-      $height={height} 
-      title={hint} 
+    <StyledButton
+      $variant={variant}
+      $width={width}
+      $height={height}
+      $hasDescription={!!description}
+      title={hint}
       disabled={disabled}
       $disabledHover={disabledHover}
       {...props}
@@ -47,6 +48,7 @@ interface StyledButtonProps {
   $variant?: VariantColor;
   $width?: string;
   $height?: string;
+  $hasDescription?: boolean;
   $disabledHover?: boolean;
   style?: React.CSSProperties;
 }
@@ -60,9 +62,10 @@ const getButtonVariantStyles = (variant: StyledButtonProps['$variant'], theme: a
 };
 
 const StyledButton = styled.button<StyledButtonProps>`
-  border: 1px solid ${({ theme }) => theme.colors.gray};
+  box-sizing: border-box;
+  border: ${({ $hasDescription, theme }) => ($hasDescription ? `1px solid ${theme.colors.gray}` : 'none')};
   border-radius: 6px;
-  padding: 8px 16px;
+  padding: ${({ $hasDescription }) => ($hasDescription ? '8px 16px' : '0')};
   font-size: 0.95em;
   font-weight: 600;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};

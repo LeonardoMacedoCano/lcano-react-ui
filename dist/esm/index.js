@@ -4470,7 +4470,7 @@ const FileActionButton = styled.button `
 `;
 
 const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
+    return (jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, "$hasDescription": !!description, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -4481,9 +4481,10 @@ const getButtonVariantStyles = (variant, theme) => {
   `;
 };
 const StyledButton = styled.button `
-  border: 1px solid ${({ theme }) => theme.colors.gray};
+  box-sizing: border-box;
+  border: ${({ $hasDescription, theme }) => ($hasDescription ? `1px solid ${theme.colors.gray}` : 'none')};
   border-radius: 6px;
-  padding: 8px 16px;
+  padding: ${({ $hasDescription }) => ($hasDescription ? '8px 16px' : '0')};
   font-size: 0.95em;
   font-weight: 600;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
