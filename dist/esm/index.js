@@ -5589,7 +5589,7 @@ const TabButton = styled.button `
   `}
 `;
 const TabContent = styled.div `
-  padding-top: 16px;
+  padding: 16px;
 `;
 
 const DEFAULT_THEME_SYSTEM = {
