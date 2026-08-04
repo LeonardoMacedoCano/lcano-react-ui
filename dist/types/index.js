@@ -1231,11 +1231,11 @@ const TableHeader = ({ columns }) => (jsx("thead", { children: jsx(TableHeadRow,
             const { header, titleAlign = 'center' } = column.props;
             return (jsx(TableHeadColumn, { children: jsx(TableColumnTitle, { align: titleAlign, children: header }) }, index));
         }) }) }));
-const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, rowHeight, }) => {
+const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, rowHeight, clickableRows, rowClickHint, }) => {
     if (data.length === 0) {
         return (jsx("tbody", { children: jsx("tr", { children: jsx("td", { colSpan: columns.length + 1, children: jsx(EmptyMessage, { children: messageEmpty }) }) }) }));
     }
-    return (jsx("tbody", { children: data.map((item, index) => (jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), children: [columns.map((column, columnIndex) => {
+    return (jsx("tbody", { children: data.map((item, index) => (jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), "$clickable": !!clickableRows, title: clickableRows ? rowClickHint : undefined, children: [columns.map((column, columnIndex) => {
                     if (!React.isValidElement(column))
                         return null;
                     const { value, width, align, wrap } = column.props;
@@ -1249,14 +1249,14 @@ const TablePagination = ({ values, loadPage }) => {
     }
     return (jsx(SearchPagination, { height: "35px", page: values, loadPage: loadPage }));
 };
-const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, }) => {
+const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, clickableRows, rowClickHint, }) => {
     const [hoveredRowIndex, setHoveredRowIndex] = useState(null);
     const tableData = useMemo(() => getTableData(values), [values]);
     const isEmpty = tableData.length === 0;
     if (isEmpty) {
         return (jsx(Container$1, { backgroundColor: "transparent", width: "100%", children: jsx(EmptyMessage, { children: messageEmpty }) }));
     }
-    return (jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsx(TableContainer, { children: jsxs(StyledTable, { children: [jsx(TableHeader, { columns: columns }), jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex, rowHeight: rowHeight })] }) }), jsx(TablePagination, { values: values, loadPage: loadPage })] }));
+    return (jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsx(TableContainer, { children: jsxs(StyledTable, { children: [jsx(TableHeader, { columns: columns }), jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex, rowHeight: rowHeight, clickableRows: clickableRows, rowClickHint: rowClickHint })] }) }), jsx(TablePagination, { values: values, loadPage: loadPage })] }));
 };
 const TableContainer = styled.div `
   width: 100%;
@@ -1333,6 +1333,7 @@ const TableColumnTitle = styled.div `
 const TableRow = styled.tr `
   background-color: ${({ theme }) => theme.colors.secondary};
   position: relative;
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 
   &:nth-child(odd) {
     background-color: ${({ theme }) => theme.colors.tertiary};

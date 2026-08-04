@@ -93,6 +93,8 @@ interface TableProps<T> {
   onDelete?: (item: T) => void;
   customActions?: (item: T) => ReactNode;
   rowHeight?: string;
+  clickableRows?: boolean;
+  rowClickHint?: string;
 }
 
 const isPagedResponse = <T,>(values: T[] | PagedResponse<T>): values is PagedResponse<T> => 
@@ -135,6 +137,8 @@ interface TableBodyProps<T> {
   hoveredRowIndex: number | null;
   onRowHover: (index: number | null) => void;
   rowHeight?: string;
+  clickableRows?: boolean;
+  rowClickHint?: string;
 }
 
 const TableBody = <T,>({
@@ -151,6 +155,8 @@ const TableBody = <T,>({
   hoveredRowIndex,
   onRowHover,
   rowHeight,
+  clickableRows,
+  rowClickHint,
 }: TableBodyProps<T>) => {
   if (data.length === 0) {
     return (
@@ -172,6 +178,8 @@ const TableBody = <T,>({
           onClick={() => onClickRow?.(item, index)}
           onMouseEnter={() => onRowHover(index)}
           onMouseLeave={() => onRowHover(null)}
+          $clickable={!!clickableRows}
+          title={clickableRows ? rowClickHint : undefined}
         >
           {columns.map((column, columnIndex) => {
             if (!React.isValidElement(column)) return null;
@@ -242,6 +250,8 @@ export const Table = <T extends any>({
   onDelete,
   customActions,
   rowHeight,
+  clickableRows,
+  rowClickHint,
 }: TableProps<T>) => {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
@@ -276,6 +286,8 @@ export const Table = <T extends any>({
             hoveredRowIndex={hoveredRowIndex}
             onRowHover={setHoveredRowIndex}
             rowHeight={rowHeight}
+            clickableRows={clickableRows}
+            rowClickHint={rowClickHint}
           />
         </StyledTable>
       </TableContainer>
@@ -375,9 +387,10 @@ const TableColumnTitle = styled.div<{ align?: string }>`
   color: ${({ theme }) => theme.colors.quaternary};
 `;
 
-const TableRow = styled.tr<{ isSelected?: boolean }>`
+const TableRow = styled.tr<{ isSelected?: boolean; $clickable?: boolean }>`
   background-color: ${({ theme }) => theme.colors.secondary};
   position: relative;
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 
   &:nth-child(odd) {
     background-color: ${({ theme }) => theme.colors.tertiary};

@@ -29,7 +29,9 @@ interface TableProps<T> {
     onDelete?: (item: T) => void;
     customActions?: (item: T) => ReactNode;
     rowHeight?: string;
+    clickableRows?: boolean;
+    rowClickHint?: string;
 }
-export declare const Table: <T extends any>({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
+export declare const Table: <T extends any>({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, clickableRows, rowClickHint, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default Table;
 //# sourceMappingURL=Table.d.ts.map
