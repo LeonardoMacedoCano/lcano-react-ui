@@ -83,4 +83,5 @@ const TabButton = styled.button<{ $active: boolean }>`
 `;
 
 const TabContent = styled.div`
+  padding-top: 16px;
 `;

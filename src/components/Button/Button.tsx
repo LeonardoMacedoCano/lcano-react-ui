@@ -60,7 +60,11 @@ const getButtonVariantStyles = (variant: StyledButtonProps['$variant'], theme: a
 };
 
 const StyledButton = styled.button<StyledButtonProps>`
-  border: none;
+  border: 1px solid ${({ theme }) => theme.colors.gray};
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.95em;
+  font-weight: 600;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   outline: none;
   transition: background-color 0.3s ease, opacity 0.3s ease;

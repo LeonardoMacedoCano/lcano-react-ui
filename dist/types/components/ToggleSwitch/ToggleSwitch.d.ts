@@ -6,10 +6,10 @@ export interface ToggleSwitchProps<T extends string> {
     optionA: ToggleSwitchOption<T>;
     optionB: ToggleSwitchOption<T>;
     value: T;
-    $width?: string;
-    $maxWidth?: string;
+    width?: string;
+    maxWidth?: string;
     onChange: (value: T) => void;
 }
-declare const ToggleSwitch: <T extends string>({ optionA, optionB, value, onChange }: ToggleSwitchProps<T>) => import("react/jsx-runtime").JSX.Element;
+declare const ToggleSwitch: <T extends string>({ optionA, optionB, value, width, maxWidth, onChange }: ToggleSwitchProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default ToggleSwitch;
 //# sourceMappingURL=ToggleSwitch.d.ts.map

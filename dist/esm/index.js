@@ -4481,7 +4481,11 @@ const getButtonVariantStyles = (variant, theme) => {
   `;
 };
 const StyledButton = styled.button `
-  border: none;
+  border: 1px solid ${({ theme }) => theme.colors.gray};
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.95em;
+  font-weight: 600;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   outline: none;
   transition: background-color 0.3s ease, opacity 0.3s ease;
@@ -5585,6 +5589,7 @@ const TabButton = styled.button `
   `}
 `;
 const TabContent = styled.div `
+  padding-top: 16px;
 `;
 
 const DEFAULT_THEME_SYSTEM = {
@@ -5823,28 +5828,34 @@ const BreadcrumbContainer = styled.nav `
   }
 `;
 
-const ToggleSwitch = ({ optionA, optionB, value, onChange }) => (jsx(ToggleSwitchContainer, { children: [optionA, optionB].map((opt) => (jsx(ToggleButtonStyled, { "$active": value === opt.value, onClick: () => onChange(opt.value), children: opt.label }, opt.value))) }));
+const ToggleSwitch = ({ optionA, optionB, value, width, maxWidth, onChange }) => (jsx(ToggleSwitchContainer, { "$width": width, "$maxWidth": maxWidth, children: [optionA, optionB].map((opt) => (jsx(ToggleButtonStyled, { type: "button", "$active": value === opt.value, onClick: () => onChange(opt.value), children: opt.label }, opt.value))) }));
 const ToggleSwitchContainer = styled.div `
   box-sizing: border-box;
-  width: ${({ $width }) => $width || '100%'};
-  max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
-  max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
-  height: 100%;
-  padding: ${({ $padding }) => $padding || '5px'};
-  display: flex;
+  display: inline-flex;
+  width: ${({ $width }) => $width || "auto"};
+  max-width: ${({ $maxWidth }) => $maxWidth || "100%"};
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.gray};
+  background-color: ${({ theme }) => theme.colors.primary};
 `;
 const ToggleButtonStyled = styled.button `
+  box-sizing: border-box;
   cursor: pointer;
   border: none;
-  width: 100%;
-  background: transparent;
-  color: ${({ theme, $active }) => $active ? theme.colors.white : theme.colors.tertiary};
+  border-radius: 6px;
+  padding: 6px 14px;
+  white-space: nowrap;
   font-size: 14px;
-  transition: background-color 0.2s;
+  font-weight: ${({ $active }) => ($active ? 600 : 400)};
+  color: ${({ theme, $active }) => ($active ? theme.colors.white : theme.colors.tertiary)};
+  background-color: ${({ theme, $active }) => ($active ? getVariantColor(theme, "quaternary") : "transparent")};
+  transition: background-color 0.2s ease, color 0.2s ease;
 
   &:hover {
-    background: ${({ theme }) => getVariantColor(theme, 'primary')};
     color: ${({ theme }) => theme.colors.white};
+    background-color: ${({ theme, $active }) => ($active ? getVariantColor(theme, "quaternary") : theme.colors.secondary)};
   }
 `;
 
