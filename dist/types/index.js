@@ -3,6 +3,7 @@ import React, { useState, useCallback, memo, useRef, useEffect, useMemo, createC
 import styled, { css, keyframes, useTheme } from 'styled-components';
 import { useDropzone } from 'react-dropzone';
 import { FaUpload, FaEye, FaTrash, FaTimes, FaExclamationTriangle, FaPlus, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight, FaSearch, FaEdit, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
+import qrcode from 'qrcode-generator';
 
 const STRING_OPERATORS = [
     { name: 'Contém', symbol: 'LIKE' },
@@ -148,6 +149,34 @@ const formatNumericInputWithLimits = (val, maxIntegerDigits, maxDecimalPlaces, m
 };
 
 const formatBooleanToSimNao = (value) => value === 'true' ? 'Sim' : 'Não';
+
+const copyToClipboard = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    try {
+        textarea.focus();
+        textarea.select();
+        return document.execCommand('copy');
+    }
+    catch {
+        return false;
+    }
+    finally {
+        document.body.removeChild(textarea);
+    }
+};
 
 const ActionButton = ({ icon, hint, onClick, options, disabled, }) => {
     const [expanded, setExpanded] = useState(false);
@@ -1714,6 +1743,16 @@ const CardValue = styled.div `
   color: ${({ theme, $variant }) => getVariantColor(theme, $variant)};
 `;
 
+const QrCode = ({ value, size = 256, errorCorrectionLevel = 'M' }) => {
+    const svg = useMemo(() => {
+        const qr = qrcode(0, errorCorrectionLevel);
+        qr.addData(value);
+        qr.make();
+        return qr.createSvgTag({ scalable: true });
+    }, [value, errorCorrectionLevel]);
+    return (jsx("div", { style: { width: size, height: size }, dangerouslySetInnerHTML: { __html: svg } }));
+};
+
 const useConfirmModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('Confirmação');
@@ -1733,6 +1772,21 @@ const useConfirmModal = () => {
     }, [resolver]);
     const ConfirmModalComponent = useMemo(() => (jsx(ConfirmModal, { isOpen: isOpen, title: title, content: content, onClose: () => handleClose(false), onConfirm: () => handleClose(true) })), [isOpen, title, content, handleClose]);
     return { confirm, ConfirmModalComponent };
+};
+
+const useCopyFeedback = ({ successMessage = 'Copiado!', errorMessage = 'Falha ao copiar', durationMs = 2500, } = {}) => {
+    const [toastOk, setToastOk] = useState(null);
+    const timeoutRef = useRef();
+    const copy = useCallback(async (text) => {
+        const ok = await copyToClipboard(text);
+        setToastOk(ok);
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => setToastOk(null), durationMs);
+        return ok;
+    }, [durationMs]);
+    useEffect(() => () => clearTimeout(timeoutRef.current), []);
+    const CopyFeedbackToast = toastOk === null ? null : (jsx(ToastNotification, { type: toastOk ? 'success' : 'error', message: toastOk ? successMessage : errorMessage, onClose: () => setToastOk(null) }));
+    return { copy, CopyFeedbackToast };
 };
 
 const ContextMessage = createContext(undefined);
@@ -1763,4 +1817,4 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, CloseButton, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, SummaryCard, Table, Tabs, ThemeFavicon, ThemeSelector, ToastCard, ToastContainer, ToastIcon, ToastMessage, ToastNotification, ToggleSwitch, buildSearchSelectAdapter, convertReactStyleToCSSObject, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, CloseButton, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, QrCode, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, SummaryCard, Table, Tabs, ThemeFavicon, ThemeSelector, ToastCard, ToastContainer, ToastIcon, ToastMessage, ToastNotification, ToggleSwitch, buildSearchSelectAdapter, convertReactStyleToCSSObject, copyToClipboard, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useCopyFeedback, useMessage };

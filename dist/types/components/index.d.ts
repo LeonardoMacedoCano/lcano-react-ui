@@ -22,4 +22,5 @@ export * from './HighlightBox';
 export * from './Breadcrumb';
 export * from './ToggleSwitch';
 export * from './SummaryCard';
+export * from './QrCode';
 //# sourceMappingURL=index.d.ts.map
