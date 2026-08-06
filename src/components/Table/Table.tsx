@@ -13,7 +13,13 @@ export type ColumnProps<T> = {
   align?: 'left' | 'center' | 'right';
   titleAlign?: 'left' | 'center' | 'right';
   wrap?: boolean;
+  stackLabel?: string;
 };
+
+const DEFAULT_STACK_BELOW = '700px';
+
+const stackLabelFor = <T extends any>(column: ColumnProps<T>): string | undefined =>
+  column.stackLabel ?? (typeof column.header === 'string' ? column.header : undefined);
 
 export const Column = <T extends any>({}: ColumnProps<T>) => null;
 
@@ -23,6 +29,7 @@ export interface TableActionsProps {
   onDelete?: () => void;
   customActions?: () => ReactNode;
   visible: boolean;
+  stackBelow?: string;
 }
 
 const COMMON_BUTTON_STYLES = {
@@ -34,15 +41,16 @@ const COMMON_BUTTON_STYLES = {
   width: '25px',
 } as const;
 
-const TableActions: FC<TableActionsProps> = ({ 
-  onView, 
-  onEdit, 
-  onDelete, 
-  visible, 
-  customActions 
+const TableActions: FC<TableActionsProps> = ({
+  onView,
+  onEdit,
+  onDelete,
+  visible,
+  customActions,
+  stackBelow = DEFAULT_STACK_BELOW,
 }) => (
   <ActionsContainer>
-    <ActionsWrapper $visible={visible}>
+    <ActionsWrapper $visible={visible} $stackBelow={stackBelow}>
       {customActions && (
         <CustomActionWrapper>
           {customActions()}
@@ -95,6 +103,7 @@ interface TableProps<T> {
   rowHeight?: string;
   clickableRows?: boolean;
   rowClickHint?: string;
+  stackBelow?: string;
 }
 
 const isPagedResponse = <T,>(values: T[] | PagedResponse<T>): values is PagedResponse<T> => 
@@ -103,14 +112,14 @@ const isPagedResponse = <T,>(values: T[] | PagedResponse<T>): values is PagedRes
 const getTableData = <T,>(values: T[] | PagedResponse<T>): T[] => 
   isPagedResponse(values) ? values.content || [] : values;
 
-const TableHeader: FC<{ columns: ReactNode[] }> = ({ columns }) => (
+const TableHeader: FC<{ columns: ReactNode[]; stackBelow: string }> = ({ columns, stackBelow }) => (
   <thead>
-    <TableHeadRow>
+    <TableHeadRow $stackBelow={stackBelow}>
       {columns.map((column, index) => {
         if (!React.isValidElement(column)) return null;
-        
+
         const { header, titleAlign = 'center' } = column.props as ColumnProps<any>;
-        
+
         return (
           <TableHeadColumn key={index}>
             <TableColumnTitle align={titleAlign}>
@@ -139,6 +148,7 @@ interface TableBodyProps<T> {
   rowHeight?: string;
   clickableRows?: boolean;
   rowClickHint?: string;
+  stackBelow: string;
 }
 
 const TableBody = <T,>({
@@ -157,6 +167,7 @@ const TableBody = <T,>({
   rowHeight,
   clickableRows,
   rowClickHint,
+  stackBelow,
 }: TableBodyProps<T>) => {
   if (data.length === 0) {
     return (
@@ -179,12 +190,14 @@ const TableBody = <T,>({
           onMouseEnter={() => onRowHover(index)}
           onMouseLeave={() => onRowHover(null)}
           $clickable={!!clickableRows}
+          $stackBelow={stackBelow}
           title={clickableRows ? rowClickHint : undefined}
         >
           {columns.map((column, columnIndex) => {
             if (!React.isValidElement(column)) return null;
 
-            const { value, width, align, wrap } = column.props as ColumnProps<T>;
+            const columnProps = column.props as ColumnProps<T>;
+            const { value, width, align, wrap } = columnProps;
             const isSelected = rowSelected?.(item) ?? false;
 
             return (
@@ -195,6 +208,8 @@ const TableBody = <T,>({
                 $align={align}
                 $rowHeight={rowHeight}
                 $wrap={wrap}
+                $stackBelow={stackBelow}
+                data-label={stackLabelFor(columnProps)}
               >
                 <TruncatedContent $wrap={wrap}>
                   {value(item, index)}
@@ -202,14 +217,15 @@ const TableBody = <T,>({
               </TableColumn>
             );
           })}
-          
-          <ActionColumn>
+
+          <ActionColumn $stackBelow={stackBelow}>
             <TableActions
               onView={onView ? () => onView(item) : undefined}
               onEdit={onEdit ? () => onEdit(item) : undefined}
               onDelete={onDelete ? () => onDelete(item) : undefined}
               visible={hoveredRowIndex === index}
               customActions={customActions ? () => customActions(item) : undefined}
+              stackBelow={stackBelow}
             />
           </ActionColumn>
         </TableRow>
@@ -252,6 +268,7 @@ export const Table = <T extends any>({
   rowHeight,
   clickableRows,
   rowClickHint,
+  stackBelow = DEFAULT_STACK_BELOW,
 }: TableProps<T>) => {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
@@ -271,7 +288,7 @@ export const Table = <T extends any>({
     <Container backgroundColor="transparent" width="100%">
       <TableContainer>
         <StyledTable>
-          <TableHeader columns={columns} />
+          <TableHeader columns={columns} stackBelow={stackBelow} />
           <TableBody
             data={tableData}
             columns={columns}
@@ -288,6 +305,7 @@ export const Table = <T extends any>({
             rowHeight={rowHeight}
             clickableRows={clickableRows}
             rowClickHint={rowClickHint}
+            stackBelow={stackBelow}
           />
         </StyledTable>
       </TableContainer>
@@ -299,8 +317,8 @@ export const Table = <T extends any>({
 
 const TableContainer = styled.div`
   width: 100%;
-  overflow: hidden;
-  table-layout: fixed;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const EmptyMessage = styled.div`
@@ -310,10 +328,15 @@ const EmptyMessage = styled.div`
 const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 `;
 
-const TableHeadRow = styled.tr`
+const TableHeadRow = styled.tr<{ $stackBelow: string }>`
   border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: none;
+  }
 `;
 
 const TableHeadColumn = styled.th`
@@ -333,6 +356,7 @@ const TableColumn = styled.td<{
   $align?: string;
   $rowHeight?: string;
   $wrap?: boolean;
+  $stackBelow: string;
 }>`
   font-size: 13px;
   height: ${({ $rowHeight }) => $rowHeight || '35px'};
@@ -363,6 +387,43 @@ const TableColumn = styled.td<{
   &:first-child {
     border-left: none;
   }
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    white-space: normal;
+    text-overflow: clip;
+    border-left: none;
+    padding: 3px 12px;
+
+    & > div {
+      width: auto;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    &[data-label]::before,
+    &:first-child[data-label]::before {
+      content: attr(data-label) ':';
+      position: static;
+      width: auto;
+      flex-shrink: 0;
+      background: none;
+      display: inline;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: ${({ theme }) => theme.colors.quaternary};
+    }
+  }
 `;
 
 const TruncatedContent = styled.div<{ $wrap?: boolean }>`
@@ -387,7 +448,7 @@ const TableColumnTitle = styled.div<{ align?: string }>`
   color: ${({ theme }) => theme.colors.quaternary};
 `;
 
-const TableRow = styled.tr<{ isSelected?: boolean; $clickable?: boolean }>`
+const TableRow = styled.tr<{ isSelected?: boolean; $clickable?: boolean; $stackBelow: string }>`
   background-color: ${({ theme }) => theme.colors.secondary};
   position: relative;
   cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
@@ -399,13 +460,31 @@ const TableRow = styled.tr<{ isSelected?: boolean; $clickable?: boolean }>`
   &:last-child {
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
   }
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px 0;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 `;
 
-const ActionColumn = styled.td`
+const ActionColumn = styled.td<{ $stackBelow: string }>`
   position: sticky;
   right: 0;
   padding: 2px;
   z-index: 2;
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    position: static;
+    display: block;
+    width: 100%;
+  }
 `;
 
 const ActionsContainer = styled.div`
@@ -413,7 +492,7 @@ const ActionsContainer = styled.div`
   height: 100%;
 `;
 
-const ActionsWrapper = styled.div<{ $visible: boolean }>`
+const ActionsWrapper = styled.div<{ $visible: boolean; $stackBelow: string }>`
   position: sticky;
   top: 0;
   right: 5px;
@@ -425,6 +504,13 @@ const ActionsWrapper = styled.div<{ $visible: boolean }>`
   opacity: ${({ $visible }) => $visible ? 1 : 0};
   pointer-events: ${({ $visible }) => $visible ? 'auto' : 'none'};
   transition: opacity 0.2s ease-in-out;
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    position: static;
+    justify-content: flex-start;
+    opacity: 1;
+    pointer-events: auto;
+  }
 `;
 
 const CustomActionWrapper = styled.div`

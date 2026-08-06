@@ -5414,6 +5414,8 @@ function buildSearchSelectAdapter({ searchOptions, mapToOption, mapFromOption, v
     return { fetchOptions, onSelect, optionValue };
 }
 
+const DEFAULT_STACK_BELOW = '700px';
+const stackLabelFor = (column) => column.stackLabel ?? (typeof column.header === 'string' ? column.header : undefined);
 const Column = ({}) => null;
 const COMMON_BUTTON_STYLES = {
     borderRadius: '50%',
@@ -5423,26 +5425,27 @@ const COMMON_BUTTON_STYLES = {
     height: '25px',
     width: '25px',
 };
-const TableActions = ({ onView, onEdit, onDelete, visible, customActions }) => (jsx(ActionsContainer, { children: jsxs(ActionsWrapper, { "$visible": visible, children: [customActions && (jsx(CustomActionWrapper, { children: customActions() })), onView && (jsx(Button, { onClick: onView, variant: "success", icon: jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsx(Button, { variant: "info", icon: jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsx(Button, { variant: "warning", icon: jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
+const TableActions = ({ onView, onEdit, onDelete, visible, customActions, stackBelow = DEFAULT_STACK_BELOW, }) => (jsx(ActionsContainer, { children: jsxs(ActionsWrapper, { "$visible": visible, "$stackBelow": stackBelow, children: [customActions && (jsx(CustomActionWrapper, { children: customActions() })), onView && (jsx(Button, { onClick: onView, variant: "success", icon: jsx(FaEye, {}), hint: "Visualizar", style: COMMON_BUTTON_STYLES })), onEdit && (jsx(Button, { variant: "info", icon: jsx(FaEdit, {}), onClick: onEdit, style: COMMON_BUTTON_STYLES })), onDelete && (jsx(Button, { variant: "warning", icon: jsx(FaTrash, {}), onClick: onDelete, style: COMMON_BUTTON_STYLES }))] }) }));
 const isPagedResponse = (values) => typeof values === 'object' && values !== null && 'content' in values;
 const getTableData = (values) => isPagedResponse(values) ? values.content || [] : values;
-const TableHeader = ({ columns }) => (jsx("thead", { children: jsx(TableHeadRow, { children: columns.map((column, index) => {
+const TableHeader = ({ columns, stackBelow }) => (jsx("thead", { children: jsx(TableHeadRow, { "$stackBelow": stackBelow, children: columns.map((column, index) => {
             if (!React.isValidElement(column))
                 return null;
             const { header, titleAlign = 'center' } = column.props;
             return (jsx(TableHeadColumn, { children: jsx(TableColumnTitle, { align: titleAlign, children: header }) }, index));
         }) }) }));
-const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, rowHeight, clickableRows, rowClickHint, }) => {
+const TableBody = ({ data, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, onView, onEdit, onDelete, customActions, hoveredRowIndex, onRowHover, rowHeight, clickableRows, rowClickHint, stackBelow, }) => {
     if (data.length === 0) {
         return (jsx("tbody", { children: jsx("tr", { children: jsx("td", { colSpan: columns.length + 1, children: jsx(EmptyMessage, { children: messageEmpty }) }) }) }));
     }
-    return (jsx("tbody", { children: data.map((item, index) => (jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), "$clickable": !!clickableRows, title: clickableRows ? rowClickHint : undefined, children: [columns.map((column, columnIndex) => {
+    return (jsx("tbody", { children: data.map((item, index) => (jsxs(TableRow, { onClick: () => onClickRow?.(item, index), onMouseEnter: () => onRowHover(index), onMouseLeave: () => onRowHover(null), "$clickable": !!clickableRows, "$stackBelow": stackBelow, title: clickableRows ? rowClickHint : undefined, children: [columns.map((column, columnIndex) => {
                     if (!React.isValidElement(column))
                         return null;
-                    const { value, width, align, wrap } = column.props;
+                    const columnProps = column.props;
+                    const { value, width, align, wrap } = columnProps;
                     const isSelected = rowSelected?.(item) ?? false;
-                    return (jsx(TableColumn, { "$isSelected": isSelected, "$width": width, "$align": align, "$rowHeight": rowHeight, "$wrap": wrap, children: jsx(TruncatedContent, { "$wrap": wrap, children: value(item, index) }) }, columnIndex));
-                }), jsx(ActionColumn, { children: jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined }) })] }, keyExtractor(item, index)))) }));
+                    return (jsx(TableColumn, { "$isSelected": isSelected, "$width": width, "$align": align, "$rowHeight": rowHeight, "$wrap": wrap, "$stackBelow": stackBelow, "data-label": stackLabelFor(columnProps), children: jsx(TruncatedContent, { "$wrap": wrap, children: value(item, index) }) }, columnIndex));
+                }), jsx(ActionColumn, { "$stackBelow": stackBelow, children: jsx(TableActions, { onView: onView ? () => onView(item) : undefined, onEdit: onEdit ? () => onEdit(item) : undefined, onDelete: onDelete ? () => onDelete(item) : undefined, visible: hoveredRowIndex === index, customActions: customActions ? () => customActions(item) : undefined, stackBelow: stackBelow }) })] }, keyExtractor(item, index)))) }));
 };
 const TablePagination = ({ values, loadPage }) => {
     if (!loadPage || !isPagedResponse(values) || values.totalElements <= 0) {
@@ -5450,19 +5453,19 @@ const TablePagination = ({ values, loadPage }) => {
     }
     return (jsx(SearchPagination, { height: "35px", page: values, loadPage: loadPage }));
 };
-const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, clickableRows, rowClickHint, }) => {
+const Table = ({ values, columns, messageEmpty, keyExtractor, onClickRow, rowSelected, loadPage, onView, onEdit, onDelete, customActions, rowHeight, clickableRows, rowClickHint, stackBelow = DEFAULT_STACK_BELOW, }) => {
     const [hoveredRowIndex, setHoveredRowIndex] = useState(null);
     const tableData = useMemo(() => getTableData(values), [values]);
     const isEmpty = tableData.length === 0;
     if (isEmpty) {
         return (jsx(Container$1, { backgroundColor: "transparent", width: "100%", children: jsx(EmptyMessage, { children: messageEmpty }) }));
     }
-    return (jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsx(TableContainer, { children: jsxs(StyledTable, { children: [jsx(TableHeader, { columns: columns }), jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex, rowHeight: rowHeight, clickableRows: clickableRows, rowClickHint: rowClickHint })] }) }), jsx(TablePagination, { values: values, loadPage: loadPage })] }));
+    return (jsxs(Container$1, { backgroundColor: "transparent", width: "100%", children: [jsx(TableContainer, { children: jsxs(StyledTable, { children: [jsx(TableHeader, { columns: columns, stackBelow: stackBelow }), jsx(TableBody, { data: tableData, columns: columns, messageEmpty: messageEmpty, keyExtractor: keyExtractor, onClickRow: onClickRow, rowSelected: rowSelected, onView: onView, onEdit: onEdit, onDelete: onDelete, customActions: customActions, hoveredRowIndex: hoveredRowIndex, onRowHover: setHoveredRowIndex, rowHeight: rowHeight, clickableRows: clickableRows, rowClickHint: rowClickHint, stackBelow: stackBelow })] }) }), jsx(TablePagination, { values: values, loadPage: loadPage })] }));
 };
 const TableContainer = styled.div `
   width: 100%;
-  overflow: hidden;
-  table-layout: fixed;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 const EmptyMessage = styled.div `
   padding: 10px;
@@ -5470,9 +5473,14 @@ const EmptyMessage = styled.div `
 const StyledTable = styled.table `
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 `;
 const TableHeadRow = styled.tr `
   border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: none;
+  }
 `;
 const TableHeadColumn = styled.th `
   padding: 0 3px;
@@ -5512,6 +5520,43 @@ const TableColumn = styled.td `
   &:first-child {
     border-left: none;
   }
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    white-space: normal;
+    text-overflow: clip;
+    border-left: none;
+    padding: 3px 12px;
+
+    & > div {
+      width: auto;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    &[data-label]::before,
+    &:first-child[data-label]::before {
+      content: attr(data-label) ':';
+      position: static;
+      width: auto;
+      flex-shrink: 0;
+      background: none;
+      display: inline;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: ${({ theme }) => theme.colors.quaternary};
+    }
+  }
 `;
 const TruncatedContent = styled.div `
   white-space: ${({ $wrap }) => ($wrap ? 'normal' : 'nowrap')};
@@ -5543,12 +5588,30 @@ const TableRow = styled.tr `
   &:last-child {
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
   }
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px 0;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 `;
 const ActionColumn = styled.td `
   position: sticky;
   right: 0;
   padding: 2px;
   z-index: 2;
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    position: static;
+    display: block;
+    width: 100%;
+  }
 `;
 const ActionsContainer = styled.div `
   position: relative;
@@ -5566,6 +5629,13 @@ const ActionsWrapper = styled.div `
   opacity: ${({ $visible }) => $visible ? 1 : 0};
   pointer-events: ${({ $visible }) => $visible ? 'auto' : 'none'};
   transition: opacity 0.2s ease-in-out;
+
+  @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
+    position: static;
+    justify-content: flex-start;
+    opacity: 1;
+    pointer-events: auto;
+  }
 `;
 const CustomActionWrapper = styled.div `
   display: flex;
