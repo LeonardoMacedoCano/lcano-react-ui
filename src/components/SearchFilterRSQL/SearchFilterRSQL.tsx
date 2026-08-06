@@ -164,7 +164,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             onClick={handleAdd}
             hint="Adicionar"
             variant="success"
-            width="100px"
+            width="36px"
             height="36px"
             disabled={isAddButtonDisabled()}
             style={{ borderRadius: '6px', flexShrink: 0 }}
@@ -221,6 +221,7 @@ const FilterFieldsRow = styled.div`
     > *:nth-child(2) {
       flex: 1 1 50%;
       min-width: 0;
+      border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
     }
 
     > *:nth-child(3) {

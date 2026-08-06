@@ -5164,7 +5164,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '6px', flexShrink: 0 } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '6px', flexShrink: 0 } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',
@@ -5187,6 +5187,7 @@ const FilterFieldsRow = styled.div `
     > *:nth-child(2) {
       flex: 1 1 50%;
       min-width: 0;
+      border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
     }
 
     > *:nth-child(3) {
