@@ -4673,6 +4673,7 @@ const FieldWrapper$2 = styled.div `
   max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
   max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
   height: 100%;
+  min-height: 36px;
   padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
   flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
@@ -4691,6 +4692,7 @@ const StyledInput = styled.input `
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
@@ -4715,6 +4717,7 @@ const StyledSelect = styled.select `
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
@@ -5159,7 +5162,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '6px', flexShrink: 0 } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',

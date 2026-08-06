@@ -165,8 +165,9 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             hint="Adicionar"
             variant="success"
             width="100px"
+            height="36px"
             disabled={isAddButtonDisabled()}
-            style={{ borderRadius: '0 5px 0 0' }}
+            style={{ borderRadius: '6px', flexShrink: 0 }}
           />
         </Stack>
 
