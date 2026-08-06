@@ -126,7 +126,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
   return (
     <Container>
       <Stack direction="column" divider="top">
-        <Stack direction="row" divider="left">
+        <FilterFieldsRow>
           <FieldValue
             type="SELECT"
             value={selectedField?.name || ''}
@@ -164,11 +164,12 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             onClick={handleAdd}
             hint="Adicionar"
             variant="success"
-            width="100px"
+            width="36px"
+            height="36px"
             disabled={isAddButtonDisabled()}
-            style={{ borderRadius: '0 5px 0 0' }}
+            style={{ borderRadius: '0 5px 0 0', flexShrink: 0 }}
           />
-        </Stack>
+        </FilterFieldsRow>
 
         {filters.length > 0 ? (
           <Tags>
@@ -202,6 +203,39 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
 };
 
 export default SearchFilterRSQL;
+
+const FILTER_ROW_STACK_BREAKPOINT = '700px';
+
+const FilterFieldsRow = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+
+  > * + * {
+    border-left: 1px solid ${({ theme }) => theme.colors.gray};
+  }
+
+  @media (max-width: ${FILTER_ROW_STACK_BREAKPOINT}) {
+    flex-wrap: wrap;
+
+    > *:nth-child(1),
+    > *:nth-child(2) {
+      flex: 1 1 50%;
+      min-width: 0;
+      border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+    }
+
+    > *:nth-child(3) {
+      flex: 1 1 0;
+      min-width: 0;
+      border-left: none;
+    }
+
+    > *:nth-child(4) {
+      flex: 0 0 auto;
+      border-radius: 0;
+    }
+  }
+`;
 
 const Tags = styled.div`
   background-color: ${({ theme }) => theme.colors.tertiary};

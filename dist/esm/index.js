@@ -4497,8 +4497,8 @@ const FileActionButton = styled.button `
   }
 `;
 
-const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, "$hasDescription": !!description, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
+const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, style, ...props }) => {
+    return (jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, "$hasDescription": !!description, "$customStyle": style, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsx(IconWrapper$2, { children: icon }), description && jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -4531,7 +4531,7 @@ const StyledButton = styled.button `
 
   ${({ $variant, theme }) => getButtonVariantStyles($variant, theme)}
 
-  ${props => props.style && css `${convertReactStyleToCSSObject(props.style)}`}
+  ${props => props.$customStyle && css `${convertReactStyleToCSSObject(props.$customStyle)}`}
 `;
 const IconWrapper$2 = styled.span `
   display: flex;
@@ -4561,16 +4561,20 @@ const ModalOverlay = styled.div `
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 const ModalContainer = styled.div `
   width: ${({ $width }) => $width};
   max-width: ${({ $maxWidth }) => $maxWidth ?? '90%'};
   height: ${({ $height }) => $height};
+  max-height: 100%;
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 8px;
   box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 const ModalHeader = styled.div `
   color: ${({ theme }) => theme.colors.white};
@@ -4599,6 +4603,9 @@ const ModalTitle = styled.div `
 const ModalContent = styled.div `
   padding: 20px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-wrap: break-word;
 `;
 const ModalActions = styled.div `
   display: flex;
@@ -4664,6 +4671,7 @@ const FieldWrapper$2 = styled.div `
   max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
   max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
   height: 100%;
+  min-height: 36px;
   padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
   flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
@@ -4682,6 +4690,7 @@ const StyledInput = styled.input `
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
@@ -4706,6 +4715,7 @@ const StyledSelect = styled.select `
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
@@ -4998,8 +5008,8 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
-const Stack = ({ children, width, height, direction = 'row', divider, style, alignCenter, alignRight, justifyCenter, justifyBetween, gap }) => {
-    return (jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, style: style, children: children }));
+const Stack = ({ children, width, height, direction = 'row', divider, style, alignCenter, alignRight, justifyCenter, justifyBetween, gap, wrap }) => {
+    return (jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, "$wrap": wrap, style: style, children: children }));
 };
 const StackContainer = styled.div `
   width: ${({ $width }) => $width || '100%'};
@@ -5014,7 +5024,10 @@ const StackContainer = styled.div `
     : css `
           display: flex;
           flex-direction: ${$direction};
+          flex-wrap: nowrap;
         `}
+
+  ${({ $wrap, $direction }) => $wrap && $direction === 'row' && 'flex-wrap: wrap;'}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
   ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
@@ -5143,19 +5156,50 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         }
         return searchValue === null || searchValue === '';
     };
-    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(FilterFieldsRow, { children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
                                 ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
                                 : [], onUpdate: (val) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "100px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0' } })] }), filters.length > 0 ? (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0', flexShrink: 0 } })] }), filters.length > 0 ? (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     display: 'flex'
                                 } })] }, i))) })) : (jsx(EmptyTags, {}))] }) }));
 };
+const FILTER_ROW_STACK_BREAKPOINT = '700px';
+const FilterFieldsRow = styled.div `
+  display: flex;
+  flex-wrap: nowrap;
+
+  > * + * {
+    border-left: 1px solid ${({ theme }) => theme.colors.gray};
+  }
+
+  @media (max-width: ${FILTER_ROW_STACK_BREAKPOINT}) {
+    flex-wrap: wrap;
+
+    > *:nth-child(1),
+    > *:nth-child(2) {
+      flex: 1 1 50%;
+      min-width: 0;
+      border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+    }
+
+    > *:nth-child(3) {
+      flex: 1 1 0;
+      min-width: 0;
+      border-left: none;
+    }
+
+    > *:nth-child(4) {
+      flex: 0 0 auto;
+      border-radius: 0;
+    }
+  }
+`;
 const Tags = styled.div `
   background-color: ${({ theme }) => theme.colors.tertiary};
   padding: 10px;

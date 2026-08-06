@@ -140,6 +140,7 @@ const FieldWrapper = styled.div<StyledProps>`
   max-width: ${({ $maxWidth }) => $maxWidth || '100%'};
   max-height: ${({ $maxHeight }) => $maxHeight || 'none'};
   height: 100%;
+  min-height: 36px;
   padding: ${({ $padding }) => $padding || '5px'};
   display: flex;
   flex-direction: ${({ $inline }) => ($inline ? 'row' : 'column')};
@@ -160,6 +161,7 @@ const StyledInput = styled.input<StyledProps>`
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
@@ -186,6 +188,7 @@ const StyledSelect = styled.select<StyledProps>`
   width: ${({ $inputWidth }) => $inputWidth || '100%'};
   font-size: 15px;
   height: 100%;
+  min-height: 26px;
   outline: none;
   background-color: transparent;
   margin-left: ${({ $inline }) => ($inline ? '5px' : '0')};
