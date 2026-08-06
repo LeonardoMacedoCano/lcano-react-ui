@@ -5523,23 +5523,33 @@ const TableColumn = styled.td `
 
   @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
     width: 100%;
     max-width: 100%;
     height: auto;
     white-space: normal;
     text-overflow: clip;
     border-left: none;
-    padding: 4px 12px;
+    padding: 3px 12px;
+
+    & > div {
+      width: auto;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
 
     &[data-label]::before,
     &:first-child[data-label]::before {
-      content: attr(data-label);
+      content: attr(data-label) ':';
       position: static;
       width: auto;
+      flex-shrink: 0;
       background: none;
-      display: block;
+      display: inline;
       font-size: 11px;
       font-weight: bold;
       text-transform: uppercase;
@@ -5582,9 +5592,9 @@ const TableRow = styled.tr `
   @media (max-width: ${({ $stackBelow }) => $stackBelow}) {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    gap: 1px;
+    padding: 6px 0;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
 
     &:last-child {
       border-bottom: none;
