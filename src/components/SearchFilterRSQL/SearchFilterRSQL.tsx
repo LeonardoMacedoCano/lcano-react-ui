@@ -167,7 +167,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             width="36px"
             height="36px"
             disabled={isAddButtonDisabled()}
-            style={{ borderRadius: '6px', flexShrink: 0 }}
+            style={{ borderRadius: '0 5px 0 0', flexShrink: 0 }}
           />
         </FilterFieldsRow>
 
@@ -232,6 +232,7 @@ const FilterFieldsRow = styled.div`
 
     > *:nth-child(4) {
       flex: 0 0 auto;
+      border-radius: 0;
     }
   }
 `;

@@ -4499,8 +4499,8 @@ const FileActionButton = styled.button `
   }
 `;
 
-const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, ...props }) => {
-    return (jsxRuntime.jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, "$hasDescription": !!description, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper$2, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
+const Button = ({ variant, description, width, height, icon, hint, disabled, disabledHover, style, ...props }) => {
+    return (jsxRuntime.jsxs(StyledButton, { "$variant": variant, "$width": width, "$height": height, "$hasDescription": !!description, "$customStyle": style, title: hint, disabled: disabled, "$disabledHover": disabledHover, ...props, children: [icon && jsxRuntime.jsx(IconWrapper$2, { children: icon }), description && jsxRuntime.jsx(Description, { children: description })] }));
 };
 const getButtonVariantStyles = (variant, theme) => {
     if (!variant)
@@ -4533,7 +4533,7 @@ const StyledButton = styled.button `
 
   ${({ $variant, theme }) => getButtonVariantStyles($variant, theme)}
 
-  ${props => props.style && styled.css `${convertReactStyleToCSSObject(props.style)}`}
+  ${props => props.$customStyle && styled.css `${convertReactStyleToCSSObject(props.$customStyle)}`}
 `;
 const IconWrapper$2 = styled.span `
   display: flex;
@@ -5164,7 +5164,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '6px', flexShrink: 0 } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField }), jsxRuntime.jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0', flexShrink: 0 } })] }), filters.length > 0 ? (jsxRuntime.jsx(Tags, { children: filters.map((f, i) => (jsxRuntime.jsxs(Tag, { children: [jsxRuntime.jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsxRuntime.jsx(Button, { icon: jsxRuntime.jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',
@@ -5198,6 +5198,7 @@ const FilterFieldsRow = styled.div `
 
     > *:nth-child(4) {
       flex: 0 0 auto;
+      border-radius: 0;
     }
   }
 `;

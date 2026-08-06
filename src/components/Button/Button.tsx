@@ -14,16 +14,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   style?: React.CSSProperties;
 }
 
-const Button: React.FC<ButtonProps> = ({ 
-  variant, 
-  description, 
-  width, 
-  height, 
-  icon, 
-  hint, 
+const Button: React.FC<ButtonProps> = ({
+  variant,
+  description,
+  width,
+  height,
+  icon,
+  hint,
   disabled,
   disabledHover,
-  ...props 
+  style,
+  ...props
 }) => {
   return (
     <StyledButton
@@ -31,6 +32,7 @@ const Button: React.FC<ButtonProps> = ({
       $width={width}
       $height={height}
       $hasDescription={!!description}
+      $customStyle={style}
       title={hint}
       disabled={disabled}
       $disabledHover={disabledHover}
@@ -50,7 +52,7 @@ interface StyledButtonProps {
   $height?: string;
   $hasDescription?: boolean;
   $disabledHover?: boolean;
-  style?: React.CSSProperties;
+  $customStyle?: React.CSSProperties;
 }
 
 const getButtonVariantStyles = (variant: StyledButtonProps['$variant'], theme: any) => {
@@ -84,7 +86,7 @@ const StyledButton = styled.button<StyledButtonProps>`
 
   ${({ $variant, theme }) => getButtonVariantStyles($variant, theme)}
 
-  ${props => props.style && css`${convertReactStyleToCSSObject(props.style)}`}
+  ${props => props.$customStyle && css`${convertReactStyleToCSSObject(props.$customStyle)}`}
 `;
 
 const IconWrapper = styled.span`
