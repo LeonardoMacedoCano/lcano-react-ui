@@ -15,6 +15,7 @@ export interface StackProps {
   justifyCenter?: boolean;
   justifyBetween?: boolean;
   gap?: string;
+  wrap?: boolean;
 }
 
 export const Stack: FC<StackProps> = ({
@@ -28,7 +29,8 @@ export const Stack: FC<StackProps> = ({
   alignRight,
   justifyCenter,
   justifyBetween,
-  gap
+  gap,
+  wrap
 }) => {
   return (
     <StackContainer
@@ -41,6 +43,7 @@ export const Stack: FC<StackProps> = ({
       $alignRight={alignRight}
       $justifyCenter={justifyCenter}
       $justifyBetween={justifyBetween}
+      $wrap={wrap}
       style={style}
     >
       {children}
@@ -60,6 +63,7 @@ interface StackContainerProps {
   $justifyCenter?: boolean;
   $justifyBetween?: boolean;
   $gap?: string;
+  $wrap?: boolean;
 }
 
 const StackContainer = styled.div<StackContainerProps>`
@@ -76,8 +80,10 @@ const StackContainer = styled.div<StackContainerProps>`
       : css`
           display: flex;
           flex-direction: ${$direction};
-          flex-wrap: ${$direction === 'row' ? 'wrap' : 'nowrap'};
+          flex-wrap: nowrap;
         `}
+
+  ${({ $wrap, $direction }) => $wrap && $direction === 'row' && 'flex-wrap: wrap;'}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
   ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}

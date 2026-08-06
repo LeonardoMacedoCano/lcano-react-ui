@@ -5008,8 +5008,8 @@ const Footer = styled(BaseBox) `
   border-top: 1px solid ${({ theme }) => theme.colors.gray};
 `;
 
-const Stack = ({ children, width, height, direction = 'row', divider, style, alignCenter, alignRight, justifyCenter, justifyBetween, gap }) => {
-    return (jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, style: style, children: children }));
+const Stack = ({ children, width, height, direction = 'row', divider, style, alignCenter, alignRight, justifyCenter, justifyBetween, gap, wrap }) => {
+    return (jsx(StackContainer, { "$direction": direction, "$divider": divider, "$gap": gap, "$width": width, "$height": height, "$alignCenter": alignCenter, "$alignRight": alignRight, "$justifyCenter": justifyCenter, "$justifyBetween": justifyBetween, "$wrap": wrap, style: style, children: children }));
 };
 const StackContainer = styled.div `
   width: ${({ $width }) => $width || '100%'};
@@ -5024,8 +5024,10 @@ const StackContainer = styled.div `
     : css `
           display: flex;
           flex-direction: ${$direction};
-          flex-wrap: ${$direction === 'row' ? 'wrap' : 'nowrap'};
+          flex-wrap: nowrap;
         `}
+
+  ${({ $wrap, $direction }) => $wrap && $direction === 'row' && 'flex-wrap: wrap;'}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
   ${({ $alignRight }) => $alignRight && 'align-items: flex-end;'}
@@ -5154,7 +5156,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         }
         return searchValue === null || searchValue === '';
     };
-    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(Stack, { direction: "row", divider: "left", children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(FilterFieldsRow, { children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
                                 ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
                                 : [], onUpdate: (val) => {
                                 const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
@@ -5167,6 +5169,35 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
                                     display: 'flex'
                                 } })] }, i))) })) : (jsx(EmptyTags, {}))] }) }));
 };
+const FILTER_ROW_STACK_BREAKPOINT = '700px';
+const FilterFieldsRow = styled.div `
+  display: flex;
+  flex-wrap: nowrap;
+
+  > * + * {
+    border-left: 1px solid ${({ theme }) => theme.colors.gray};
+  }
+
+  @media (max-width: ${FILTER_ROW_STACK_BREAKPOINT}) {
+    flex-wrap: wrap;
+
+    > *:nth-child(1),
+    > *:nth-child(2) {
+      flex: 1 1 50%;
+      min-width: 0;
+    }
+
+    > *:nth-child(3) {
+      flex: 1 1 0;
+      min-width: 0;
+      border-left: none;
+    }
+
+    > *:nth-child(4) {
+      flex: 0 0 auto;
+    }
+  }
+`;
 const Tags = styled.div `
   background-color: ${({ theme }) => theme.colors.tertiary};
   padding: 10px;

@@ -12,6 +12,7 @@ export interface StackProps {
     justifyCenter?: boolean;
     justifyBetween?: boolean;
     gap?: string;
+    wrap?: boolean;
 }
 export declare const Stack: FC<StackProps>;
 export default Stack;
