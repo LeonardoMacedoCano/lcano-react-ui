@@ -94,17 +94,21 @@ export const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 
 export const ModalContainer = styled.div<ModalContainerProps>`
   width: ${({ $width }) => $width};
   max-width: ${({ $maxWidth }) => $maxWidth ?? '90%'};
   height: ${({ $height }) => $height};
+  max-height: 100%;
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 8px;
   box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 
 interface ModalHeaderProps {
@@ -141,6 +145,9 @@ export const ModalTitle = styled.div`
 export const ModalContent = styled.div`
   padding: 20px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-wrap: break-word;
 `;
 
 export const ModalActions = styled.div`

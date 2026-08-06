@@ -76,6 +76,7 @@ const StackContainer = styled.div<StackContainerProps>`
       : css`
           display: flex;
           flex-direction: ${$direction};
+          flex-wrap: ${$direction === 'row' ? 'wrap' : 'nowrap'};
         `}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}

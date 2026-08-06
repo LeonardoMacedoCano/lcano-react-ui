@@ -394,16 +394,20 @@ const ModalOverlay = styled.div `
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 const ModalContainer = styled.div `
   width: ${({ $width }) => $width};
   max-width: ${({ $maxWidth }) => $maxWidth ?? '90%'};
   height: ${({ $height }) => $height};
+  max-height: 100%;
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 8px;
   box-shadow: 0 0 5px 5px ${({ theme }) => theme.colors.secondary};
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 const ModalHeader = styled.div `
   color: ${({ theme }) => theme.colors.white};
@@ -432,6 +436,9 @@ const ModalTitle = styled.div `
 const ModalContent = styled.div `
   padding: 20px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-wrap: break-word;
 `;
 const ModalActions = styled.div `
   display: flex;
@@ -847,6 +854,7 @@ const StackContainer = styled.div `
     : css `
           display: flex;
           flex-direction: ${$direction};
+          flex-wrap: ${$direction === 'row' ? 'wrap' : 'nowrap'};
         `}
 
   ${({ $alignCenter }) => $alignCenter && 'align-items: center;'}
