@@ -38,31 +38,41 @@ export type BooleanField = {
 
 export type Field = SelectField | NumberField | StringField | DateField | BooleanField;
 
-export const STRING_OPERATORS: Operator[] = [
-  { name: 'Contém', symbol: 'LIKE' },
-  { name: 'Igual', symbol: '==' },
-  { name: 'Diferente', symbol: '!=' },
-];
+export type Locale = 'pt' | 'en';
 
-export const NUMBER_OPERATORS: Operator[] = [
-  { name: 'Igual', symbol: '==' },
-  { name: 'Diferente', symbol: '!=' },
-  { name: 'Maior', symbol: '>' },
-  { name: 'Menor', symbol: '<' },
-  { name: 'Maior ou igual', symbol: '>=' },
-  { name: 'Menor ou igual', symbol: '<=' },
-];
+type OperatorSymbol = '==' | '!=' | 'LIKE' | '>' | '<' | '>=' | '<=';
 
-export const DATE_OPERATORS: Operator[] = [...NUMBER_OPERATORS];
+const OPERATOR_LABELS: Record<OperatorSymbol, Record<Locale, string>> = {
+  LIKE: { pt: 'Contém', en: 'Contains' },
+  '==': { pt: 'Igual', en: 'Equal' },
+  '!=': { pt: 'Diferente', en: 'Different' },
+  '>': { pt: 'Maior', en: 'Greater' },
+  '<': { pt: 'Menor', en: 'Less' },
+  '>=': { pt: 'Maior ou igual', en: 'Greater or equal' },
+  '<=': { pt: 'Menor ou igual', en: 'Less or equal' },
+};
 
-export const SELECT_OPERATORS: Operator[] = [
-  { name: 'Igual', symbol: '==' },
-  { name: 'Diferente', symbol: '!=' },
-];
+const OPERATOR_SYMBOLS_BY_TYPE: Record<FieldValueType, OperatorSymbol[]> = {
+  STRING: ['LIKE', '==', '!='],
+  NUMBER: ['==', '!=', '>', '<', '>=', '<='],
+  DATE: ['==', '!=', '>', '<', '>=', '<='],
+  SELECT: ['==', '!='],
+  BOOLEAN: ['=='],
+  MONTH: ['==', '!=', '>', '<', '>=', '<='],
+};
 
-export const BOOLEAN_OPERATORS: Operator[] = [
-  { name: 'Igual', symbol: '==' },
-];
+export function getOperators(fieldType: FieldValueType, locale: Locale = 'pt'): Operator[] {
+  return OPERATOR_SYMBOLS_BY_TYPE[fieldType].map((symbol) => ({
+    name: OPERATOR_LABELS[symbol][locale],
+    symbol,
+  }));
+}
+
+export const STRING_OPERATORS: Operator[] = getOperators('STRING');
+export const NUMBER_OPERATORS: Operator[] = getOperators('NUMBER');
+export const DATE_OPERATORS: Operator[] = getOperators('DATE');
+export const SELECT_OPERATORS: Operator[] = getOperators('SELECT');
+export const BOOLEAN_OPERATORS: Operator[] = getOperators('BOOLEAN');
 
 export const OPERATORS: Record<FieldValueType, Operator[]> = {
   STRING: STRING_OPERATORS,
