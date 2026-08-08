@@ -2,27 +2,37 @@ import { jsxs, jsx, Fragment as Fragment$1 } from 'react/jsx-runtime';
 import React, { useState, useMemo, useRef, useReducer, useEffect, useCallback, forwardRef, useImperativeHandle, Fragment, memo, createContext, useContext } from 'react';
 import styled, { css, keyframes, useTheme } from 'styled-components';
 
-const STRING_OPERATORS = [
-    { name: 'Contém', symbol: 'LIKE' },
-    { name: 'Igual', symbol: '==' },
-    { name: 'Diferente', symbol: '!=' },
-];
-const NUMBER_OPERATORS = [
-    { name: 'Igual', symbol: '==' },
-    { name: 'Diferente', symbol: '!=' },
-    { name: 'Maior', symbol: '>' },
-    { name: 'Menor', symbol: '<' },
-    { name: 'Maior ou igual', symbol: '>=' },
-    { name: 'Menor ou igual', symbol: '<=' },
-];
-const DATE_OPERATORS = [...NUMBER_OPERATORS];
-const SELECT_OPERATORS = [
-    { name: 'Igual', symbol: '==' },
-    { name: 'Diferente', symbol: '!=' },
-];
-const BOOLEAN_OPERATORS = [
-    { name: 'Igual', symbol: '==' },
-];
+const OPERATOR_LABELS = {
+    LIKE: { pt: 'Contém', en: 'Contains' },
+    '==': { pt: 'Igual', en: 'Equal' },
+    '!=': { pt: 'Diferente', en: 'Different' },
+    '>': { pt: 'Maior', en: 'Greater' },
+    '<': { pt: 'Menor', en: 'Less' },
+    '>=': { pt: 'Maior ou igual', en: 'Greater or equal' },
+    '<=': { pt: 'Menor ou igual', en: 'Less or equal' },
+};
+const OPERATOR_SYMBOLS_BY_TYPE = {
+    STRING: ['LIKE', '==', '!='],
+    NUMBER: ['==', '!=', '>', '<', '>=', '<='],
+    DATE: ['==', '!=', '>', '<', '>=', '<='],
+    SELECT: ['==', '!='],
+    BOOLEAN: ['=='],
+    MONTH: ['==', '!=', '>', '<', '>=', '<='],
+};
+// Symbols never change with locale (they drive RSQL semantics); only the
+// displayed `name` is translated. Defaults to 'pt' to match every existing
+// consumer of this library that never passed a locale.
+function getOperators(fieldType, locale = 'pt') {
+    return OPERATOR_SYMBOLS_BY_TYPE[fieldType].map((symbol) => ({
+        name: OPERATOR_LABELS[symbol][locale],
+        symbol,
+    }));
+}
+const STRING_OPERATORS = getOperators('STRING');
+const NUMBER_OPERATORS = getOperators('NUMBER');
+const DATE_OPERATORS = getOperators('DATE');
+const SELECT_OPERATORS = getOperators('SELECT');
+const BOOLEAN_OPERATORS = getOperators('BOOLEAN');
 const OPERATORS = {
     STRING: STRING_OPERATORS,
     NUMBER: NUMBER_OPERATORS,
@@ -5059,7 +5069,12 @@ const StackContainer = styled.div `
     `}
 `;
 
-const SearchFilterRSQL = ({ fields, onSearch }) => {
+const UI_TEXT = {
+    pt: { selectPlaceholder: 'Selecione...', addHint: 'Adicionar' },
+    en: { selectPlaceholder: 'Select...', addHint: 'Add' },
+};
+const SearchFilterRSQL = ({ fields, onSearch, locale = 'pt' }) => {
+    const text = UI_TEXT[locale];
     const [selectedField, setSelectedField] = useState(null);
     const [selectedOperator, setSelectedOperator] = useState(null);
     const [searchValue, setSearchValue] = useState(null);
@@ -5116,7 +5131,7 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         if (!field)
             return resetState();
         setSelectedField(field);
-        setSelectedOperator(OPERATORS[field.type][0]);
+        setSelectedOperator(getOperators(field.type, locale)[0]);
         setSearchValue(null);
     };
     const isDuplicateFilter = (newFilter) => filters.some(f => f.field === newFilter.field && f.operator === newFilter.operator && f.value === newFilter.value);
@@ -5156,13 +5171,13 @@ const SearchFilterRSQL = ({ fields, onSearch }) => {
         }
         return searchValue === null || searchValue === '';
     };
-    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(FilterFieldsRow, { children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
-                                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
+    return (jsx(Container$1, { children: jsxs(Stack, { direction: "column", divider: "top", children: [jsxs(FilterFieldsRow, { children: [jsx(FieldValue, { type: "SELECT", value: selectedField?.name || '', options: fields.map(({ name, label }) => ({ key: name, value: label })), onUpdate: handleFieldChange, editable: true, placeholder: text.selectPlaceholder }), jsx(FieldValue, { type: "SELECT", value: selectedOperator?.name || '', options: selectedField
+                                ? getOperators(selectedField.type, locale).map(({ name }) => ({ key: name, value: name }))
                                 : [], onUpdate: (val) => {
-                                const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
+                                const op = selectedField && getOperators(selectedField.type, locale).find(o => o.name === val);
                                 if (op)
                                     setSelectedOperator(op);
-                            }, editable: !!selectedField }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd() }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: "Adicionar", variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0', flexShrink: 0 } })] }), filters.length > 0 ? (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
+                            }, editable: !!selectedField, placeholder: text.selectPlaceholder }), jsx(FieldValue, { type: selectedField?.type || 'STRING', value: searchValue || '', onUpdate: setSearchValue, editable: !!selectedOperator, options: selectedField?.type === 'SELECT' ? selectedField.options : undefined, onKeyDown: (e) => e.key === 'Enter' && handleAdd(), placeholder: text.selectPlaceholder }), jsx(Button, { icon: jsx(FaPlus, {}), onClick: handleAdd, hint: text.addHint, variant: "success", width: "36px", height: "36px", disabled: isAddButtonDisabled(), style: { borderRadius: '0 5px 0 0', flexShrink: 0 } })] }), filters.length > 0 ? (jsx(Tags, { children: filters.map((f, i) => (jsxs(Tag, { children: [jsxs("span", { children: [fields.find(fd => fd.name === f.field)?.label, " ", f.operadorDescr, " ", getFormattedValue(f)] }), jsx(Button, { icon: jsx(FaTimes, {}), onClick: () => handleRemove(i), variant: "warning", height: "20px", width: "20px", style: {
                                     borderRadius: '50%',
                                     justifyContent: 'center',
                                     alignItems: 'center',
@@ -8331,5 +8346,5 @@ const useMessage = () => {
     return context;
 };
 
-export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, CloseButton, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, QrCode, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, SummaryCard, Table, Tabs, ThemeFavicon, ThemeSelector, ToastCard, ToastContainer, ToastIcon, ToastMessage, ToastNotification, ToggleSwitch, buildSearchSelectAdapter, convertReactStyleToCSSObject, copyToClipboard, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useCopyFeedback, useMessage };
+export { ActionButton, BOOLEAN_OPERATORS, Breadcrumb, Button, CloseButton, Column, ConfirmModal, Container$1 as Container, ContextMessageProvider, DATE_OPERATORS, DEFAULT_THEME_SYSTEM, DragDropFile, FieldTextArea, FieldValue, HighlightBox, ImagePicker, Loading, Modal, NUMBER_OPERATORS, OPERATORS, PAGE_SIZE_COMPACT, PAGE_SIZE_DEFAULT, Panel, QrCode, SELECT_OPERATORS, STRING_OPERATORS, SearchFilterRSQL, SearchPagination, SearchSelectField, Stack, SummaryCard, Table, Tabs, ThemeFavicon, ThemeSelector, ToastCard, ToastContainer, ToastIcon, ToastMessage, ToastNotification, ToggleSwitch, buildSearchSelectAdapter, convertReactStyleToCSSObject, copyToClipboard, formatBooleanToSimNao, formatDateTimeToBrString, formatDateToBrString, formatDateToYMDString, formatDateToYMString, formatFieldValueToString, formatIsoDateToBrDate, formatNumericInputWithLimits, getOperators, getVariantColor, isDateValid, parseDateStringToDate, parseShortStringToDateTime, useConfirmModal, useCopyFeedback, useMessage };
 //# sourceMappingURL=index.js.map

@@ -30,6 +30,8 @@ export type BooleanField = {
     type: 'BOOLEAN';
 };
 export type Field = SelectField | NumberField | StringField | DateField | BooleanField;
+export type Locale = 'pt' | 'en';
+export declare function getOperators(fieldType: FieldValueType, locale?: Locale): Operator[];
 export declare const STRING_OPERATORS: Operator[];
 export declare const NUMBER_OPERATORS: Operator[];
 export declare const DATE_OPERATORS: Operator[];

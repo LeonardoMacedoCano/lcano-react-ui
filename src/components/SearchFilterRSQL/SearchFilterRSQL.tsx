@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaTimes } from 'react-icons/fa';
-import { Field, FilterDTO, Operator, OPERATORS } from '../../types';
+import { Field, FilterDTO, Locale, Operator, getOperators } from '../../types';
 import { formatBooleanToSimNao, formatDateToYMDString, formatIsoDateToBrDate, parseDateStringToDate } from '../../utils';
 import { Container } from '../Container';
 import { Stack } from '../Stack';
 import { FieldValue } from '../FieldValue';
 import { Button } from '../Button';
 
+const UI_TEXT: Record<Locale, { selectPlaceholder: string; addHint: string }> = {
+  pt: { selectPlaceholder: 'Selecione...', addHint: 'Adicionar' },
+  en: { selectPlaceholder: 'Select...', addHint: 'Add' },
+};
+
 export type SearchFilterRSQLProps = {
   fields: Field[];
   onSearch: (rsql: string) => void;
+  /** Defaults to 'pt', matching every existing consumer that never set this. */
+  locale?: Locale;
 };
 
 const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
   fields,
-  onSearch
+  onSearch,
+  locale = 'pt'
 }) => {
+  const text = UI_TEXT[locale];
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
   const [searchValue, setSearchValue] = useState<string | number | boolean | null>(null);
@@ -74,7 +83,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
     const field = fields.find(f => f.name === fieldName);
     if (!field) return resetState();
     setSelectedField(field);
-    setSelectedOperator(OPERATORS[field.type][0]);
+    setSelectedOperator(getOperators(field.type, locale)[0]);
     setSearchValue(null);
   };
 
@@ -133,6 +142,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             options={fields.map(({ name, label }) => ({ key: name, value: label }))}
             onUpdate={handleFieldChange}
             editable
+            placeholder={text.selectPlaceholder}
           />
 
           <FieldValue
@@ -140,14 +150,15 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             value={selectedOperator?.name || ''}
             options={
               selectedField
-                ? OPERATORS[selectedField.type].map(({ name }) => ({ key: name, value: name }))
+                ? getOperators(selectedField.type, locale).map(({ name }) => ({ key: name, value: name }))
                 : []
             }
             onUpdate={(val) => {
-              const op = selectedField && OPERATORS[selectedField.type].find(o => o.name === val);
+              const op = selectedField && getOperators(selectedField.type, locale).find(o => o.name === val);
               if (op) setSelectedOperator(op);
             }}
             editable={!!selectedField}
+            placeholder={text.selectPlaceholder}
           />
 
           <FieldValue
@@ -157,12 +168,13 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
             editable={!!selectedOperator}
             options={selectedField?.type === 'SELECT' ? selectedField.options : undefined}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+            placeholder={text.selectPlaceholder}
           />
 
           <Button
             icon={<FaPlus />}
             onClick={handleAdd}
-            hint="Adicionar"
+            hint={text.addHint}
             variant="success"
             width="36px"
             height="36px"
