@@ -19,9 +19,6 @@ const OPERATOR_SYMBOLS_BY_TYPE = {
     BOOLEAN: ['=='],
     MONTH: ['==', '!=', '>', '<', '>=', '<='],
 };
-// Symbols never change with locale (they drive RSQL semantics); only the
-// displayed `name` is translated. Defaults to 'pt' to match every existing
-// consumer of this library that never passed a locale.
 function getOperators(fieldType, locale = 'pt') {
     return OPERATOR_SYMBOLS_BY_TYPE[fieldType].map((symbol) => ({
         name: OPERATOR_LABELS[symbol][locale],

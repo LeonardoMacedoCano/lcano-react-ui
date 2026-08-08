@@ -61,9 +61,6 @@ const OPERATOR_SYMBOLS_BY_TYPE: Record<FieldValueType, OperatorSymbol[]> = {
   MONTH: ['==', '!=', '>', '<', '>=', '<='],
 };
 
-// Symbols never change with locale (they drive RSQL semantics); only the
-// displayed `name` is translated. Defaults to 'pt' to match every existing
-// consumer of this library that never passed a locale.
 export function getOperators(fieldType: FieldValueType, locale: Locale = 'pt'): Operator[] {
   return OPERATOR_SYMBOLS_BY_TYPE[fieldType].map((symbol) => ({
     name: OPERATOR_LABELS[symbol][locale],

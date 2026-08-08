@@ -16,7 +16,6 @@ const UI_TEXT: Record<Locale, { selectPlaceholder: string; addHint: string }> = 
 export type SearchFilterRSQLProps = {
   fields: Field[];
   onSearch: (rsql: string) => void;
-  /** Defaults to 'pt', matching every existing consumer that never set this. */
   locale?: Locale;
 };
 
