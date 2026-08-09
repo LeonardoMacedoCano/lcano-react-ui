@@ -11,7 +11,11 @@
   ],
   "scripts": {
     "build": "rm -rf dist && rollup -c",
-    "prepare": "yarn build"
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeonardoMacedoCano/lcano-react-ui.git"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
@@ -32,7 +36,6 @@
     "typescript": "^5.0.0"
   },
   "license": "MIT",
-  "private": true,
   "dependencies": {
     "qrcode-generator": "^2.0.4",
     "react-dropzone": "^15.0.0",
