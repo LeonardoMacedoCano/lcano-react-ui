@@ -14,6 +14,7 @@ that opens a dropdown of remotely-fetched options as the user types (or on focus
 | `value` | `OptionItem` (`{ key: string; value: string }`) | no | — | Controlled current selection. |
 | `loadAllOnFocus` | `boolean` | no | `true` | When `true`, opening the dropdown with an empty query still calls `fetchOptions('', 0)`. When `false`, the dropdown stays empty until the user types something. |
 | `disabled` | `boolean` | no | `false` | Disables the field entirely. |
+| `noResultsMessage` | `string` | no | `'Nenhum resultado'` | Shown in the dropdown when `fetchOptions` resolves to an empty list. Defaults to Portuguese — pass your own if the consuming app isn't in Portuguese. |
 
 ## Usage
 

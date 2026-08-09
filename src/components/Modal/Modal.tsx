@@ -17,6 +17,7 @@ export interface ModalProps {
   actions?: React.ReactNode;
   showCloseButton?: boolean;
   closeButtonSize?: string;
+  closeButtonHint?: string;
   modalWidth?: string;
   maxWidth?: string;
   modalHeight?: string;
@@ -32,6 +33,7 @@ const Modal: React.FC<ModalProps> = ({
   actions,
   showCloseButton = true,
   closeButtonSize = '20px',
+  closeButtonHint = 'Fechar',
   modalWidth = '500px',
   maxWidth,
   modalHeight = 'auto',
@@ -65,7 +67,7 @@ const Modal: React.FC<ModalProps> = ({
                 alignItems: 'center',
               }}
               icon={<FaTimes />}
-              hint="Fechar"
+              hint={closeButtonHint}
               onClick={onClose}
             />
           )}

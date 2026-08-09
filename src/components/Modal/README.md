@@ -16,6 +16,7 @@ preconfigured confirm/cancel variant built on top of this.
 | `actions` | `React.ReactNode` | no | — | Rendered in a footer row (e.g. buttons), right-aligned. |
 | `showCloseButton` | `boolean` | no | `true` | Shows/hides the "×" button in the header. |
 | `closeButtonSize` | `string` | no | `'20px'` | Width/height of the close button. |
+| `closeButtonHint` | `string` | no | `'Fechar'` | Tooltip on the close button. Defaults to Portuguese — pass your own if the consuming app isn't in Portuguese. |
 | `modalWidth` | `string` | no | `'500px'` | CSS width of the modal box. |
 | `maxWidth` | `string` | no | `'90%'` | CSS max-width of the modal box. |
 | `modalHeight` | `string` | no | `'auto'` | CSS height of the modal box. |

@@ -17,6 +17,7 @@ pagination (accepts either a plain array or a `PagedResponse`), hover-reveal row
 | `loadPage` | `(pageIndex: number, pageSize: number) => void` | no | — | Enables pagination controls; only rendered when `values` is a `PagedResponse` with `totalElements > 0`. |
 | `onView` / `onEdit` / `onDelete` | `(item: T) => void` | no | — | Each adds its own hover-revealed action button on the row. |
 | `customActions` | `(item: T) => ReactNode` | no | — | Extra action content rendered before view/edit/delete. |
+| `viewHint` | `string` | no | `'Visualizar'` | Tooltip on the view action button. Defaults to Portuguese — pass your own if the consuming app isn't in Portuguese. `onEdit`/`onDelete` buttons have no tooltip at all (not just a PT default). |
 | `rowHeight` | `string` | no | `'35px'` | Row height (desktop layout only). |
 | `clickableRows` | `boolean` | no | `false` | Shows a pointer cursor and `rowClickHint` tooltip on rows. |
 | `rowClickHint` | `string` | no | — | Tooltip shown on rows when `clickableRows` is `true`. |

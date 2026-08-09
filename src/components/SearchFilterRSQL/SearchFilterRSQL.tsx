@@ -56,7 +56,7 @@ const SearchFilterRSQL: React.FC<SearchFilterRSQLProps> = ({
 
     switch (f.type) {
       case 'BOOLEAN':
-        return formatBooleanToSimNao(f.value);
+        return formatBooleanToSimNao(f.value, locale);
       case 'SELECT':
         return field.type === 'SELECT'
           ? field.options.find(opt => opt.key === f.value)?.value || f.value
