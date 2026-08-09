@@ -30,6 +30,7 @@ export interface TableActionsProps {
   customActions?: () => ReactNode;
   visible: boolean;
   stackBelow?: string;
+  viewHint?: string;
 }
 
 const COMMON_BUTTON_STYLES = {
@@ -48,6 +49,7 @@ const TableActions: FC<TableActionsProps> = ({
   visible,
   customActions,
   stackBelow = DEFAULT_STACK_BELOW,
+  viewHint = 'Visualizar',
 }) => (
   <ActionsContainer>
     <ActionsWrapper $visible={visible} $stackBelow={stackBelow}>
@@ -62,7 +64,7 @@ const TableActions: FC<TableActionsProps> = ({
           onClick={onView}
           variant="success"
           icon={<FaEye />}
-          hint="Visualizar"
+          hint={viewHint}
           style={COMMON_BUTTON_STYLES}
         />
       )}
@@ -104,6 +106,7 @@ interface TableProps<T> {
   clickableRows?: boolean;
   rowClickHint?: string;
   stackBelow?: string;
+  viewHint?: string;
 }
 
 const isPagedResponse = <T,>(values: T[] | PagedResponse<T>): values is PagedResponse<T> => 
@@ -149,6 +152,7 @@ interface TableBodyProps<T> {
   clickableRows?: boolean;
   rowClickHint?: string;
   stackBelow: string;
+  viewHint?: string;
 }
 
 const TableBody = <T,>({
@@ -168,6 +172,7 @@ const TableBody = <T,>({
   clickableRows,
   rowClickHint,
   stackBelow,
+  viewHint,
 }: TableBodyProps<T>) => {
   if (data.length === 0) {
     return (
@@ -226,6 +231,7 @@ const TableBody = <T,>({
               visible={hoveredRowIndex === index}
               customActions={customActions ? () => customActions(item) : undefined}
               stackBelow={stackBelow}
+              viewHint={viewHint}
             />
           </ActionColumn>
         </TableRow>
@@ -269,6 +275,7 @@ export const Table = <T extends any>({
   clickableRows,
   rowClickHint,
   stackBelow = DEFAULT_STACK_BELOW,
+  viewHint,
 }: TableProps<T>) => {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
@@ -306,6 +313,7 @@ export const Table = <T extends any>({
             clickableRows={clickableRows}
             rowClickHint={rowClickHint}
             stackBelow={stackBelow}
+            viewHint={viewHint}
           />
         </StyledTable>
       </TableContainer>

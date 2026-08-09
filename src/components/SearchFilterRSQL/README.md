@@ -55,3 +55,5 @@ const fields: Field[] = [
 - Duplicate filters (same field + operator + value) are silently ignored instead of added
   twice.
 - The operator dropdown resets whenever the selected field changes.
+- `locale` also controls how `BOOLEAN` filter chips are displayed (`Sim`/`Não` for `'pt'`,
+  `Yes`/`No` for `'en'`), not just the field/operator picker text.

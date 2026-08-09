@@ -16,6 +16,7 @@ export interface SearchSelectFieldProps {
   value?: OptionItem;
   loadAllOnFocus?: boolean;
   disabled?: boolean;
+  noResultsMessage?: string;
 }
 
 const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
@@ -25,7 +26,8 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
   onSelect,
   value,
   loadAllOnFocus = true,
-  disabled = false
+  disabled = false,
+  noResultsMessage = 'Nenhum resultado',
 }) => {
   const [query, setQuery] = useState(value?.value || '');
   const [options, setOptions] = useState<OptionItem[]>([]);
@@ -140,7 +142,7 @@ const SearchSelectField: React.FC<SearchSelectFieldProps> = ({
               </DropdownItem>
             ))
           ) : (
-            <DropdownItem $disabled>Nenhum resultado</DropdownItem>
+            <DropdownItem $disabled>{noResultsMessage}</DropdownItem>
           )}
         </Dropdown>
       )}
