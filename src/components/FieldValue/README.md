@@ -28,6 +28,8 @@ different component per data type. Used internally by
 | `placeholder` | `string` | no | — | Placeholder text, or the "select" prompt for `type="SELECT"`. |
 | `maxDecimalPlaces` | `number` | no | `2` | Decimal digits allowed for `type="NUMBER"`. |
 | `maxIntegerDigits` | `number` | no | `8` | Integer digits allowed for `type="NUMBER"`. |
+| `locale` | `Locale` (`'pt' \| 'en'`) | no | `'pt'` | Thousand/decimal separators used to display `type="NUMBER"` values (`1.234,56` for `pt`, `1,234.56` for `en`). |
+| `numberFormat` | `NumberFormatStyle` (`'grouped' \| 'plain'`) | no | `'grouped'` | `'grouped'` shows the locale-formatted value while the field isn't focused; `'plain'` keeps the raw unformatted number (previous default behavior). |
 | `onUpdate` | `(value: any) => void` | no | — | Called with the parsed value (`number` for `NUMBER`, `boolean` for `BOOLEAN`, `Date` for `DATE`, raw string otherwise). |
 | `onKeyDown` | `React.KeyboardEventHandler<HTMLInputElement>` | no | — | Forwarded to the input (not applied to `SELECT`/`BOOLEAN`, which render a `<select>`). |
 
@@ -70,5 +72,8 @@ const [age, setAge] = useState<number>();
   `type="SELECT"` with your own `options` instead.
 - `type="MONTH"` is accepted for parsing/formatting purposes but renders the same as
   `STRING`/`NUMBER`; there's no dedicated month picker UI.
+- `type="NUMBER"` always renders as a text input (`inputMode="decimal"`) so it can display
+  grouped values; while focused it shows the raw editable number, and reformats on blur.
+  `onUpdate` still always receives a plain `"1234.56"`-style string regardless of `locale`.
 - Requires a styled-components `ThemeProvider` ancestor, see the
   [main README](../../../README.md#theming).
