@@ -30,3 +30,4 @@ export * from './PaginatedGrid';
 export * from './IconButton';
 export * from './AccountSummary';
 export * from './GoogleSignInButton';
+export * from './OptionGrid';
