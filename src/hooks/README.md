@@ -1,7 +1,7 @@
 # Hooks
 
 Two imperative helpers, each pairing a hook with the component it renders internally, plus
-two standalone hooks with no rendered UI of their own.
+three standalone hooks with no rendered UI of their own.
 
 ## `useConfirmModal`
 
@@ -119,3 +119,56 @@ const isNarrow = useMediaQuery('(max-width: 640px)');
 ```
 
 - Returns `false` during server-side rendering (no `window`) instead of throwing.
+
+## `useSyncedPreference`
+
+A local-first preference: reads its initial value synchronously from a getter you provide
+(e.g. `localStorage`), then — if `enabled` — fetches a JSON settings blob from `endpoint` and
+adopts `field` from it, unless a local change already raced ahead in the meantime. Every
+update writes the new value locally right away and, if `enabled`, `PUT`s (or `POST`s) it to
+`endpoint` in the background.
+
+```ts
+function useSyncedPreference<T>(options: {
+  field: string;
+  get: () => T;
+  set: (value: T) => void;
+  toPayload: (value: T) => unknown;
+  fromPayload: (raw: unknown) => T;
+  endpoint: string;
+  enabled: boolean;
+  cacheKey?: string;              // dedupes the GET across hook instances sharing the same endpoint; default ''
+  method?: 'PUT' | 'POST';        // default 'PUT'
+  onSaved?: (response: Record<string, unknown>) => void; // called with the parsed response after a successful save
+}): { value: T; updateValue: (next: T) => void };
+```
+
+```tsx
+import { useSyncedPreference } from 'lcano-react-ui';
+
+const { value: quality, updateValue: setQuality } = useSyncedPreference<GraphicsQuality>({
+  field: 'graphicsQuality',
+  get: getStoredGraphicsQuality,
+  set: setStoredGraphicsQuality,
+  toPayload: (v) => v,
+  fromPayload: (raw) => (isGraphicsQuality(raw) ? raw : DEFAULT_GRAPHICS_QUALITY),
+  endpoint: '/api/settings/me',
+  enabled: !!currentUser,
+  cacheKey: currentUser?.id,
+  onSaved: (response) => {
+    if (Array.isArray(response.unlockedAchievements)) notifyUnlocks(response.unlockedAchievements);
+  },
+});
+```
+
+- The GET to `endpoint` is deduped across every hook instance that shares the same
+  `endpoint`+`cacheKey` pair (e.g. several fields all read from one settings blob) — it fires
+  once, not once per field.
+- `field` is a plain `string`, not constrained to keys of some fixed response type — the hook
+  doesn't know or care about the shape of your settings blob beyond `response[field]`.
+- Only `updateValue`'s local `set(next)` runs when `enabled` is `false` — no network request is
+  made, so this is safe to use before a user is authenticated (flip `enabled` to `true` later
+  and the next mount's effect will fetch and reconcile).
+- `onSaved` is your hook into "the server responded with something extra" (like newly
+  unlocked achievements) — there's no built-in notification mechanism, wire it to your own
+  toast/queue.

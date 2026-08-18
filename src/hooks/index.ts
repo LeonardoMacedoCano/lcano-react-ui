@@ -5,3 +5,5 @@ export type { UseCopyFeedbackOptions, UseCopyFeedbackResult } from './useCopyFee
 export { useFullscreen } from './useFullscreen';
 export type { UseFullscreenResult } from './useFullscreen';
 export { useMediaQuery } from './useMediaQuery';
+export { useSyncedPreference } from './useSyncedPreference';
+export type { UseSyncedPreferenceOptions, UseSyncedPreferenceResult } from './useSyncedPreference';
