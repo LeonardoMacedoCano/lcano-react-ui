@@ -83,7 +83,9 @@ gotchas/dependencies.
 
 | Component | Description |
 | --- | --- |
+| [AccountSummary](src/components/AccountSummary/README.md) | Signed-in user row: avatar, name, log-out button |
 | [ActionButton](src/components/ActionButton/README.md) | Floating action button with a hover-out options menu |
+| [BadgeCard](src/components/BadgeCard/README.md) | Icon-tile list card for achievements/badges/collectibles |
 | [Breadcrumb](src/components/Breadcrumb/README.md) | Scrollable breadcrumb trail |
 | [Button](src/components/Button/README.md) | Themed icon/label button |
 | [ConfirmModal](src/components/ConfirmModal/README.md) | Preconfigured confirm/cancel modal |
@@ -91,10 +93,14 @@ gotchas/dependencies.
 | [DragDropFile](src/components/DragDropFile/README.md) | Single-file drag-and-drop upload zone |
 | [FieldTextArea](src/components/FieldTextArea/README.md) | Labeled auto-growing textarea |
 | [FieldValue](src/components/FieldValue/README.md) | Labeled input adapting to string/number/boolean/date/select |
+| [GoogleSignInButton](src/components/GoogleSignInButton/README.md) | Google Identity Services sign-in button |
 | [HighlightBox](src/components/HighlightBox/README.md) | Centered pill badge colored by variant |
+| [IconButton](src/components/IconButton/README.md) | Circular icon-only button |
 | [ImagePicker](src/components/ImagePicker/README.md) | Circular avatar with a file-picker overlay |
 | [Loading](src/components/Loading/README.md) | Fullscreen spinner overlay |
 | [Modal](src/components/Modal/README.md) | Generic centered modal dialog |
+| [OptionGrid](src/components/OptionGrid/README.md) | Grid of selectable option cards, optional color swatch |
+| [PaginatedGrid](src/components/PaginatedGrid/README.md) | CSS grid that paginates itself by row count |
 | [Panel](src/components/Panel/README.md) | Titled content card with header/body/footer |
 | [QrCode](src/components/QrCode/README.md) | Inline SVG QR code |
 | [SearchFilterRSQL](src/components/SearchFilterRSQL/README.md) | RSQL filter builder |
@@ -107,12 +113,15 @@ gotchas/dependencies.
 | [ThemeFavicon](src/components/ThemeFavicon/README.md) | Favicon that follows the active theme |
 | [ThemeSelector](src/components/ThemeSelector/README.md) | Theme picker grid |
 | [ToastNotification](src/components/ToastNotification/README.md) | Single toast card |
+| [ToastStack](src/components/ToastStack/README.md) | Stacking, auto-dismissing notification queue |
 | [ToggleSwitch](src/components/ToggleSwitch/README.md) | Two-option segmented control |
 
 ## Hooks & contexts
 
-- [`useConfirmModal`, `useCopyFeedback`](src/hooks/README.md) — imperative helpers for
-  `ConfirmModal` and clipboard copy feedback.
+- [`useConfirmModal`, `useCopyFeedback`, `useFullscreen`, `useMediaQuery`,
+  `useSyncedPreference`](src/hooks/README.md) — imperative helpers for `ConfirmModal` and
+  clipboard copy feedback, fullscreen toggling, media-query matching, and a local-first
+  preference synced with a server endpoint.
 - [`ContextMessageProvider` / `useMessage`](src/contexts/README.md) — app-wide toast queue.
 
 ## Development
