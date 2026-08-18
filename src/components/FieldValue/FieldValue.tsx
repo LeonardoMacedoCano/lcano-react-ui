@@ -1,7 +1,9 @@
-import React, { FC, ChangeEvent, KeyboardEventHandler } from 'react';
+import React, { FC, ChangeEvent, KeyboardEventHandler, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { FieldValueType, Option, VariantColor } from '../../types';
-import { formatFieldValueToString, formatNumericInputWithLimits, getVariantColor, parseDateStringToDate } from '../../utils';
+import { FieldValueType, Locale, Option, VariantColor } from '../../types';
+import { formatFieldValueToString, formatGroupedNumber, getVariantColor, parseDateStringToDate, sanitizeNumericInput } from '../../utils';
+
+export type NumberFormatStyle = 'grouped' | 'plain';
 
 export type FieldValueProps = {
   type: FieldValueType;
@@ -23,6 +25,8 @@ export type FieldValueProps = {
   placeholder?: string;
   maxDecimalPlaces?: number;
   maxIntegerDigits?: number;
+  locale?: Locale;
+  numberFormat?: NumberFormatStyle;
   onUpdate?: (value: any) => void;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 };
@@ -47,10 +51,17 @@ const FieldValue: FC<FieldValueProps> = ({
   placeholder,
   maxDecimalPlaces = 2,
   maxIntegerDigits = 8,
+  locale = 'pt',
+  numberFormat = 'grouped',
   onUpdate,
   onKeyDown,
 }) => {
-  const displayValue = formatFieldValueToString(type, value);
+  const [isFocused, setIsFocused] = useState(false);
+  const rawValue = formatFieldValueToString(type, value);
+  const isGroupedNumber = type === 'NUMBER' && numberFormat === 'grouped';
+  const displayValue = isGroupedNumber && !isFocused
+    ? formatGroupedNumber(rawValue, locale, maxDecimalPlaces)
+    : rawValue;
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!onUpdate) return;
@@ -58,7 +69,7 @@ const FieldValue: FC<FieldValueProps> = ({
 
     switch (type) {
       case 'NUMBER':
-        val = formatNumericInputWithLimits(val, maxIntegerDigits, maxDecimalPlaces, minValue, maxValue);
+        val = sanitizeNumericInput(val, maxIntegerDigits, maxDecimalPlaces, minValue, maxValue);
         break;
       case 'BOOLEAN':
         val = val === 'true';
@@ -75,11 +86,14 @@ const FieldValue: FC<FieldValueProps> = ({
     <>
       {icon && <Icon>{icon}</Icon>}
       <StyledInput
-        type={editable ? type : 'string'}
+        type={editable ? (type === 'NUMBER' ? 'text' : type) : 'string'}
+        inputMode={type === 'NUMBER' ? 'decimal' : undefined}
         readOnly={!editable}
         disabled={!editable}
         value={displayValue}
         onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         $inputWidth={inputWidth}
