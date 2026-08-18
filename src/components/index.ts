@@ -27,3 +27,4 @@ export * from './QrCode';
 export * from './ToastStack';
 export * from './BadgeCard';
 export * from './PaginatedGrid';
+export * from './IconButton';

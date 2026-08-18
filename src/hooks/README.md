@@ -1,6 +1,7 @@
 # Hooks
 
-Two imperative helpers, each pairing a hook with the component it renders internally.
+Two imperative helpers, each pairing a hook with the component it renders internally, plus
+two standalone hooks with no rendered UI of their own.
 
 ## `useConfirmModal`
 
@@ -76,3 +77,45 @@ return (
   app isn't in Portuguese.
 - Both hooks only manage **one** confirmation/toast at a time — calling `confirm()` again
   before the previous one resolves reuses the same modal instance.
+
+## `useFullscreen`
+
+Wraps the Fullscreen API (`document.documentElement.requestFullscreen`/`exitFullscreen`) with
+React state that stays in sync even when fullscreen is exited some other way (e.g. the
+browser's own Esc handling), by listening for `fullscreenchange`.
+
+```ts
+function useFullscreen(): {
+  isFullscreen: boolean;
+  toggle: () => void;
+  isSupported: boolean;
+};
+```
+
+```tsx
+import { useFullscreen } from 'lcano-react-ui';
+
+const { isFullscreen, toggle, isSupported } = useFullscreen();
+
+return isSupported ? <button onClick={toggle}>{isFullscreen ? 'Exit' : 'Enter'} fullscreen</button> : null;
+```
+
+- `toggle()` and the effect listener are both no-ops when `isSupported` is `false` (e.g. iOS
+  Safari) — always gate any fullscreen UI on `isSupported` rather than assuming it works.
+
+## `useMediaQuery`
+
+A thin `window.matchMedia` wrapper: returns whether a CSS media query currently matches, and
+re-renders when it changes.
+
+```ts
+function useMediaQuery(query: string): boolean;
+```
+
+```tsx
+import { useMediaQuery } from 'lcano-react-ui';
+
+const isNarrow = useMediaQuery('(max-width: 640px)');
+```
+
+- Returns `false` during server-side rendering (no `window`) instead of throwing.
