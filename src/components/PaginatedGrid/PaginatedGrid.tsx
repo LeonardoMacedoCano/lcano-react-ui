@@ -8,19 +8,35 @@ const GRID_GAP_PX = 10;
 const DEFAULT_ROWS_PER_PAGE = 3;
 const DEFAULT_MIN_ITEM_WIDTH = '240px';
 
-function useColumnCount(minItemWidthPx: number): [(element: HTMLDivElement | null) => void, number] {
-  const [columns, setColumns] = useState(1);
+type ColumnBasis = { unit: 'px'; value: number } | { unit: 'percent'; value: number };
+
+function parseColumnBasis(minItemWidth: string): ColumnBasis {
+  const trimmed = minItemWidth.trim();
+  if (trimmed.endsWith('%')) {
+    return { unit: 'percent', value: parseFloat(trimmed) || 100 };
+  }
+  return { unit: 'px', value: parseInt(trimmed, 10) || 240 };
+}
+
+function useColumnCount(basis: ColumnBasis): [(element: HTMLDivElement | null) => void, number] {
+  const [columns, setColumns] = useState(() => (basis.unit === 'percent' ? Math.max(1, Math.floor(100 / basis.value)) : 1));
   const observerRef = useRef<ResizeObserver | null>(null);
 
   const setContainer = useCallback(
     (element: HTMLDivElement | null) => {
       observerRef.current?.disconnect();
       observerRef.current = null;
+
+      if (basis.unit === 'percent') {
+        setColumns(Math.max(1, Math.floor(100 / basis.value)));
+        return;
+      }
+
       if (!element) return;
 
       function updateColumns() {
         const width = element!.clientWidth;
-        const computed = Math.floor((width + GRID_GAP_PX) / (minItemWidthPx + GRID_GAP_PX));
+        const computed = Math.floor((width + GRID_GAP_PX) / ((basis as { unit: 'px'; value: number }).value + GRID_GAP_PX));
         setColumns(Math.max(1, computed));
       }
 
@@ -29,7 +45,7 @@ function useColumnCount(minItemWidthPx: number): [(element: HTMLDivElement | nul
       observer.observe(element);
       observerRef.current = observer;
     },
-    [minItemWidthPx]
+    [basis.unit, basis.value]
   );
 
   useEffect(() => () => observerRef.current?.disconnect(), []);
@@ -54,8 +70,7 @@ const PaginatedGrid = <T,>({
   rowsPerPage = DEFAULT_ROWS_PER_PAGE,
   minItemWidth = DEFAULT_MIN_ITEM_WIDTH,
 }: PaginatedGridProps<T>) => {
-  const minItemWidthPx = parseInt(minItemWidth, 10) || 240;
-  const [containerRef, columns] = useColumnCount(minItemWidthPx);
+  const [containerRef, columns] = useColumnCount(parseColumnBasis(minItemWidth));
   const pageSize = columns * rowsPerPage;
   const [pageIndex, setPageIndex] = useState(0);
 
