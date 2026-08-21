@@ -1,50 +1,45 @@
-import React from 'react';
 import styled from 'styled-components';
-import { Tema } from '../../types/Tema';
 
-export interface ThemeOption {
+export interface ThemeSelectorOption<T extends string | number = string> {
+  id: T;
   title: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    tertiary: string;
-    quaternary: string;
-    [key: string]: string;
-  };
+  swatch: string[];
+  accentColor?: string;
 }
 
-export interface ThemeSelectorProps {
-  themes: Tema[];
-  currentTheme?: number;
-  onThemeChange: (id: number) => void;
+export interface ThemeSelectorProps<T extends string | number = string> {
+  options: ThemeSelectorOption<T>[];
+  value: T;
+  onChange: (id: T) => void;
 }
 
-const ThemeSelector: React.FC<ThemeSelectorProps> = ({
-  themes,
-  currentTheme,
-  onThemeChange,
-}) => {
+const ThemeSelector = <T extends string | number = string>({ options, value, onChange }: ThemeSelectorProps<T>) => {
   return (
     <ThemeGrid>
-      {themes.map((theme) => (
-        <ThemeItem 
-          key={theme.title}
-          $isSelected={theme.id === currentTheme}
-          onClick={() => onThemeChange(theme.id)}
-          $borderColor={theme.quaternaryColor}
-        >
-          <ThemeName>{theme.title}</ThemeName>
-          <ColorPalette>
-            <ColorBlock $color={theme.primaryColor} />
-            <ColorBlock $color={theme.secondaryColor} />
-            <ColorBlock $color={theme.tertiaryColor} />
-            <ColorBlock $color={theme.quaternaryColor} />
-          </ColorPalette>
-        </ThemeItem>
-      ))}
+      {options.map((option) => {
+        const accentColor = option.accentColor ?? option.swatch[option.swatch.length - 1];
+        return (
+          <ThemeItem
+            key={option.id}
+            type="button"
+            $isSelected={option.id === value}
+            $borderColor={accentColor}
+            onClick={() => onChange(option.id)}
+          >
+            <ThemeName>{option.title}</ThemeName>
+            <ColorPalette>
+              {option.swatch.map((color, i) => (
+                <ColorBlock key={i} $color={color} />
+              ))}
+            </ColorPalette>
+          </ThemeItem>
+        );
+      })}
     </ThemeGrid>
   );
 };
+
+export default ThemeSelector;
 
 const ThemeGrid = styled.div`
   display: grid;
@@ -58,13 +53,15 @@ interface ThemeItemProps {
   $borderColor: string;
 }
 
-const ThemeItem = styled.div<ThemeItemProps>`
-  background-color: ${props => props.theme.colors.primary};
+const ThemeItem = styled.button<ThemeItemProps>`
+  background-color: ${(props) => props.theme.colors.primary};
   border-radius: 5px;
   overflow: hidden;
   cursor: pointer;
+  padding: 0;
+  text-align: left;
   transition: transform 0.2s ease;
-  border: 2px solid ${props => props.$isSelected ? props.$borderColor : 'transparent'};
+  border: 2px solid ${(props) => (props.$isSelected ? props.$borderColor : 'transparent')};
 
   &:hover {
     transform: translateY(-3px);
@@ -75,22 +72,20 @@ const ThemeName = styled.div`
   padding: 10px;
   text-align: center;
   font-weight: 600;
-  color: ${props => props.theme.colors.white};
+  color: ${(props) => props.theme.colors.white};
 `;
-
-interface ColorBlockProps {
-  $color: string;
-}
 
 const ColorPalette = styled.div`
   display: flex;
   height: 30px;
 `;
 
+interface ColorBlockProps {
+  $color: string;
+}
+
 const ColorBlock = styled.div<ColorBlockProps>`
   flex: 1;
   height: 100%;
-  background-color: ${props => props.$color};
+  background-color: ${(props) => props.$color};
 `;
-
-export default ThemeSelector;
