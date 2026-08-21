@@ -4,8 +4,9 @@ A grid of selectable option cards — label + optional description + optional co
 strip, with a border highlight and "Selected" badge on the active one. For single-choice
 settings shown as a grid instead of a dropdown: a graphics-quality picker, a visual-effect
 picker, a plan tier picker. Distinct from [`ThemeSelector`](../ThemeSelector/README.md), which
-is purpose-built for a fixed 4-color theme palette shape (`Tema`) with no description/badge —
-`OptionGrid` is the general-purpose version of the same "grid of selectable cards" pattern.
+is purpose-built for swatch-forward theme picking (bigger color blocks, no description/badge) —
+`OptionGrid` is the general-purpose version of the same "grid of selectable cards" pattern, and
+also works fine for a theme picker if you want description text or a badge on cards.
 
 ## Props
 
