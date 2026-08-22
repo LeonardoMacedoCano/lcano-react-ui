@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import styled from 'styled-components';
 
+const DEFAULT_DENSE_BELOW = '500px';
+
 export interface BadgeCardProps {
   icon: ReactNode;
   title: string;
@@ -9,12 +11,23 @@ export interface BadgeCardProps {
   active?: boolean;
   onClick?: () => void;
   height?: string;
+  /** Viewport height below which the card shrinks regardless of `height` (e.g. a phone in landscape). */
+  denseBelow?: string;
 }
 
-const BadgeCard = ({ icon, title, description, meta, active = true, onClick, height = '150px' }: BadgeCardProps) => (
-  <BadgeCardContainer $active={active} $clickable={!!onClick} $height={height} onClick={onClick}>
-    <BadgeCardIcon>{icon}</BadgeCardIcon>
-    <BadgeCardBody>
+const BadgeCard = ({
+  icon,
+  title,
+  description,
+  meta,
+  active = true,
+  onClick,
+  height = '150px',
+  denseBelow = DEFAULT_DENSE_BELOW,
+}: BadgeCardProps) => (
+  <BadgeCardContainer $active={active} $clickable={!!onClick} $height={height} $denseBelow={denseBelow} onClick={onClick}>
+    <BadgeCardIcon $denseBelow={denseBelow}>{icon}</BadgeCardIcon>
+    <BadgeCardBody $denseBelow={denseBelow}>
       <BadgeCardTitle>{title}</BadgeCardTitle>
       <BadgeCardDescription>{description}</BadgeCardDescription>
       {meta && <BadgeCardMeta>{meta}</BadgeCardMeta>}
@@ -24,7 +37,7 @@ const BadgeCard = ({ icon, title, description, meta, active = true, onClick, hei
 
 export default BadgeCard;
 
-export const BadgeCardContainer = styled.div<{ $active: boolean; $clickable: boolean; $height: string }>`
+export const BadgeCardContainer = styled.div<{ $active: boolean; $clickable: boolean; $height: string; $denseBelow: string }>`
   display: flex;
   align-items: stretch;
   height: ${({ $height }) => $height};
@@ -38,9 +51,13 @@ export const BadgeCardContainer = styled.div<{ $active: boolean; $clickable: boo
   &:hover {
     border-color: ${({ theme, $clickable }) => ($clickable ? theme.colors.quaternary : theme.colors.gray)};
   }
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    height: 96px;
+  }
 `;
 
-export const BadgeCardIcon = styled.div`
+export const BadgeCardIcon = styled.div<{ $denseBelow: string }>`
   flex-shrink: 0;
   aspect-ratio: 1 / 1;
   display: flex;
@@ -50,9 +67,13 @@ export const BadgeCardIcon = styled.div`
   line-height: 1;
   background-color: ${({ theme }) => theme.colors.primary};
   border-right: 1px solid ${({ theme }) => theme.colors.gray};
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    font-size: 1.8rem;
+  }
 `;
 
-export const BadgeCardBody = styled.div`
+export const BadgeCardBody = styled.div<{ $denseBelow: string }>`
   min-width: 0;
   flex: 1;
   padding: 12px 16px;
@@ -60,6 +81,10 @@ export const BadgeCardBody = styled.div`
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 6px 12px;
+  }
 `;
 
 export const BadgeCardTitle = styled.div`
