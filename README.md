@@ -103,6 +103,7 @@ gotchas/dependencies.
 | [PaginatedGrid](src/components/PaginatedGrid/README.md) | CSS grid that paginates itself by row count |
 | [Panel](src/components/Panel/README.md) | Titled content card with header/body/footer |
 | [QrCode](src/components/QrCode/README.md) | Inline SVG QR code |
+| [RailTabsNav](src/components/RailTabsNav/README.md) | App nav: icon rail on wide/landscape screens, labeled bottom tabs on narrow ones |
 | [SearchFilterRSQL](src/components/SearchFilterRSQL/README.md) | RSQL filter builder |
 | [SearchPagination](src/components/SearchPagination/README.md) | Pagination controls for a `PagedResponse` |
 | [SearchSelectField](src/components/SearchSelectField/README.md) | Async debounced search combobox |
