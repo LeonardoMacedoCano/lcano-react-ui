@@ -32,3 +32,4 @@ export * from './AccountSummary';
 export * from './GoogleSignInButton';
 export * from './OptionGrid';
 export * from './SideNav';
+export * from './RailTabsNav';
