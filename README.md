@@ -106,6 +106,7 @@ gotchas/dependencies.
 | [SearchFilterRSQL](src/components/SearchFilterRSQL/README.md) | RSQL filter builder |
 | [SearchPagination](src/components/SearchPagination/README.md) | Pagination controls for a `PagedResponse` |
 | [SearchSelectField](src/components/SearchSelectField/README.md) | Async debounced search combobox |
+| [SideNav](src/components/SideNav/README.md) | App nav: icon rail on wide screens, hamburger + drawer on narrow ones |
 | [Stack](src/components/Stack/README.md) | Flexbox row/column layout with dividers |
 | [SummaryCard](src/components/SummaryCard/README.md) | Small KPI/metric card |
 | [Table](src/components/Table/README.md) | Data table with columns, pagination, row actions, responsive stacking |
