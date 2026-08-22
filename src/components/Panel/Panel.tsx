@@ -2,6 +2,8 @@ import React, { ReactNode } from 'react';
 import styled, { CSSProperties } from 'styled-components';
 import { Container } from '../Container';
 
+const DEFAULT_DENSE_BELOW = '500px';
+
 export interface PanelProps {
   title?: ReactNode;
   children: ReactNode;
@@ -12,9 +14,11 @@ export interface PanelProps {
   transparent?: boolean;
   actionButton?: ReactNode;
   style?: CSSProperties;
+  /** Viewport height below which the gap under the title shrinks (e.g. a phone in landscape). */
+  denseBelow?: string;
 }
 
-const Panel: React.FC<PanelProps> = ({ 
+const Panel: React.FC<PanelProps> = ({
   title,
   children,
   footer,
@@ -23,7 +27,8 @@ const Panel: React.FC<PanelProps> = ({
   padding,
   actionButton ,
   style,
-  transparent = false
+  transparent = false,
+  denseBelow = DEFAULT_DENSE_BELOW,
 }) => {
   return (
     <Container
@@ -40,23 +45,24 @@ const Panel: React.FC<PanelProps> = ({
           {actionButton && <ActionContainer>{actionButton}</ActionContainer>}
         </Title>
       )}
-      <Container
-        width="100%"
-        variantColor={transparent ? undefined : "secondary"}
-        backgroundColor={transparent ? "transparent" : undefined}
-        margin="20px 0 0 0"
-        style={
-          transparent ?
-          {} :
-          {
-            boxShadow: '0 0 2px',
-            borderRadius: '5px',
+      <Section $denseBelow={denseBelow}>
+        <Container
+          width="100%"
+          variantColor={transparent ? undefined : "secondary"}
+          backgroundColor={transparent ? "transparent" : undefined}
+          style={
+            transparent ?
+            {} :
+            {
+              boxShadow: '0 0 2px',
+              borderRadius: '5px',
+            }
           }
-        }
-      >
-        <Body>{children}</Body>
-        {footer && <Footer>{footer}</Footer>}
-      </Container>
+        >
+          <Body>{children}</Body>
+          {footer && <Footer>{footer}</Footer>}
+        </Container>
+      </Section>
     </Container>
   );
 };
@@ -70,6 +76,15 @@ const Title = styled.div`
   min-width: 0;
   overflow: hidden;
   border-bottom: 2px solid ${({ theme }) => theme.colors.gray};
+`;
+
+const Section = styled.div<{ $denseBelow: string }>`
+  width: 100%;
+  margin-top: 20px;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    margin-top: 10px;
+  }
 `;
 
 const TitleContent = styled.div`
