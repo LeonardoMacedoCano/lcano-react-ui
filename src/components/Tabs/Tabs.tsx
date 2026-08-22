@@ -7,11 +7,15 @@ interface Tab {
   content: React.ReactNode;
 }
 
+const DEFAULT_DENSE_BELOW = '500px';
+
 export interface TabsProps {
   tabs: Tab[];
+  /** Viewport height below which the tab bar/content padding shrink (e.g. a phone in landscape). */
+  denseBelow?: string;
 }
 
-const Tabs: React.FC<TabsProps> = ({ tabs }) => {
+const Tabs: React.FC<TabsProps> = ({ tabs, denseBelow = DEFAULT_DENSE_BELOW }) => {
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const handleTabClick = (index: number) => {
@@ -28,13 +32,14 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
           <TabButton
             key={index}
             $active={index === activeTab}
+            $denseBelow={denseBelow}
             onClick={() => handleTabClick(index)}
           >
             {tab.label}
           </TabButton>
         ))}
       </TabList>
-      <TabContent>
+      <TabContent $denseBelow={denseBelow}>
         {tabs[activeTab]?.content}
       </TabContent>
     </Container>
@@ -48,7 +53,7 @@ const TabList = styled.div`
   border-bottom: 2px solid ${({ theme }) => theme.colors.quaternary};
 `;
 
-const TabButton = styled.button<{ $active: boolean }>`
+const TabButton = styled.button<{ $active: boolean; $denseBelow: string }>`
   flex: 1;
   padding: 10px 0px;
   border: none;
@@ -80,8 +85,16 @@ const TabButton = styled.button<{ $active: boolean }>`
     background-color: ${theme.colors.tertiary};
     border-right-color: transparent;
   `}
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 6px 0px;
+  }
 `;
 
-const TabContent = styled.div`
+const TabContent = styled.div<{ $denseBelow: string }>`
   padding: 16px;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 8px 16px;
+  }
 `;

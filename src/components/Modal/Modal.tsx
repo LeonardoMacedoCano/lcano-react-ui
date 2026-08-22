@@ -8,6 +8,8 @@ import { getVariantColor } from '../../utils';
 import { Button } from '../Button';
 import { VariantColor } from '../../types';
 
+const DEFAULT_DENSE_BELOW = '500px';
+
 export interface ModalProps {
   isOpen: boolean;
   title: string;
@@ -22,6 +24,8 @@ export interface ModalProps {
   maxWidth?: string;
   modalHeight?: string;
   icon?: React.ReactNode;
+  /** Viewport height below which the header/content/actions padding shrinks (e.g. a phone in landscape). */
+  denseBelow?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -37,19 +41,20 @@ const Modal: React.FC<ModalProps> = ({
   modalWidth = '500px',
   maxWidth,
   modalHeight = 'auto',
-  icon = <FaExclamationTriangle />
+  icon = <FaExclamationTriangle />,
+  denseBelow = DEFAULT_DENSE_BELOW,
 }) => {
   if (!isOpen) return null;
 
   return (
-    <ModalOverlay onClick={onClose}>
+    <ModalOverlay $denseBelow={denseBelow} onClick={onClose}>
       <ModalContainer
         onClick={(e) => e.stopPropagation()}
         $width={modalWidth}
         $maxWidth={maxWidth}
         $height={modalHeight}
       >
-        <ModalHeader $variant={variant}>
+        <ModalHeader $variant={variant} $denseBelow={denseBelow}>
           <HeaderLeft>
             {icon && <IconWrapper>{icon}</IconWrapper>}
             <ModalTitle>{title}</ModalTitle>
@@ -73,8 +78,8 @@ const Modal: React.FC<ModalProps> = ({
           )}
         </ModalHeader>
 
-        <ModalContent>{content}</ModalContent>
-        {actions && <ModalActions>{actions}</ModalActions>}
+        <ModalContent $denseBelow={denseBelow}>{content}</ModalContent>
+        {actions && <ModalActions $denseBelow={denseBelow}>{actions}</ModalActions>}
       </ModalContainer>
     </ModalOverlay>
   );
@@ -88,7 +93,7 @@ interface ModalContainerProps {
   $height: string;
 }
 
-export const ModalOverlay = styled.div`
+export const ModalOverlay = styled.div<{ $denseBelow: string }>`
   z-index: 1000;
   position: fixed;
   inset: 0;
@@ -98,6 +103,10 @@ export const ModalOverlay = styled.div`
   align-items: center;
   padding: 20px;
   box-sizing: border-box;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 10px;
+  }
 `;
 
 export const ModalContainer = styled.div<ModalContainerProps>`
@@ -115,6 +124,7 @@ export const ModalContainer = styled.div<ModalContainerProps>`
 
 interface ModalHeaderProps {
   $variant: VariantColor;
+  $denseBelow: string;
 }
 export const ModalHeader = styled.div<ModalHeaderProps>`
   color: ${({ theme }) => theme.colors.white};
@@ -125,6 +135,10 @@ export const ModalHeader = styled.div<ModalHeaderProps>`
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   padding: 15px;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 8px 15px;
+  }
 `;
 
 export const HeaderLeft = styled.div`
@@ -144,17 +158,25 @@ export const ModalTitle = styled.div`
   color: ${({ theme }) => theme.colors.white};
 `;
 
-export const ModalContent = styled.div`
+export const ModalContent = styled.div<{ $denseBelow: string }>`
   padding: 20px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-wrap: break-word;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 10px 15px;
+  }
 `;
 
-export const ModalActions = styled.div`
+export const ModalActions = styled.div<{ $denseBelow: string }>`
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   padding: 20px;
+
+  @media (max-height: ${({ $denseBelow }) => $denseBelow}) {
+    padding: 10px 15px;
+  }
 `;
