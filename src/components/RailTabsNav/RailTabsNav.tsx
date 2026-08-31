@@ -253,11 +253,12 @@ const RailButton = styled.button<{ $active: boolean; $open: boolean }>`
   line-height: 1;
   color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme, $active, $open }) =>
-    $active ? theme.colors.quaternary : $open ? theme.colors.secondary : 'transparent'};
+    $active || $open ? theme.colors.quaternary : 'transparent'};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme, $active }) => ($active ? theme.colors.quaternary : theme.colors.secondary)};
+    background-color: ${({ theme, $active, $open }) =>
+      $active || $open ? theme.colors.quaternary : theme.colors.secondary};
   }
 `;
 
@@ -273,11 +274,12 @@ const TabButton = styled.button<{ $active: boolean; $open: boolean }>`
   border-radius: 8px;
   color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme, $active, $open }) =>
-    $active ? theme.colors.quaternary : $open ? theme.colors.secondary : 'transparent'};
+    $active || $open ? theme.colors.quaternary : 'transparent'};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme, $active }) => ($active ? theme.colors.quaternary : theme.colors.secondary)};
+    background-color: ${({ theme, $active, $open }) =>
+      $active || $open ? theme.colors.quaternary : theme.colors.secondary};
   }
 `;
 
