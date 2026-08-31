@@ -24,13 +24,40 @@ mounted/unmounted on resize.
 
 ### `RailTabsNavItem`
 
+Every item has `id` / `icon` / `label` / `active?`, plus **one of three shapes** depending
+on whether it carries an action, a submenu, or both:
+
+| Shape | Fields | Click behaviour |
+| --- | --- | --- |
+| **Action** (`RailTabsNavActionItem`) | `onClick` | Runs `onClick`. Closes any submenu that was open. |
+| **Submenu** (`RailTabsNavSubmenuItem`) | `submenu` | Toggles this item's submenu open/closed. No action of its own. |
+| **Action + submenu** (`RailTabsNavActionSubmenuItem`) | `onClick` + `submenu` | Opening click runs `onClick` **and** opens the submenu; the next click just closes it (the action does **not** re-fire on close). |
+
+An item with neither `onClick` nor a non-empty `submenu` is a type error.
+
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `id` | `string` | yes | React key. |
 | `icon` | `ReactNode` | yes | Shown in both the rail button and the tab button. |
-| `label` | `string` | yes | Visible text under the icon in the tab bar; used as the rail button's `title`/`aria-label` only (the rail is icon-only by design). |
+| `label` | `string` | yes | Text under the icon in the tab bar; the rail button's `title`/`aria-label`; also the heading shown at the top of this item's submenu. |
 | `active` | `boolean` | no | Highlights the current destination in both layouts (`aria-current="page"` + background fill). |
-| `onClick` | `() => void` | yes | Called on click in either layout. |
+| `onClick` | `() => void` | Action shapes only | Called as described above. |
+| `submenu` | `RailTabsNavSubItem[]` | Submenu shapes only | Options shown in the popover. |
+
+### `RailTabsNavSubItem`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | yes | React key. |
+| `label` | `string` | yes | Row text (one option per row). |
+| `active` | `boolean` | no | Highlights the current option. |
+| `onClick` | `() => void` | yes | Called on select; the submenu closes right after. |
+
+The submenu is an overlay — `position: fixed`, above everything, and it reserves **no**
+layout space. It renders as a flyout beside the rail (aligned to the item you clicked)
+where the rail is visible, and as a sheet just above the tab bar on narrow screens. It
+closes on: selecting an option, clicking outside it, pressing <kbd>Esc</kbd>, or a viewport
+resize. The component owns this state — you only pass data.
 
 ## Usage
 
@@ -39,8 +66,30 @@ import { RailTabsNav } from 'lcano-react-ui';
 
 <RailTabsNav
   items={[
+    // action only
     { id: 'home', icon: '🏠', label: 'Home', active: screen === 'home', onClick: () => go('home') },
-    { id: 'settings', icon: '⚙️', label: 'Settings', active: screen === 'settings', onClick: () => go('settings') },
+    // action + submenu: goes to the section overview, then shows its sub-pages
+    {
+      id: 'finance',
+      icon: '💰',
+      label: 'Finance',
+      active: section === 'finance',
+      onClick: () => go('finance'),
+      submenu: [
+        { id: 'overview', label: 'Overview', active: page === 'overview', onClick: () => go('finance/overview') },
+        { id: 'entries', label: 'Entries', active: page === 'entries', onClick: () => go('finance/entries') },
+      ],
+    },
+    // submenu only
+    {
+      id: 'reports',
+      icon: '📊',
+      label: 'Reports',
+      submenu: [
+        { id: 'monthly', label: 'Monthly', onClick: () => go('reports/monthly') },
+        { id: 'yearly', label: 'Yearly', onClick: () => go('reports/yearly') },
+      ],
+    },
   ]}
 />
 ```
