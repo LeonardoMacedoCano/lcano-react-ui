@@ -59,8 +59,10 @@ where the rail is visible, and as a sheet just above the tab bar on narrow scree
 closes on: selecting an option, clicking outside it, pressing <kbd>Esc</kbd>, or a viewport
 resize. The component owns this state — you only pass data.
 
-While an item's submenu is open, that item's button carries the same filled highlight as
-an `active` item, so opening a submenu looks like selecting any other item.
+While a submenu is open, its parent is the only item with the filled highlight — the
+`active` highlight on every other item is suppressed until the submenu closes, so exactly
+one item ever looks selected. When nothing is open, the `active` item is highlighted as
+usual.
 
 ## Usage
 
