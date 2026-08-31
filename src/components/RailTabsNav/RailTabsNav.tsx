@@ -126,6 +126,7 @@ const RailTabsNav = ({
       <Rail ref={railRef} aria-label={ariaLabel} $compactBelow={compactBelow} $denseBelow={denseBelow}>
         {items.map((item) => {
           const submenu = getSubmenu(item);
+          const selected = openItem ? item.id === openItem.id : !!item.active;
           return (
             <RailButton
               key={item.id}
@@ -135,8 +136,7 @@ const RailTabsNav = ({
               aria-current={item.active ? 'page' : undefined}
               aria-haspopup={submenu ? 'menu' : undefined}
               aria-expanded={submenu ? openId === item.id : undefined}
-              $active={!!item.active}
-              $open={openId === item.id}
+              $selected={selected}
               onClick={(event) => handleItemClick(item, event.currentTarget)}
             >
               <span aria-hidden>{item.icon}</span>
@@ -148,6 +148,7 @@ const RailTabsNav = ({
       <Tabs ref={tabsRef} aria-label={ariaLabel} $compactBelow={compactBelow}>
         {items.map((item) => {
           const submenu = getSubmenu(item);
+          const selected = openItem ? item.id === openItem.id : !!item.active;
           return (
             <TabButton
               key={item.id}
@@ -155,8 +156,7 @@ const RailTabsNav = ({
               aria-current={item.active ? 'page' : undefined}
               aria-haspopup={submenu ? 'menu' : undefined}
               aria-expanded={submenu ? openId === item.id : undefined}
-              $active={!!item.active}
-              $open={openId === item.id}
+              $selected={selected}
               onClick={(event) => handleItemClick(item, event.currentTarget)}
             >
               <TabIcon aria-hidden>{item.icon}</TabIcon>
@@ -241,7 +241,7 @@ const Tabs = styled.nav<{ $compactBelow: string }>`
   }
 `;
 
-const RailButton = styled.button<{ $active: boolean; $open: boolean }>`
+const RailButton = styled.button<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,17 +252,17 @@ const RailButton = styled.button<{ $active: boolean; $open: boolean }>`
   font-size: 22px;
   line-height: 1;
   color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme, $active, $open }) =>
-    $active || $open ? theme.colors.quaternary : 'transparent'};
+  background-color: ${({ theme, $selected }) =>
+    $selected ? theme.colors.quaternary : 'transparent'};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme, $active, $open }) =>
-      $active || $open ? theme.colors.quaternary : theme.colors.secondary};
+    background-color: ${({ theme, $selected }) =>
+      $selected ? theme.colors.quaternary : theme.colors.secondary};
   }
 `;
 
-const TabButton = styled.button<{ $active: boolean; $open: boolean }>`
+const TabButton = styled.button<{ $selected: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -273,13 +273,13 @@ const TabButton = styled.button<{ $active: boolean; $open: boolean }>`
   padding: 8px 4px;
   border-radius: 8px;
   color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme, $active, $open }) =>
-    $active || $open ? theme.colors.quaternary : 'transparent'};
+  background-color: ${({ theme, $selected }) =>
+    $selected ? theme.colors.quaternary : 'transparent'};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme, $active, $open }) =>
-      $active || $open ? theme.colors.quaternary : theme.colors.secondary};
+    background-color: ${({ theme, $selected }) =>
+      $selected ? theme.colors.quaternary : theme.colors.secondary};
   }
 `;
 
