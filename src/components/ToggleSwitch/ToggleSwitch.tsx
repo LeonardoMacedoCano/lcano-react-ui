@@ -51,11 +51,13 @@ const ToggleSwitchContainer = styled.div<StyledProps>`
 
 const ToggleButtonStyled = styled.button<{ $active: boolean }>`
   box-sizing: border-box;
+  flex: 1 1 0;
   cursor: pointer;
   border: none;
   border-radius: 6px;
   padding: 6px 14px;
   white-space: nowrap;
+  text-align: center;
   font-size: 14px;
   font-weight: ${({ $active }) => ($active ? 600 : 400)};
   color: ${({ theme, $active }) => ($active ? theme.colors.white : theme.colors.tertiary)};

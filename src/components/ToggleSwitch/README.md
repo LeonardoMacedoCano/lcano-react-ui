@@ -34,6 +34,8 @@ const [unit, setUnit] = useState<Unit>('metric');
 
 - Exactly two options by design (`optionA`/`optionB`) — for more than two, use
   [`Tabs`](../Tabs/README.md) or build a custom control instead.
+- The two options always split the control's width evenly, so giving `width` (or letting a
+  parent stretch it) grows the buttons rather than leaving empty space.
 - `T` is constrained to `extends string` — numeric or object values aren't supported directly
   (stringify them if needed).
 - Requires a styled-components `ThemeProvider` ancestor, see the
