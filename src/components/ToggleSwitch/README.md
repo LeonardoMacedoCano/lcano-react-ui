@@ -13,6 +13,8 @@ switch). Generic over the option value type.
 | `onChange` | `(value: T) => void` | yes | — | Called with the clicked option's value. |
 | `width` | `string` | no | `'auto'` | CSS width. |
 | `maxWidth` | `string` | no | `'100%'` | CSS max-width. |
+| `bordered` | `boolean` | no | `true` | When `false`, drops the container border. |
+| `transparent` | `boolean` | no | `false` | When `true`, makes the container background transparent instead of `theme.colors.primary`. |
 
 ## Usage
 
@@ -34,6 +36,8 @@ const [unit, setUnit] = useState<Unit>('metric');
 
 - Exactly two options by design (`optionA`/`optionB`) — for more than two, use
   [`Tabs`](../Tabs/README.md) or build a custom control instead.
+- The two options always split the control's width evenly, so giving `width` (or letting a
+  parent stretch it) grows the buttons rather than leaving empty space.
 - `T` is constrained to `extends string` — numeric or object values aren't supported directly
   (stringify them if needed).
 - Requires a styled-components `ThemeProvider` ancestor, see the
