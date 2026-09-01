@@ -43,5 +43,9 @@ import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 - Positioning is fixed (`position: fixed; bottom: 20px; right: 20px`) — only render one
   `ActionButton` per screen.
+- To keep it clear of fixed app chrome (e.g. a bottom tab bar), set the
+  `--lcano-action-button-inset-bottom` CSS custom property on any ancestor. Its value is
+  added to the default `20px` bottom offset; it defaults to `0px`, so the position is
+  unchanged when unset.
 - Colors come from the active theme (`theme.colors.tertiary`/`white`) — requires a
   styled-components `ThemeProvider` ancestor, see the [main README](../../../README.md#theming).

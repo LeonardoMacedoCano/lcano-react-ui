@@ -71,7 +71,7 @@ export default ActionButton;
 
 const Wrapper = styled.div`
   position: fixed;
-  bottom: 20px;
+  bottom: calc(20px + var(--lcano-action-button-inset-bottom, 0px));
   right: 20px;
   z-index: 1000;
 `;
