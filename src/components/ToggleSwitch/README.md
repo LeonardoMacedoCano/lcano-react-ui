@@ -13,6 +13,8 @@ switch). Generic over the option value type.
 | `onChange` | `(value: T) => void` | yes | — | Called with the clicked option's value. |
 | `width` | `string` | no | `'auto'` | CSS width. |
 | `maxWidth` | `string` | no | `'100%'` | CSS max-width. |
+| `bordered` | `boolean` | no | `true` | When `false`, drops the container border. |
+| `transparent` | `boolean` | no | `false` | When `true`, makes the container background transparent instead of `theme.colors.primary`. |
 
 ## Usage
 
