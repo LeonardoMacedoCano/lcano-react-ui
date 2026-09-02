@@ -119,6 +119,7 @@ const Loading: React.FC<LoadingProps> = ({ isLoading }) => {
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 9999,
+        pointerEvents: 'none',
       }}
     >
       <div dangerouslySetInnerHTML={{ __html: svgContent }} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 export interface ActionOption {
@@ -24,36 +24,55 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   disabled,
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const toggleOptions = (show: boolean) => setExpanded(show);
+  const hasOptions = !!options && options.length > 0;
 
-  const handleOptionClick = (action: () => void) => {
-    action();
-    setExpanded(false);
+  const close = useCallback(() => setExpanded(false), []);
+
+  useEffect(() => {
+    if (!expanded) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [expanded, close]);
+
+  const handleMainClick = () => {
+    if (disabled) return;
+    onClick?.();
+    if (hasOptions) setExpanded((prev) => !prev);
+  };
+
+  const handleOptionClick = (option: ActionOption) => {
+    if (option.disabled) return;
+    option.action();
+    close();
   };
 
   return (
-    <Wrapper>
-      <MainButton
-        onMouseEnter={() => toggleOptions(true)}
-        onMouseLeave={() => toggleOptions(false)}
-        onClick={onClick}
-        title={hint}
-        disabled={disabled}
-        aria-label={hint}
-      >
-        {icon}
-      </MainButton>
-
-      {options && expanded && (
+    <Wrapper ref={wrapperRef}>
+      {hasOptions && expanded && (
         <OptionsContainer
-          onMouseEnter={() => toggleOptions(true)}
-          onMouseLeave={() => toggleOptions(false)}
+          role="menu"
+          onMouseLeave={() => close()}
         >
-          {options.map((option, index) => (
+          {options!.map((option) => (
             <OptionButton
-              key={index}
-              onClick={() => handleOptionClick(option.action)}
+              key={option.hint}
+              type="button"
+              role="menuitem"
+              onClick={() => handleOptionClick(option)}
               title={option.hint}
               disabled={option.disabled}
               aria-label={option.hint}
@@ -63,6 +82,20 @@ const ActionButton: React.FC<ActionButtonProps> = ({
           ))}
         </OptionsContainer>
       )}
+
+      <MainButton
+        type="button"
+        onMouseEnter={() => hasOptions && !disabled && setExpanded(true)}
+        onMouseLeave={() => hasOptions && close()}
+        onClick={handleMainClick}
+        title={hint}
+        disabled={disabled}
+        aria-label={hint}
+        aria-haspopup={hasOptions ? 'menu' : undefined}
+        aria-expanded={hasOptions ? expanded : undefined}
+      >
+        {icon}
+      </MainButton>
     </Wrapper>
   );
 };
@@ -74,6 +107,10 @@ const Wrapper = styled.div`
   bottom: calc(20px + var(--lcano-action-button-inset-bottom, 0px));
   right: 20px;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 `;
 
 const commonButtonStyles = css`
@@ -85,10 +122,18 @@ const commonButtonStyles = css`
   justify-content: center;
   align-items: center;
   font-size: 25px;
+  touch-action: manipulation;
   transition: background-color 0.3s ease, opacity 0.3s ease;
 
-  &:hover {
-    opacity: 0.7;
+  @media (hover: hover) {
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
   }
 `;
 
@@ -96,16 +141,10 @@ const MainButton = styled.button`
   ${commonButtonStyles};
   width: 55px;
   height: 55px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+  cursor: pointer;
 `;
 
 const OptionsContainer = styled.div`
-  position: absolute;
-  bottom: 100%;
-  padding-bottom: 10px;
-  right: 0;
-  width: 55px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -117,6 +156,5 @@ const OptionButton = styled.button`
   width: 40px;
   height: 40px;
   font-size: 20px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+  cursor: pointer;
 `;

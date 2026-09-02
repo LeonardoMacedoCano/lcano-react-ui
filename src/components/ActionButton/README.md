@@ -1,8 +1,8 @@
 # ActionButton
 
-A floating action button (FAB) fixed to the bottom-right corner of the viewport. Hovering
-over it reveals a stack of secondary `options`, each rendered as its own circular button —
-useful for a page-level "quick actions" menu.
+A floating action button (FAB) fixed to the bottom-right corner of the viewport. Tapping or
+hovering it reveals a stack of secondary `options`, each rendered as its own circular
+button — useful for a page-level "quick actions" menu.
 
 ## Props
 
@@ -10,16 +10,16 @@ useful for a page-level "quick actions" menu.
 | --- | --- | --- | --- | --- |
 | `icon` | `React.ReactNode` | yes | — | Icon rendered inside the main button. |
 | `hint` | `string` | no | — | Tooltip (`title`/`aria-label`) for the main button. |
-| `onClick` | `() => void` | no | — | Click handler for the main button. |
-| `options` | `ActionOption[]` | no | — | Secondary actions shown on hover, stacked above the main button. |
-| `disabled` | `boolean` | no | `false` | Disables the main button. |
+| `onClick` | `() => void` | no | — | Called when the main button is clicked/tapped. When `options` is set, the same interaction also toggles the options menu. |
+| `options` | `ActionOption[]` | no | — | Secondary actions, stacked above the main button. |
+| `disabled` | `boolean` | no | `false` | Disables the main button (no click, no menu). |
 
 ### `ActionOption`
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
 | `icon` | `React.ReactNode` | yes | Icon for the option button. |
-| `hint` | `string` | yes | Tooltip for the option button. |
+| `hint` | `string` | yes | Tooltip for the option button. Also used as the React key, so keep it unique within one `ActionButton`. |
 | `action` | `() => void` | yes | Called on click; also closes the options menu. |
 | `disabled` | `boolean` | no | Disables this specific option. |
 
@@ -38,6 +38,15 @@ import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
   ]}
 />
 ```
+
+## Behaviour
+
+- **Opening the menu:** click/tap the main button, or (on devices with a real pointer)
+  hover it. Hover styling is gated behind `@media (hover: hover)` so touch devices never
+  get a stuck hover state.
+- **Closing the menu:** pick an option, click/tap outside the FAB, press `Escape`, or
+  move the pointer away.
+- Both buttons are `type="button"` and use `touch-action: manipulation`.
 
 ## Notes
 
