@@ -16,6 +16,13 @@ export interface ActionButtonProps {
   disabled?: boolean;
 }
 
+const TOGGLE_DEBOUNCE_MS = 300;
+
+const detectHover = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 const ActionButton: React.FC<ActionButtonProps> = ({
   icon,
   hint,
@@ -24,7 +31,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   disabled,
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const [canHover] = useState(detectHover);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const lastToggleAt = useRef(0);
 
   const hasOptions = !!options && options.length > 0;
 
@@ -51,7 +60,12 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   const handleMainClick = () => {
     if (disabled) return;
     onClick?.();
-    if (hasOptions) setExpanded((prev) => !prev);
+    if (canHover || !hasOptions) return;
+
+    const now = Date.now();
+    if (now - lastToggleAt.current < TOGGLE_DEBOUNCE_MS) return;
+    lastToggleAt.current = now;
+    setExpanded((prev) => !prev);
   };
 
   const handleOptionClick = (option: ActionOption) => {
@@ -60,13 +74,14 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     close();
   };
 
+  const openOnHover =
+    canHover && hasOptions && !disabled ? () => setExpanded(true) : undefined;
+  const closeOnHover = canHover && hasOptions ? () => setExpanded(false) : undefined;
+
   return (
-    <Wrapper ref={wrapperRef}>
+    <Wrapper ref={wrapperRef} onMouseEnter={openOnHover} onMouseLeave={closeOnHover}>
       {hasOptions && expanded && (
-        <OptionsContainer
-          role="menu"
-          onMouseLeave={() => close()}
-        >
+        <OptionsContainer role="menu">
           {options!.map((option) => (
             <OptionButton
               key={option.hint}
@@ -85,8 +100,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
       <MainButton
         type="button"
-        onMouseEnter={() => hasOptions && !disabled && setExpanded(true)}
-        onMouseLeave={() => hasOptions && close()}
         onClick={handleMainClick}
         title={hint}
         disabled={disabled}

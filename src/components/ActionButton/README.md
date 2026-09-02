@@ -41,12 +41,17 @@ import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 ## Behaviour
 
-- **Opening the menu:** click/tap the main button, or (on devices with a real pointer)
-  hover it. Hover styling is gated behind `@media (hover: hover)` so touch devices never
-  get a stuck hover state.
-- **Closing the menu:** pick an option, click/tap outside the FAB, press `Escape`, or
-  move the pointer away.
-- Both buttons are `type="button"` and use `touch-action: manipulation`.
+The interaction model is chosen per device via `matchMedia('(hover: hover) and (pointer: fine)')`:
+
+- **Pointer devices (mouse):** the menu opens on hover and closes when the pointer leaves
+  the FAB. Clicking the main button only runs `onClick`.
+- **Touch devices:** the menu toggles on tap of the main button (debounced ~300ms to
+  ignore ghost/duplicate taps), and closes on: picking an option, tapping outside, or
+  `Escape`. Hover handlers are not wired, so the emulated `mouseenter`+`click` pair a tap
+  produces can't open-then-close the menu.
+
+Hover styling is gated behind `@media (hover: hover)`; both buttons are `type="button"`
+and use `touch-action: manipulation`.
 
 ## Notes
 

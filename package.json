@@ -1,6 +1,6 @@
 {
   "name": "lcano-react-ui",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "React UI Components Library para meus projetos",
   "type": "module",
   "main": "dist/cjs/index.js",
@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "rm -rf dist && rollup -c",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,13 @@
     "react-dom": "^18.0.0",
     "rollup": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "^14.3.1",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^24.0.0",
+    "vitest": "^1.6.0"
   },
   "license": "MIT",
   "dependencies": {
